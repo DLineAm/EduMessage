@@ -1,0 +1,55 @@
+﻿<Page
+    x:Class="EduMessage.Pages.PrimaryRegistrationPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:EduMessage.Pages"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <StackPanel>
+
+        <TextBlock HorizontalAlignment="Center"
+                   VerticalAlignment="Center"
+                   Margin="12"
+                   Text="Регистрация"
+                   Style="{StaticResource 26TitleTextBlock}"></TextBlock>
+        <TextBlock Text="Шаг 1/5"
+                   HorizontalAlignment="Center"
+                   FontSize="20"
+                   Margin="0,0,0,12"></TextBlock>
+        <TextBox Margin="0,12"
+                 Width="240"
+                 Header="Логин"
+                 Text="{x:Bind ViewModel.Login, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                 IsEnabled="{Binding IsLoginEnabled}"></TextBox>
+        <TextBox Width="240"
+                 Header="Email"
+                 Text="{x:Bind ViewModel.Email, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                 IsEnabled="{Binding IsLoginEnabled}"></TextBox>
+        <PasswordBox Margin="0,12"
+                 Width="240"
+                 Header="Пароль"
+                 Password="{x:Bind ViewModel.Password, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                 IsEnabled="{Binding IsLoginEnabled}"></PasswordBox>
+        <PasswordBox Margin="0,0,0,24"
+                     Width="240"
+                     Header="Повтор пароля"
+                     Password="{x:Bind ViewModel.PasswordRepeat, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                     IsEnabled="{Binding IsLoginEnabled}"></PasswordBox>
+        <TextBlock Foreground="Red"
+                   HorizontalAlignment="Center"
+                   TextAlignment="Center"
+                   Width="260"
+                   TextWrapping="Wrap"
+                   Text="{Binding ErrorText}"/>
+        <Grid Margin="0,12">
+            <HyperlinkButton Content="Вход в аккаунт"
+                             HorizontalAlignment="Left"
+                             Command="{Binding GoBackCommand}"></HyperlinkButton>
+            <Button Content="Далее"
+                    HorizontalAlignment="Right"
+                    Command="{Binding RegisterCommand}"></Button>
+        </Grid>
+    </StackPanel>
+</Page>

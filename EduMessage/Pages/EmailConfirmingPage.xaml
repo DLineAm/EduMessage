@@ -1,0 +1,54 @@
+﻿<Page
+    x:Class="EduMessage.Pages.EmailConfirmingPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <StackPanel>
+        <TextBlock HorizontalAlignment="Center"
+                   VerticalAlignment="Center"
+                   Margin="12"
+                   Text="Регистрация"
+                   Style="{StaticResource 26TitleTextBlock}"></TextBlock>
+        <TextBlock Text="Шаг 2/5"
+                   HorizontalAlignment="Center"
+                   FontSize="20"
+                   Margin="0,0,0,12"></TextBlock>
+        <TextBlock Text="На указанную почту было отправлено письмо с кодом подтверждения, введите его в поле ввода кода"
+                   TextWrapping="Wrap"
+                   Width="270"
+                   TextAlignment="Center"
+                   HorizontalAlignment="Center"
+                   Margin="0,0,0,12"/>
+        
+        <TextBox Header="Код подтверждения"
+                 IsEnabled="{Binding IsLoginEnabled}"
+                 Margin="0,12,0,24"
+                 Width="240"
+                 Text="{Binding Code, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+        <TextBlock Foreground="Red"
+                   Width="260"
+                   TextWrapping="Wrap"
+                   TextAlignment="Center"
+                   HorizontalAlignment="Center"
+                   Text="{Binding ErrorText}"/>
+        
+        <Grid Margin="0,12,0,0">
+            <StackPanel HorizontalAlignment="Left">
+                <HyperlinkButton Content="Вход в аккаунт"
+                                 Command="{Binding GoToLoginCommand}"/>
+                <HyperlinkButton Content="Назад"
+                                 Margin="0,12,0,0"
+                                 Command="{Binding GoBackCommand}"/>
+            </StackPanel>
+
+            <Button Content="Подтвердить"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Top"
+                    Command="{Binding ConfirmCommand}"/>
+
+        </Grid>
+    </StackPanel>
+</Page>
