@@ -50,6 +50,29 @@ namespace EduMessage.Services
             return result;
         }
 
+        public static async Task<string> DeleteFromRequestAsync(this string address, string token, bool passCertificateValidation = true)
+        {
+            HttpClient client;
+            
+            if (passCertificateValidation)
+            {
+                var clientHandler = new HttpClientHandler { ServerCertificateCustomValidationCallback = (_, _, _, _) => true };
+                client = new HttpClient(clientHandler);
+            }
+            else
+            {
+                client = new HttpClient();
+            }
+
+            client.DefaultRequestHeaders.Authorization =
+                new System.Net.Http.Headers.AuthenticationHeaderValue("bearer", token);
+
+            var response = client.DeleteAsync(new Uri(address)).Result;
+            response.EnsureSuccessStatusCode();
+            var result = await response.Content.ReadAsStringAsync();
+            return result;
+        }
+
         public static async Task<string> PostBoolAsync<T>(this string address, T value, bool passCertificateValidation = true)
         {
             HttpClient client;

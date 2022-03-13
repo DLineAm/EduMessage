@@ -20,9 +20,9 @@ namespace EduMessage.ViewModels
     public partial class EducationMainPageViewModel
     {
         [Property]
-        private ObservableCollection<Crumb> _crumbs = new ObservableCollection<Crumb>
+        private ObservableCollection<Crumb> _crumbs = new()
         {
-            new Crumb("Главная", new EducationFolderPage())
+            new ("Главная", new EducationFolderPage())
         };
 
         public void Initialize()
@@ -32,22 +32,31 @@ namespace EduMessage.ViewModels
 
         private void App_SelectedSpeciallityChanged(Speciality speciality)
         {
-            if (speciality == null)
+            //Неопознанная ошибка COMException
+            try
             {
-                if (Crumbs.Count != 1)
+                if (speciality == null)
                 {
-                    Crumbs.Remove(Crumbs.LastOrDefault());
+                    if (Crumbs.Count != 1)
+                    {
+                        Crumbs.Remove(Crumbs.LastOrDefault());
+                    }
+                    return;
                 }
-                return;
+                var lastCrumb = Crumbs.LastOrDefault();
+                var convertedTitle = speciality.Code + " " + speciality.Title;
+                if (lastCrumb != null && lastCrumb.Title == convertedTitle)
+                {
+                    return;
+                }
+                Crumbs.Add(new Crumb(convertedTitle, null));
+                new Navigator().Navigate(typeof(EducationCourseListPage), speciality, new DrillInNavigationTransitionInfo(), FrameType.EducationFrame);
             }
-            var lastCrumb = Crumbs.LastOrDefault();
-            var convertedTitle = speciality.Code + " " + speciality.Title;
-            if (lastCrumb != null && lastCrumb.Title == convertedTitle)
+            catch (Exception e)
             {
-                return;
+
             }
-            Crumbs.Add(new Crumb(convertedTitle, null));
-            new Navigator().Navigate(typeof(EducationCourseListPage), speciality, new DrillInNavigationTransitionInfo(), FrameType.EducationFrame);
+            
         }
     }
 

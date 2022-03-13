@@ -30,8 +30,10 @@
                     <TextBlock Text="{Binding FullName}"
                            FontSize="40"
                            Style="{StaticResource 26TitleTextBlock}"/>
-                    <TextBlock Text="{Binding User.Email}"/>
-                    <TextBlock Text="{Binding User.IdRoleNavigation.Title}"/>
+                    <TextBlock Text="{Binding User.Email}"
+                               Margin="0,0,0,0"/>
+                    <TextBlock Text="{Binding User.IdRoleNavigation.Title}"
+                               Margin="0,4,0,0"/>
                 </StackPanel>
 
             </Grid>

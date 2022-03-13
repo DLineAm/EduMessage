@@ -29,8 +29,8 @@ namespace EduMessage
     sealed partial class App : Application
     {
         //"https://169.254.77.140:5001/"
-        //public static string Address = "https://192.168.1.2:5001/";
-        public static string Address = "https://169.254.77.140:5001/";
+        public static string Address = "https://192.168.1.2:5001/";
+        //public static string Address = "https://169.254.77.140:5001/";
 
         public static event Action<Color> ColorChanged;
 

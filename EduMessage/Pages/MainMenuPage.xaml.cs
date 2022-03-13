@@ -37,6 +37,9 @@ namespace EduMessage.Pages
             this.DataContext = ViewModel;
         }
 
+        public EducationFolderPage EducationPage { get; set; }
+        public AccountInfoPage AccountInfoPage { get; set; } = new();
+
         public MainMenuViewModel ViewModel { get; }
 
         private void NavigationViewControl_SelectionChanged(NavigationView sender, NavigationViewSelectionChangedEventArgs args)
