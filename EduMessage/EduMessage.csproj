@@ -132,6 +132,8 @@
     <Compile Include="Models\Attachment.cs" />
     <Compile Include="Models\AttachmentType.cs" />
     <Compile Include="Models\City.cs" />
+    <Compile Include="Models\Course.cs" />
+    <Compile Include="Models\CourseAttachment.cs" />
     <Compile Include="Models\Device.cs" />
     <Compile Include="Models\EducationForm.cs" />
     <Compile Include="Models\EducationType.cs" />
@@ -142,11 +144,20 @@
     <Compile Include="Models\School.cs" />
     <Compile Include="Models\Speciality.cs" />
     <Compile Include="Models\User.cs" />
+    <Compile Include="Pages\AccountInfoPage.xaml.cs">
+      <DependentUpon>AccountInfoPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Pages\BaseLoginPage.xaml.cs">
       <DependentUpon>BaseLoginPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Pages\EducationPage.xaml.cs">
-      <DependentUpon>EducationPage.xaml</DependentUpon>
+    <Compile Include="Pages\EducationCourseListPage.xaml.cs">
+      <DependentUpon>EducationCourseListPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Pages\EducationFolderPage.xaml.cs">
+      <DependentUpon>EducationFolderPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Pages\EducationMainPage.xaml.cs">
+      <DependentUpon>EducationMainPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Pages\EmailConfirmingPage.xaml.cs">
       <DependentUpon>EmailConfirmingPage.xaml</DependentUpon>
@@ -191,7 +202,11 @@
     <Compile Include="Services\UserBuilder.cs" />
     <Compile Include="Services\ValidateStatusType.cs" />
     <Compile Include="Services\ValidationResponse.cs" />
+    <Compile Include="ViewModels\AccountInfoViewModel.cs" />
     <Compile Include="ViewModels\BaseLoginPageViewModel.cs" />
+    <Compile Include="ViewModels\EducationFolderPageViewModel.cs" />
+    <Compile Include="ViewModels\EducationListPageViewModel.cs" />
+    <Compile Include="ViewModels\EducationMainPageViewModel.cs" />
     <Compile Include="ViewModels\EmailConfirmingPageViewModel.cs" />
     <Compile Include="ViewModels\LoginPageViewModel.cs" />
     <Compile Include="ViewModels\MainMenuViewModel.cs" />
@@ -206,6 +221,7 @@
     </AppxManifest>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Assets\file.png" />
     <Content Include="Assets\icon.altform-lightunplated_targetsize-16.png" />
     <Content Include="Assets\icon.altform-lightunplated_targetsize-24.png" />
     <Content Include="Assets\icon.altform-lightunplated_targetsize-256.png" />
@@ -232,6 +248,7 @@
     <Content Include="Assets\LargeTile.scale-150.png" />
     <Content Include="Assets\LargeTile.scale-200.png" />
     <Content Include="Assets\LargeTile.scale-400.png" />
+    <Content Include="Assets\pdf.png" />
     <Content Include="Assets\SmallTile.scale-100.png" />
     <Content Include="Assets\SmallTile.scale-125.png" />
     <Content Include="Assets\SmallTile.scale-150.png" />
@@ -246,10 +263,14 @@
     <Content Include="Assets\StoreLogo.scale-150.png" />
     <Content Include="Assets\StoreLogo.scale-200.png" />
     <Content Include="Assets\StoreLogo.scale-400.png" />
+    <Content Include="Assets\userPicture.png" />
+    <Content Include="Assets\userPictureWhite.png" />
     <Content Include="Assets\Wide310x150Logo.scale-100.png" />
     <Content Include="Assets\Wide310x150Logo.scale-125.png" />
     <Content Include="Assets\Wide310x150Logo.scale-150.png" />
     <Content Include="Assets\Wide310x150Logo.scale-400.png" />
+    <Content Include="Assets\word.png" />
+    <Content Include="Assets\zhma.jpg" />
     <Content Include="Properties\Default.rd.xml" />
     <Content Include="Assets\LockScreenLogo.scale-200.png" />
     <Content Include="Assets\SplashScreen.scale-200.png" />
@@ -263,11 +284,23 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Page Include="Pages\AccountInfoPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Pages\BaseLoginPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Pages\EducationPage.xaml">
+    <Page Include="Pages\EducationCourseListPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Pages\EducationFolderPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Pages\EducationMainPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -55,8 +55,6 @@ namespace EduMessage
             Window.Current.Activated += Current_Activated;
 
             AppTitleBorder = AppTitleBar;
-
-            //ContentFrame.Navigate(typeof(LoginPage), null, new DrillInNavigationTransitionInfo());
         }
 
 

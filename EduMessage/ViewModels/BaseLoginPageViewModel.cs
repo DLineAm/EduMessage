@@ -14,7 +14,7 @@ namespace EduMessage.ViewModels
     {
         [Property] private string _login;
         [Property] private string _password;
-        [Property] private bool _isSavelogin = true;
+        [Property] private bool _isSaveLogin = true;
         [Property] private string _errorText;
         [Property] private bool _isLoginEnabled = true;
 
@@ -24,7 +24,7 @@ namespace EduMessage.ViewModels
             ErrorText = string.Empty;
             await SetLoaderVisibility(Visibility.Visible);
            
-            var result = await App.Account.Login(Login, Password);
+            var result = await App.Account.Login(Login, Password, _isSaveLogin);
             if (result != string.Empty)
             {
                 ErrorText = result;

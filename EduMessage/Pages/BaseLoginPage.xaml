@@ -25,7 +25,7 @@
                      Password="{Binding Password, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                      IsEnabled="{Binding IsLoginEnabled}"></PasswordBox>
         <CheckBox Margin="18,0,0,12"
-                  IsChecked="{Binding IsSavelogin}"
+                  IsChecked="{Binding IsSaveLogin, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                   IsEnabled="{Binding IsLoginEnabled}">Запомнить компьютер</CheckBox>
         <TextBlock Foreground="Red"
                    Width="270"

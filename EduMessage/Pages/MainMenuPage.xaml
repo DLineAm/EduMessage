@@ -113,11 +113,12 @@
                         HorizontalAlignment="Left"
                         VerticalAlignment="Center">
 
-                                        <Rectangle
+                                        <Border
                             x:Name="SelectionIndicator"
-                            Width="6"
+                            Width="3"
                             Height="24"
-                            Fill="{ThemeResource NavigationViewSelectionIndicatorForeground}"
+                                            CornerRadius="2"
+                            Background="{ThemeResource NavigationViewSelectionIndicatorForeground}"
                             Opacity="0.0"/>
                                     </Grid>
 
@@ -126,7 +127,7 @@
                         BorderBrush="{TemplateBinding BorderBrush}"
                         BorderThickness="{TemplateBinding BorderThickness}" />
 
-                                    <Grid Height="100" HorizontalAlignment="Left" x:Name="ContentGrid">
+                                    <Grid Height="40" HorizontalAlignment="Left" x:Name="ContentGrid">
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition x:Name="IconColumn" Width="48" />
                                             <ColumnDefinition Width="*" />
@@ -157,36 +158,35 @@
                 </Style>
             </controls:NavigationView.MenuItemContainerStyle>
 
+            <controls:NavigationView.MenuItems>
+                <controls:NavigationViewItem Content="Жмышенко">
+                    <controls:NavigationViewItem.Icon>
+                        <controls:ImageIcon Source="/Assets/zhma.jpg" />
+                    </controls:NavigationViewItem.Icon>
+                </controls:NavigationViewItem>
+                <controls:NavigationViewItem Content="Валерий">
+                    <controls:NavigationViewItem.Icon>
+                        <controls:ImageIcon Source="/Assets/zhma.jpg" />
+                    </controls:NavigationViewItem.Icon>
+                </controls:NavigationViewItem>
+                <controls:NavigationViewItem Content="Альбертович">
+                    <controls:NavigationViewItem.Icon>
+                        <controls:ImageIcon Source="/Assets/zhma.jpg" />
+                    </controls:NavigationViewItem.Icon>
+                </controls:NavigationViewItem>
+            </controls:NavigationView.MenuItems>
+
             <controls:NavigationView.FooterMenuItems>
                 <controls:NavigationViewItem Content="Обучение">
                     <controls:NavigationViewItem.Icon>
                         <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE736;"/>
                     </controls:NavigationViewItem.Icon>
                 </controls:NavigationViewItem>
-                <controls:NavigationViewItem>
+                <controls:NavigationViewItem Content="{Binding AccountName}">
                     <controls:NavigationViewItem.Icon>
-                        <controls:ImageIcon Source="/Assets/icon.altform-unplated_targetsize-256.png">
-                            </controls:ImageIcon>
-
+                        <controls:ImageIcon Source="{Binding AccountImage}">
+                        </controls:ImageIcon>
                     </controls:NavigationViewItem.Icon>
-                    <!--<controls:NavigationViewItem.Template>
-                        <ControlTemplate>
-                            <Grid Margin="12,0,0,0">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="auto"/>
-                                    <ColumnDefinition/>
-                                </Grid.ColumnDefinitions>
-                                <PersonPicture Width="25"
-                                           Height="25"
-                                           HorizontalAlignment="Left"/>
-                                <TextBlock Grid.Column="1"
-                                           Text="Аккаунт"
-                                           Margin="12,0,0,0"
-                                           VerticalAlignment="Center"/>
-                            </Grid>
-                            
-                        </ControlTemplate>
-                    </controls:NavigationViewItem.Template>-->
                 </controls:NavigationViewItem>
             </controls:NavigationView.FooterMenuItems>
 
@@ -195,8 +195,7 @@
                                 PlaceholderText="Поиск сообщений"/>
             </controls:NavigationView.AutoSuggestBox>
 
-            <Frame Padding="12" x:Name="NavFrame">
-                <local:ItemsPickPage/>
+            <Frame Padding="12" x:Name="NavFrame" x:FieldModifier="public">
             </Frame>
 
         </controls:NavigationView>

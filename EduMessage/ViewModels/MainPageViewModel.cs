@@ -18,7 +18,7 @@ namespace EduMessage.ViewModels
 
         public async void Initialize()
         {
-            _selectedContent = await App.Account.TryLoadTokenFromJson() ? new MainMenuPage() : new LoginPage();
+            _selectedContent = await App.Account.TryLoadToken() ? new MainMenuPage() : new LoginPage();
 
         }
     }

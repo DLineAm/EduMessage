@@ -1,5 +1,7 @@
 ﻿using EduMessage.Services;
 
+using SignalIRServerTest;
+
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -9,6 +11,7 @@ using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.Storage;
 using Windows.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -30,11 +33,21 @@ namespace EduMessage
         public static string Address = "https://169.254.77.140:5001/";
 
         public static event Action<Color> ColorChanged;
+
+        public static event Action<Speciality> SelectedSpeciallityChanged;
+        public static event Action<IReadOnlyList<IStorageItem>> DropCompleted;
+        public static event Action CrumbItemClicked;
         public static ColorManager ColorManager { get; } = new();
         public static ControlContainer Container { get; } = ControlContainer.Get();
         public static Account Account { get; private set; }
 
         public static event Action<Visibility> LoaderVisibiltyChanged;
+
+        internal static void InvokeDropCompleted(IReadOnlyList<IStorageItem> items)
+        {
+            DropCompleted?.Invoke(items);
+        }
+
         /// <summary>
         /// Инициализирует одноэлементный объект приложения. Это первая выполняемая строка разрабатываемого
         /// кода, поэтому она является логическим эквивалентом main() или WinMain().
@@ -116,6 +129,16 @@ namespace EduMessage
         public static void InvokeColorChanged(Color color)
         {
             ColorChanged?.Invoke(color);
+        }
+
+        public static void InvokeCrumbItemClicked()
+        {
+            CrumbItemClicked?.Invoke();
+        }
+
+        public static void InvokeSelectedSpecialityChanged(Speciality speciality)
+        {
+            SelectedSpeciallityChanged?.Invoke(speciality);
         }
 
         /// <summary>

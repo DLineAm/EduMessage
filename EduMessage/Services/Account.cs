@@ -12,9 +12,9 @@ namespace EduMessage.Services
 {
     public class Account
     {
-        public  User User { get; private set; }
+        public User User { get; private set; }
 
-        public  string Jwt { get; private set; }
+        public string Jwt { get; private set; }
 
         public IUserBuilder UserBuilder { get; }
 
@@ -25,7 +25,7 @@ namespace EduMessage.Services
 
 
 
-        public async Task<bool> TryLoadTokenFromJson()
+        public async Task<bool> TryLoadToken()
         {
             try
             {
@@ -57,13 +57,20 @@ namespace EduMessage.Services
             }
         }
 
-        public void SaveTokenToJson()
+        public void UpdateToken(bool isAddMode)
         {
             var settings = Settings.Get();
-            settings.Values["Jwt"] = Jwt;
+            if (isAddMode)
+            {
+                settings.Values["Jwt"] = Jwt;
+            }
+            else
+            {
+                settings.Values.Remove("Jwt");
+            }
         }
 
-        public  async Task<string> Login(string loginEmail, string password)
+        public async Task<string> Login(string loginEmail, string password, bool isSaveLogin)
         {
             try
             {
@@ -79,7 +86,9 @@ namespace EduMessage.Services
 
                 Jwt = token;
 
-                SaveTokenToJson();
+
+                UpdateToken(isSaveLogin);
+
                 User = user;
                 return string.Empty;
             }
@@ -90,7 +99,7 @@ namespace EduMessage.Services
 
         }
 
-        public  async Task<bool> Register(IUserBuilder builder)
+        public async Task<bool> Register(IUserBuilder builder)
         {
             if (!builder.UserInvalidate())
             {
@@ -108,7 +117,7 @@ namespace EduMessage.Services
             {
                 Jwt = token;
 
-                SaveTokenToJson();
+                UpdateToken(true);
             }
 
             if (savedUserId == -1)
@@ -119,6 +128,6 @@ namespace EduMessage.Services
             return true;
         }
 
-        
+
     }
 }

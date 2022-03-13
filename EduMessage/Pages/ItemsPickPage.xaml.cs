@@ -45,14 +45,16 @@ namespace EduMessage.Pages
         private async void Rectangle_Drop(object sender, DragEventArgs e)
         {
 
-            var items = await e.DataView.GetStorageItemsAsync();
+            IReadOnlyList<IStorageItem> items = await e.DataView.GetStorageItemsAsync();
 
-            var files = items.Select(i => i as StorageFile);
+            App.InvokeDropCompleted(items);
 
-            foreach (var item in files)
-            {
-                //var
-            }
+            //var files = items.Select(i => i as StorageFile);
+
+            //foreach (var item in files)
+            //{
+            //    //var
+            //}
 
             ChangeRectColor(false);
         }

@@ -14,10 +14,15 @@ namespace EduMessage.ViewModels
     public partial class MainMenuViewModel
     {
         [Property] private string _accountName;
+        [Property] private object _accountImage;
 
         public void Initialize()
         {
-            AccountName = App.Account.User.Login;
+            AccountName = App.Account.User.FirstName + " " + App.Account.User.LastName;
+            var imageBytes = App.Account.User.Image;
+            AccountImage = imageBytes == null || imageBytes.Length == 0
+                ? "ms-appx:///Assets/userPictureWhite.png"
+                : imageBytes;
         }
     }
 }

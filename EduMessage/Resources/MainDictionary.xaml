@@ -11,4 +11,13 @@
         <Setter Property="FontSize" Value="26"></Setter>
         <Setter Property="FontWeight" Value="SemiBold"></Setter>
     </Style>
+    <Style TargetType="Border" x:Key="CardBorder">
+        <Setter Property="CornerRadius" Value="6"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="BorderBrush" Value="{ThemeResource CardStrokeColorDefaultBrush}"/>
+        <Setter Property="Background" Value="{ThemeResource LayerFillColorDefaultBrush}"/>
+    </Style>
+
+    <!--Background="{ThemeResource LayerFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"-->
 </ResourceDictionary>

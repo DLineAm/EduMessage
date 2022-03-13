@@ -22,6 +22,12 @@ namespace EduMessage.Services
                 ((((Frame)Window.Current.Content).Content as MainPage).ContentFrame.Content as LoginPage).ContentFrame
                     ?.Navigate(pageType, parameter, navigationTransitionInfo);
             }
+
+            if (type == FrameType.EducationFrame)
+            {
+                (((((Frame)Window.Current.Content).Content as MainPage).ContentFrame.Content as MainMenuPage).NavFrame.Content as EducationMainPage).ContentFrame
+                    ?.Navigate(pageType, parameter, navigationTransitionInfo);
+            }
         }
 
         public void Navigate(Type pageType, FrameType type = FrameType.ContentFrame)
@@ -29,6 +35,11 @@ namespace EduMessage.Services
             if (type == FrameType.ContentFrame)
             {
                 _contentFrame.Navigate(pageType);
+            }
+            if (type == FrameType.EducationFrame)
+            {
+                (((((Frame)Window.Current.Content).Content as MainPage).ContentFrame.Content as MainMenuPage).NavFrame.Content as EducationMainPage).ContentFrame
+                    ?.Navigate(pageType);
             }
         }
 
@@ -39,7 +50,7 @@ namespace EduMessage.Services
                 if (_contentFrame.CanGoBack)
                 {
                     _contentFrame.GoBack();
-                } 
+                }
             }
             else if (type == FrameType.LoginFrame)
             {
@@ -52,14 +63,14 @@ namespace EduMessage.Services
             }
         }
 
-        public void GoBack( NavigationTransitionInfo info, FrameType type = FrameType.ContentFrame)
+        public void GoBack(NavigationTransitionInfo info, FrameType type = FrameType.ContentFrame)
         {
             if (type == FrameType.ContentFrame)
             {
                 if (_contentFrame.CanGoBack)
                 {
                     _contentFrame.GoBack();
-                } 
+                }
             }
             else if (type == FrameType.LoginFrame)
             {

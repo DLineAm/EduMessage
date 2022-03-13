@@ -44,7 +44,7 @@ namespace EduMessage.ViewModels
             }
             finally
             {
-                await SetLoaderVisibility(Visibility.Visible);
+                await SetLoaderVisibility(Visibility.Collapsed);
             }
 
         }

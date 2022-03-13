@@ -34,6 +34,7 @@ namespace EduMessage.Pages
             this.InitializeComponent();
             ViewModel = new MainMenuViewModel();
             ViewModel.Initialize();
+            this.DataContext = ViewModel;
         }
 
         public MainMenuViewModel ViewModel { get; }
@@ -45,7 +46,24 @@ namespace EduMessage.Pages
 
         private void NavigationViewControl_ItemInvoked(NavigationView sender, NavigationViewItemInvokedEventArgs args)
         {
-            throw new NotImplementedException();
+            var item = args.InvokedItem;
+
+            if ((string)item == App.Account.User.FirstName + " " + App.Account.User.LastName)
+            {
+                NavFrame.Navigate(typeof(AccountInfoPage));
+            }
+
+            switch (item)
+            {
+                case "Обучение":
+                    NavFrame.Navigate(typeof(EducationMainPage));
+                    break;
+                case "Параметры":
+                    NavFrame.Navigate(typeof(ItemsPickPage));
+                    break;
+                default:
+                    break;
+            }
         }
 
         private void NavigationViewControl_DisplayModeChanged(NavigationView sender, NavigationViewDisplayModeChangedEventArgs args)

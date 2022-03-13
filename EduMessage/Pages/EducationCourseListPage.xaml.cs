@@ -1,4 +1,8 @@
-﻿using System;
+﻿using EduMessage.ViewModels;
+
+using SignalIRServerTest;
+
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -21,11 +25,29 @@ namespace EduMessage.Pages
     /// <summary>
     /// Пустая страница, которую можно использовать саму по себе или для перехода внутри фрейма.
     /// </summary>
-    public sealed partial class EducationPage : Page
+    public sealed partial class EducationCourseListPage : Page
     {
-        public EducationPage()
+        public EducationCourseListPage()
         {
             this.InitializeComponent();
+            ViewModel = new EducationListPageViewModel();
+        }
+
+        protected override async void OnNavigatedTo(NavigationEventArgs e)
+        {
+            base.OnNavigatedTo(e);
+
+            var parameter = e.Parameter as Speciality;
+
+            await ViewModel.Initialize(parameter);
+            this.DataContext = ViewModel;
+        }
+
+        public EducationListPageViewModel ViewModel{ get; }
+
+        private async void HyperlinkButton_Click(object sender, RoutedEventArgs e)
+        {
+            await CourseAddDialog.ShowAsync();
         }
     }
 }

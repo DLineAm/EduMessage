@@ -1,0 +1,55 @@
+﻿<Page
+    x:Class="EduMessage.Pages.EducationFolderPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:EduMessage.Pages"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:signalirservertest="using:SignalIRServerTest"
+    mc:Ignorable="d"
+    DataContextChanged="Page_DataContextChanged">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition Height="auto"/>
+        </Grid.RowDefinitions>
+        <ListView ItemsSource="{Binding Specialities}"
+                  SelectedItem="{Binding Speciality, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+            <ListView.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <ItemsWrapGrid Orientation="Horizontal"/>
+                </ItemsPanelTemplate>
+            </ListView.ItemsPanel>
+
+            <ListView.ItemTemplate>
+                <DataTemplate x:DataType="signalirservertest:Speciality">
+                    <Border Padding="12">
+                        <StackPanel>
+                            <FontIcon Height="64"
+                                  Width="64"
+                                      FontSize="56"
+                                  FontFamily="Segoe MDL2 Assets"
+                                  Glyph="&#xE838;"
+                                      HorizontalAlignment="Center"/>
+                            <RichTextBlock HorizontalAlignment="Center"
+                                           IsHitTestVisible="False"
+                                       Width="150"
+                                       Margin="0,12,0,0"
+                                       TextWrapping="Wrap"
+                                       TextAlignment="Center"
+                                       TextTrimming="WordEllipsis"
+                                       Height="70">
+                                <Paragraph >
+                                    <Run Text="{Binding Code}"/>
+                                </Paragraph>
+                                <Paragraph >
+                                    <Run Text="{Binding Title}"/>
+                                </Paragraph>
+                            </RichTextBlock>
+                        </StackPanel>
+                    </Border>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+    </Grid>
+</Page>
