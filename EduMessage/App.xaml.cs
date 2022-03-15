@@ -1,5 +1,7 @@
 ﻿using EduMessage.Services;
 
+using MvvmGen.Events;
+
 using SignalIRServerTest;
 
 using System;
@@ -23,20 +25,25 @@ using Windows.UI.Xaml.Navigation;
 
 namespace EduMessage
 {
+    public record ColorChangedEvent(Color Color);
     /// <summary>
     /// Обеспечивает зависящее от конкретного приложения поведение, дополняющее класс Application по умолчанию.
     /// </summary>
     sealed partial class App : Application
     {
         //"https://169.254.77.140:5001/"
-        public static string Address = "https://192.168.1.2:5001/";
-        //public static string Address = "https://169.254.77.140:5001/";
+        //public static string Address = "https://192.168.1.2:5001/";
+        public static string Address = "https://169.254.77.140:5001/";
+        public static IEventAggregator EventAggregator;
 
         public static event Action<Color> ColorChanged;
 
         public static event Action<Speciality> SelectedSpeciallityChanged;
+
         public static event Action<IReadOnlyList<IStorageItem>> DropCompleted;
+
         public static event Action CrumbItemClicked;
+
         public static ColorManager ColorManager { get; } = new();
         public static ControlContainer Container { get; } = ControlContainer.Get();
         public static Account Account { get; private set; }
@@ -68,9 +75,11 @@ namespace EduMessage
             Container.Register(Component.For<IValidator>().ImplementedBy<PasswordValidator>().Named("password"));
             Container.Register(Component.For<IValidator>().ImplementedBy<LoginValidator>().Named("login"));
             Container.Register(Component.For<IValidator>().ImplementedBy<PersonNameValidator>().Named("person"));
+            Container.Register(Component.For<IEventAggregator>().ImplementedBy<EventAggregator>().Singleton());
             Container.Register(Component.For<IUserBuilder>().ImplementedBy<UserBuilder>());
 
             Account = Container.ResolveConstructor<Account>();
+            EventAggregator = Container.Resolve<IEventAggregator>();
 
             Frame rootFrame = Window.Current.Content as Frame;
 
@@ -113,7 +122,7 @@ namespace EduMessage
             uiSettings.ColorValuesChanged += (_, _) =>
             {
                 var rgba = uiSettings.GetColorValue(Windows.UI.ViewManagement.UIColorType.Accent);
-                App.InvokeColorChanged(rgba);
+                EventAggregator.Publish(new ColorChangedEvent(rgba));
             };
         }
 

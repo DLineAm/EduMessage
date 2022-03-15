@@ -18,7 +18,16 @@ namespace EduMessage.ViewModels
 
         public async void Initialize()
         {
-            _selectedContent = await App.Account.TryLoadToken() ? new MainMenuPage() : new LoginPage();
+            var result = await App.Account.TryLoadToken();
+            if (result)
+            {
+                _selectedContent = new MainMenuPage();
+            }
+            else
+            {
+                _selectedContent = new LoginPage();
+            }
+              
 
         }
     }

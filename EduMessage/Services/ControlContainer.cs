@@ -18,11 +18,12 @@ namespace EduMessage.Services
             return _instance ??= new ControlContainer();
         }
 
-        private readonly Dictionary<string, (Type, Type)> _types = new();
+        private readonly Dictionary<string, Component> _types = new();
+        private readonly List<object> _singletonComponents = new();
 
         public void Register(Component component)
         {
-            _types[component.ImplementationName] = (component.InterfaceType, component.ImplementationType);
+            _types[component.ImplementationName] = component;
         }
 
         private object Resolve(Type type)
@@ -32,9 +33,23 @@ namespace EduMessage.Services
         }
         private object Resolve(string name)
         {
-            var pair = _types[name];
-            var concreteType = pair.Item2;
-            return InvokeConstructor(concreteType);
+            var component = _types[name];
+            var concreteType = component.ImplementationType;
+            object resolvedObject = null;
+            if (component.IsSingleton)
+            {
+                resolvedObject = _singletonComponents.FirstOrDefault(c => c.GetType() == component.ImplementationType);
+                if (resolvedObject == null)
+                {
+                    resolvedObject = InvokeConstructor(concreteType);
+                    _singletonComponents.Add(resolvedObject);
+                }               
+            }
+            else
+            {
+                resolvedObject = InvokeConstructor(concreteType);
+            }
+            return resolvedObject;
         }
 
         public TInterface Resolve<TInterface>()
@@ -77,6 +92,7 @@ namespace EduMessage.Services
         public Type InterfaceType { get; private set; }
         public Type ImplementationType { get; private set; }
         public string ImplementationName { get; private set; }
+        public bool IsSingleton { get; set; }
 
         private Component(Type interfaceType)
         {
@@ -99,6 +115,12 @@ namespace EduMessage.Services
         public Component Named(string name)
         {
             ImplementationName = name;
+            return this;
+        }
+
+        public Component Singleton()
+        {
+            IsSingleton = true;
             return this;
         }
     }

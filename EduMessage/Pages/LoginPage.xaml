@@ -53,13 +53,12 @@
             </Border>
 
 
-            <Border VerticalAlignment="Center"
-                                               HorizontalAlignment="Center"
+            <Border VerticalAlignment="Center" HorizontalAlignment="Center"
                                                Height="100"
                                                Width="100"
                                                Margin="0,-24,0,0">
                 <muxc:AnimatedVisualPlayer Visibility="{Binding LoaderVisibility}">
-                    <animatedVisuals:Loader Color_000000="{x:Bind LoaderColor}"/>
+                    <animatedVisuals:Loader Color_000000="{x:Bind ViewModel.LoaderColor, Mode=OneWay}"/>
                 </muxc:AnimatedVisualPlayer>
             </Border>
             

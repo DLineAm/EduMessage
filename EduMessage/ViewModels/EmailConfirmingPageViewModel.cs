@@ -26,8 +26,8 @@ namespace EduMessage.ViewModels
             try
             {
                 await SetLoaderVisibility(Visibility.Visible);
-                var responseString = await (App.Address + $"Home/Validate.email={Email}.emailCode={Code}")
-                    .GetStringAsync();
+                var responseString = await (App.Address + $"Login/Validate.email={Email}.emailCode={Code}")
+                    .SendRequestAsync("", HttpRequestType.Get);
 
                 if (string.IsNullOrEmpty(responseString))
                 {

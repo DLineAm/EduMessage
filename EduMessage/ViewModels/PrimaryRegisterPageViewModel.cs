@@ -93,8 +93,8 @@ namespace EduMessage.ViewModels
             {
                 new MailAddress(Email);
 
-                var responseString = await (App.Address + $"Home/Send.email={Email}")
-                    .GetStringAsync();
+                var responseString = await (App.Address + $"Login/Send.email={Email}")
+                    .SendRequestAsync("", HttpRequestType.Get);
 
                 if (string.IsNullOrEmpty(responseString) ||
                     !bool.TryParse(responseString, out var response) ||

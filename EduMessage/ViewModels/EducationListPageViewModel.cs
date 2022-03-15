@@ -20,10 +20,12 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media.Imaging;
 using Microsoft.Toolkit.Uwp.Helpers;
+using MvvmGen.Events;
 
 namespace EduMessage.ViewModels
 {
     [ViewModel]
+    [Inject(typeof(IEventAggregator))]
     public partial class EducationListPageViewModel
     {
         [Property] private ObservableCollection<CourseFiles> _courses = new();
@@ -31,6 +33,7 @@ namespace EduMessage.ViewModels
         [Property] private bool _isClearButtonEnabled;
         [Property] private string _courseTitle;
         [Property] private string _courseDescription;
+
         private Speciality _speciality;
 
         public async Task Initialize(Speciality speciality)
@@ -41,7 +44,7 @@ namespace EduMessage.ViewModels
             try
             {
                 var response = (await (App.Address + $"Education/Courses.SpecialityId={speciality.Id}")
-                    .GetStringAsync(App.Account.Jwt))
+                    .SendRequestAsync("",HttpRequestType.Get, App.Account.Jwt))
                     .DeserializeJson<List<CourseAttachment>>();
 
                 var courses = response
@@ -59,18 +62,9 @@ namespace EduMessage.ViewModels
                     {
                         continue;
                     }
+
                     var sortedList = response.Where(c => c.IdCourse == course.Id).ToList();
                     var attachments = sortedList.Select(f => f.IdAttachmanentNavigation).ToList();
-                    //var attachments = sortedList.Select(async f => f.IdAttachmanentNavigation != null 
-                    //? new EducationFile
-                    //{
-                    //    Name = f.IdAttachmanentNavigation.Title,
-                    //    Data = f.IdAttachmanentNavigation.Data,
-                    //    Type = "." + f.IdAttachmanentNavigation.Title.Split('.').LastOrDefault(),
-                    //    ImagePath = await GetImage("." + f.IdAttachmanentNavigation.Title.Split('.').LastOrDefault(), f.IdAttachmanentNavigation.Data)
-                    //}
-                    //: null)
-                    //    .Select(t=> t.Result).ToList();
 
                     foreach (var attachment in attachments)
                     {
@@ -120,9 +114,10 @@ namespace EduMessage.ViewModels
             if (string.IsNullOrWhiteSpace(CourseTitle)
                 || string.IsNullOrWhiteSpace(CourseDescription))
             {
-
                 return;
             }
+
+            EventAggregator.Publish(new LoaderVisibilityChanged(Visibility.Visible, "Сохранение курса"));
 
             var course = new Course
             {
@@ -153,13 +148,13 @@ namespace EduMessage.ViewModels
                         IdCourseNavigation = course
                     };
                     response = (await (App.Address + "Education/Courses")
-                            .PostBoolAsync(courseAttachment, App.Account.Jwt))
+                            .SendRequestAsync(courseAttachment, HttpRequestType.Post, App.Account.Jwt))
                         .DeserializeJson<int>();
                 }
                 else
                 {
                     response = (await (App.Address + "Education/Courses.FromList")
-                            .PostBoolAsync(coursesList, App.Account.Jwt))
+                            .SendRequestAsync(coursesList, HttpRequestType.Post, App.Account.Jwt))
                         .DeserializeJson<int>();
                 }
 
@@ -175,13 +170,15 @@ namespace EduMessage.ViewModels
                             continue;
                         }
 
+                        var typeString = "." + attachment.Title.Split('.').Last();
+
                         convertedAttachments.Add(new EducationFile
                         {
 
                             Name = attachment.Title,
-                            Type = "." + attachment.Title.Split('.').Last(),
+                            Type = typeString,
                             Data = attachment.Data,
-                            ImagePath = await GetImage("." + attachment.Title.Split('.').Last(), attachment.Data)
+                            ImagePath = await GetImage(typeString, attachment.Data)
                         });
                     }
                     var convertedCourse = new CourseFiles
@@ -192,11 +189,13 @@ namespace EduMessage.ViewModels
                     Courses.Add(convertedCourse);
                     Cancel();
                 }
+
+                EventAggregator.Publish(new LoaderVisibilityChanged(Visibility.Collapsed, string.Empty));
+
             }
             catch (Exception e)
             {
-
-
+                EventAggregator.Publish(new LoaderVisibilityChanged(Visibility.Collapsed, string.Empty));
             }
         }
 
@@ -288,7 +287,7 @@ namespace EduMessage.ViewModels
                 else if (item is StorageFile file)
                 {
                     var fileProps = await file.GetBasicPropertiesAsync();
-                    if (fileProps.Size == 0)
+                    if (fileProps.Size == 0 && fileProps.Size >= 250*1024*1024)
                     {
                         continue;
                     }
@@ -303,6 +302,8 @@ namespace EduMessage.ViewModels
                         Data = data,
                         ImagePath = await GetImage(file.FileType, data)
                     });
+
+                    await Task.Delay(TimeSpan.FromMilliseconds(10));
                 }
             }
 
@@ -315,20 +316,9 @@ namespace EduMessage.ViewModels
             ".docx" => "ms-appx:///Assets/word.png",
             ".pdf" => "ms-appx:///Assets/pdf.png",
             ".txt" => "ms-appx:///Assets/txt.png",
-            ".png" or ".jpg" or ".jpeg" => await CreateBitmap(data),
+            ".png" or ".jpg" or ".jpeg" => await data.CreateBitmap(),
             _ => "ms-appx:///Assets/file.png"
         };
-
-        private async Task<BitmapImage> CreateBitmap(byte[] data)
-        {
-            var source = new BitmapImage();
-            using var stream = new InMemoryRandomAccessStream();
-            await stream.WriteAsync(data.AsBuffer());
-            stream.Seek(0);
-            await source.SetSourceAsync(stream);
-
-            return source;
-        }
 
         [Command]
         private async void DeleteCourse(object courseObj)
@@ -338,7 +328,7 @@ namespace EduMessage.ViewModels
                 try
                 {
                     var response = (await (App.Address + $"Education/Courses.id={course.Course.Id}")
-                            .DeleteFromRequestAsync(App.Account.Jwt))
+                            .SendRequestAsync("", HttpRequestType.Delete,App.Account.Jwt))
                         .DeserializeJson<bool>();
 
                     if (response)
@@ -375,4 +365,6 @@ namespace EduMessage.ViewModels
         ? Visibility.Collapsed
         : Visibility.Visible;
     }
+
+    public record LoaderVisibilityChanged(Visibility LoaderVisibility, string LoaderText);
 }

@@ -23,8 +23,6 @@ namespace EduMessage.Services
             UserBuilder = userBuilder;
         }
 
-
-
         public async Task<bool> TryLoadToken()
         {
             try
@@ -37,9 +35,9 @@ namespace EduMessage.Services
                 }
 
                 Jwt = jwt as string;
-
-                var user = (await (App.Address + "Home/GetUser.ByToken")
-                    .GetStringAsync(Jwt))
+                //.SendRequestAsync("", HttpRequestType.Get, Jwt))
+                var user = (await (App.Address + "Login/GetUser.ByToken")
+                    .SendRequestAsync("", HttpRequestType.Get, Jwt))
                     .DeserializeJson<User>();
 
                 if (user == null)
@@ -74,8 +72,8 @@ namespace EduMessage.Services
         {
             try
             {
-                var pair = (await (App.Address + $"Home/Users.login={loginEmail}.password={password}")
-                    .GetStringAsync())
+                var pair = (await (App.Address + $"Login/Users.login={loginEmail}.password={password}")
+                    .SendRequestAsync("", HttpRequestType.Get))
                     .DeserializeJson<KeyValuePair<User, string>>();
                 var user = pair.Key;
                 var token = pair.Value;
@@ -108,7 +106,7 @@ namespace EduMessage.Services
 
             var user = builder.Build();
             User = user;
-            var result = (await (App.Address + "Home/Register").PostBoolAsync(User)).DeserializeJson<KeyValuePair<int, string>>();
+            var result = (await (App.Address + "Login/Register").SendRequestAsync(User, HttpRequestType.Post)).DeserializeJson<KeyValuePair<int, string>>();
 
             var savedUserId = result.Key;
             var token = result.Value;

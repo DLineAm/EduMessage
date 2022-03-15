@@ -8,6 +8,7 @@ using System.Runtime.InteropServices.WindowsRuntime;
 
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -31,14 +32,12 @@ namespace EduMessage.Pages
     {
         public MainMenuPage()
         {
-            this.InitializeComponent();
-            ViewModel = new MainMenuViewModel();
+            ViewModel = App.Container.ResolveConstructor<MainMenuViewModel>();
             ViewModel.Initialize();
             this.DataContext = ViewModel;
-        }
 
-        public EducationFolderPage EducationPage { get; set; }
-        public AccountInfoPage AccountInfoPage { get; set; } = new();
+            this.InitializeComponent();
+        }
 
         public MainMenuViewModel ViewModel { get; }
 
@@ -49,9 +48,25 @@ namespace EduMessage.Pages
 
         private void NavigationViewControl_ItemInvoked(NavigationView sender, NavigationViewItemInvokedEventArgs args)
         {
-            var item = args.InvokedItem;
+            var invokedItem = args.InvokedItem;
 
-            if ((string)item == App.Account.User.FirstName + " " + App.Account.User.LastName)
+            var item = string.Empty;
+
+            if (invokedItem is StackPanel panel)
+            {
+                var dataContext = panel.DataContext;
+
+                if (dataContext is MainMenuViewModel menuModel)
+                {
+                    item = menuModel.AccountName;
+                }
+            }
+            else
+            {
+                item = (string)invokedItem;
+            }
+
+            if (item == App.Account.User.FirstName + " " + App.Account.User.LastName)
             {
                 NavFrame.Navigate(typeof(AccountInfoPage));
             }

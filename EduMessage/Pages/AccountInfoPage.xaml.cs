@@ -1,5 +1,7 @@
 ﻿using EduMessage.ViewModels;
 
+using MvvmGen.Events;
+
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -28,7 +30,7 @@ namespace EduMessage.Pages
         public AccountInfoPage()
         {
             this.InitializeComponent();
-            ViewModel = new AccountInfoViewModel();
+            ViewModel = App.Container.ResolveConstructor<AccountInfoViewModel>();
             ViewModel.Initialize();
             this.DataContext = ViewModel;
         }

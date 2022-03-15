@@ -49,7 +49,7 @@
         <Frame x:Name="ContentFrame"
                x:FieldModifier="public"
                HorizontalContentAlignment="Stretch"
-               Content="{Binding SelectedContent}">
+               Content="{Binding SelectedContent, UpdateSourceTrigger=PropertyChanged}">
         </Frame>
     </Grid>
 </Page>

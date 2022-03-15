@@ -5,14 +5,38 @@
     xmlns:local="using:EduMessage.Pages"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:controls="using:Microsoft.UI.Xaml.Controls"
+    xmlns:controls="using:Microsoft.UI.Xaml.Controls" xmlns:animatedVisuals="using:AnimatedVisuals"
     mc:Ignorable="d">
 
     <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+
+        <Grid Height="40">
+            <StackPanel HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    Orientation="Horizontal"
+                        Visibility="{Binding LoaderVisibility}">
+                <TextBlock Text="{Binding LoaderText}"
+                           VerticalAlignment="Center"
+                           FontSize="12"
+                       Margin="0,0,-8,0"/>
+                <controls:AnimatedVisualPlayer Height="65"
+                                               Margin="0,-7.7,0,0">
+                    <animatedVisuals:Loader Color_000000="{x:Bind ViewModel.LoaderColor, Mode=OneWay}"/>
+                </controls:AnimatedVisualPlayer>
+                
+            </StackPanel>
+        </Grid>
+        
+        
         <controls:NavigationView IsTitleBarAutoPaddingEnabled="False"
                                  PaneTitle="Главное меню"
+                                 Grid.Row="1"
                          Canvas.ZIndex="0"
-                         Margin="0,40,0,0"        
+                         Margin="0,0,0,0"        
                          x:Name="NavigationViewControl"
                          DisplayModeChanged="NavigationViewControl_DisplayModeChanged"
                          IsBackButtonVisible="Collapsed"
@@ -108,7 +132,7 @@
 
                                     </VisualStateManager.VisualStateGroups>
 
-                                    <!-- Wrap SelectionIndicator in a grid so that its offset is 0,0 - this enables the offset animation. -->
+                                     <!--Wrap SelectionIndicator in a grid so that its offset is 0,0 - this enables the offset animation.--> 
                                     <Grid 
                         HorizontalAlignment="Left"
                         VerticalAlignment="Center">
@@ -182,11 +206,27 @@
                         <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE736;"/>
                     </controls:NavigationViewItem.Icon>
                 </controls:NavigationViewItem>
-                <controls:NavigationViewItem Content="{Binding AccountName}">
-                    <controls:NavigationViewItem.Icon>
-                        <controls:ImageIcon Source="{Binding AccountImage}">
-                        </controls:ImageIcon>
-                    </controls:NavigationViewItem.Icon>
+                <controls:NavigationViewItem >
+                    <controls:NavigationViewItem.ContextFlyout>
+                        <MenuFlyout>
+                            <MenuFlyoutItem Text="Выйти">
+                                <MenuFlyoutItem.Icon>
+                                    <SymbolIcon Symbol="Cancel"/>
+                                </MenuFlyoutItem.Icon>
+                            </MenuFlyoutItem>
+                        </MenuFlyout>
+                        
+                    </controls:NavigationViewItem.ContextFlyout>
+                    <controls:NavigationViewItem.Content>
+                        <StackPanel Orientation="Horizontal"
+                                    Margin="-35,0,0,0">
+                            <PersonPicture Height="20"
+                                           ProfilePicture="{Binding AccountImage}">
+                            </PersonPicture>
+                            <TextBlock Text="{Binding AccountName}"
+                                       Margin="16,0,0,0"/>
+                        </StackPanel>
+                    </controls:NavigationViewItem.Content>
                 </controls:NavigationViewItem>
             </controls:NavigationView.FooterMenuItems>
 

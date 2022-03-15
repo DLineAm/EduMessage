@@ -33,27 +33,28 @@ namespace EduMessage.Pages
         public LoginPage()
         {
             this.InitializeComponent();
+            ViewModel = App.Container.ResolveConstructor<LoginPageViewModel>();
             ViewModel.Initialize();
             this.DataContext = ViewModel;
 
             ContentFrame.Navigate(typeof(BaseLoginPage), null, new DrillInNavigationTransitionInfo());
 
-            App.ColorChanged += App_ColorChanged;
+            //App.ColorChanged += App_ColorChanged;
         }
 
-        private void App_ColorChanged(Color color)
-        {
-            LoaderColor = color;
-            Bindings.Update();
-        }
+        //private void App_ColorChanged(Color color)
+        //{
+        //    LoaderColor = color;
+        //    Bindings.Update();
+        //}
 
         //TODO: Визибилиту лоадер, сохранение jwt токена
 
         public Visibility LoaderVisibility { get; set; }
 
-        public Color LoaderColor { get; set; } = App.ColorManager.GetAccentColor();
+        //public Color LoaderColor { get; set; } = App.ColorManager.GetAccentColor();
 
-        public static LoginPageViewModel ViewModel { get; } = new();
+        public LoginPageViewModel ViewModel { get; private set; }
 
     }
 }

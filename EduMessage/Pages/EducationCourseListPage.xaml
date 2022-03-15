@@ -7,7 +7,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:signalirservertest="using:SignalIRServerTest" xmlns:controls="using:Microsoft.UI.Xaml.Controls"
     mc:Ignorable="d"
       xmlns:Interactivity="using:Microsoft.Xaml.Interactivity"
-  xmlns:Core="using:Microsoft.Xaml.Interactions.Core" xmlns:viewmodels="using:EduMessage.ViewModels"
+  xmlns:Core="using:Microsoft.Xaml.Interactions.Core" xmlns:viewmodels="using:EduMessage.ViewModels" xmlns:animatedvisuals="using:AnimatedVisuals" xmlns:lottie="using:Microsoft.Toolkit.Uwp.UI.Lottie"
     x:Name="window">
 
     <Grid Margin="-12,0">
@@ -15,6 +15,11 @@
             <ColumnDefinition/>
             <ColumnDefinition Width="auto"/>
         </Grid.ColumnDefinitions>
+        <controls:AnimatedVisualPlayer Height="100">
+            <lottie:LottieVisualSource UriSource="ms-appx:///AnimatedVisuals/Fire.json"/>
+
+            <!--<animatedvisuals:Fire/>-->
+        </controls:AnimatedVisualPlayer>
         <ListView ItemsSource="{Binding Courses}"
                   HorizontalContentAlignment="Stretch"
                   ScrollViewer.VerticalScrollBarVisibility="Auto"
@@ -46,7 +51,7 @@
                         <controls:Expander HorizontalAlignment="Stretch"
                                            VerticalAlignment="Stretch"
                                            Margin="0,5,0,0"
-                                           HorizontalContentAlignment="Left">
+                                           HorizontalContentAlignment="Stretch">
                             <controls:Expander.Header>
                                 <Grid Height="50">
                                     <TextBlock VerticalAlignment="Center">
@@ -66,42 +71,59 @@
                                     <TextBlock Text="{Binding Course.Description}"
                                                TextWrapping="Wrap"/>
 
-                                    <StackPanel Grid.Row="1"
-                                                Visibility="{Binding FilesInfoVisibility}">
-                                        <TextBlock Text="Прикрепленные файлы"
+                                    <Grid Grid.Row="1">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition/>
+                                            <ColumnDefinition Width="auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <StackPanel Visibility="{Binding FilesInfoVisibility}">
+                                            <TextBlock Text="Прикрепленные файлы"
                                                    Margin="0,12"
                                                    Foreground="{ThemeResource TextBoxButtonForegroundThemeBrush}"></TextBlock>
-                                        <ListView ItemsSource="{Binding Files}">
-                                            <ListView.ItemsPanel>
-                                                <ItemsPanelTemplate>
-                                                    <StackPanel Orientation="Horizontal"></StackPanel>
-                                                </ItemsPanelTemplate>
-                                            </ListView.ItemsPanel>
-                                            <ListView.ItemTemplate>
-                                                <DataTemplate>
-                                                    <Border Background="Transparent">
-                                                        <Interactivity:Interaction.Behaviors>
-                                                            <Core:EventTriggerBehavior EventName="DoubleTapped">
-                                                                <Core:EventTriggerBehavior.Actions>
-                                                                    <Core:InvokeCommandAction Command="{Binding DataContext.OpenFileCommand, ElementName=window}"
+                                            <ListView ItemsSource="{Binding Files}">
+                                                <ListView.ItemsPanel>
+                                                    <ItemsPanelTemplate>
+                                                        <StackPanel Orientation="Horizontal"></StackPanel>
+                                                    </ItemsPanelTemplate>
+                                                </ListView.ItemsPanel>
+                                                <ListView.ItemTemplate>
+                                                    <DataTemplate>
+                                                        <Border Background="Transparent">
+                                                            <Interactivity:Interaction.Behaviors>
+                                                                <Core:EventTriggerBehavior EventName="DoubleTapped">
+                                                                    <Core:EventTriggerBehavior.Actions>
+                                                                        <Core:InvokeCommandAction Command="{Binding DataContext.OpenFileCommand, ElementName=window}"
                                                                         CommandParameter="{Binding }"></Core:InvokeCommandAction>
-                                                                </Core:EventTriggerBehavior.Actions>
-                                                            </Core:EventTriggerBehavior>
-                                                        </Interactivity:Interaction.Behaviors>
-                                                        <StackPanel>
-                                                            <Image Source="{Binding ImagePath}"
+                                                                    </Core:EventTriggerBehavior.Actions>
+                                                                </Core:EventTriggerBehavior>
+                                                            </Interactivity:Interaction.Behaviors>
+                                                            <StackPanel>
+                                                                <Image Source="{Binding ImagePath}"
                                                                    Height="32"></Image>
-                                                            <TextBlock HorizontalAlignment="Center"
+                                                                <TextBlock HorizontalAlignment="Center"
                                                                        TextAlignment="Center"
                                                                        Text="{Binding Name}"
                                                                        Width="70"
                                                                        TextTrimming="CharacterEllipsis"></TextBlock>
-                                                        </StackPanel>
-                                                    </Border>
-                                                </DataTemplate>
-                                            </ListView.ItemTemplate>
-                                        </ListView>
-                                    </StackPanel>
+                                                            </StackPanel>
+                                                        </Border>
+                                                    </DataTemplate>
+                                                </ListView.ItemTemplate>
+                                            </ListView>
+                                        </StackPanel>
+
+                                        <StackPanel Grid.Column="1"
+                                                    Orientation="Horizontal"
+                                                    VerticalAlignment="Bottom">
+                                            <AppBarButton Label="Изменить"
+                                                          Icon="Edit"
+                                                          HorizontalAlignment="Right"/>
+                                            <AppBarButton Label="Отправить"
+                                                          Icon="Share"
+                                                          HorizontalAlignment="Right"/>
+                                        </StackPanel>
+                                    </Grid>
+                                    
                                 </Grid>
                                 
                             </controls:Expander.Content>

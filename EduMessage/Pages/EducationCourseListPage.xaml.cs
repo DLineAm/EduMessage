@@ -30,7 +30,7 @@ namespace EduMessage.Pages
         public EducationCourseListPage()
         {
             this.InitializeComponent();
-            ViewModel = new EducationListPageViewModel();
+            ViewModel = App.Container.ResolveConstructor<EducationListPageViewModel>();
         }
 
         protected override async void OnNavigatedTo(NavigationEventArgs e)

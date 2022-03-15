@@ -4,16 +4,17 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:EduMessage.Pages"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:controls="using:Microsoft.UI.Xaml.Controls"
     mc:Ignorable="d">
 
-    <Grid>
+    <Grid Margin="48,12">
         <Grid.RowDefinitions>
             <RowDefinition Height="auto"/>
             <RowDefinition/>
+            <RowDefinition Height="auto"/>
         </Grid.RowDefinitions>
 
-        <StackPanel Margin="48,12">
+        <StackPanel >
             <TextBlock Style="{StaticResource 26TitleTextBlock}"
                        Text="Аккаунт"
                        Margin="0,12"/>
@@ -23,7 +24,16 @@
                     <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
 
-                <PersonPicture/>
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition Height="auto"/>
+                </Grid.RowDefinitions>
+
+                <PersonPicture ProfilePicture="{Binding ProfilePicture}"/>
+                <HyperlinkButton Content="Выбрать фото"
+                                 Grid.Row="1"
+                                 Margin="0,12,0,0"
+                                 Command="{Binding PickImageCommand}"/>
                 <StackPanel Grid.Column="1"
                         VerticalAlignment="Top"
                         Margin="12,-10,0,0">
@@ -38,7 +48,60 @@
 
             </Grid>
         </StackPanel>
-        
+
+        <StackPanel Grid.Row="1"
+                    Margin="0,12,0,0">
+            <controls:Expander HorizontalAlignment="Stretch">
+                <controls:Expander.Header>
+                    <StackPanel Orientation="Horizontal">
+                        <SymbolIcon Symbol="Account"/>
+                        <TextBlock Margin="12,0,0,0"
+                                   Text="Аккаунт"/>
+                        <TextBlock Text="Login, E-mail, пароль"
+                                   Margin="12,0,0,0"
+                                   Foreground="Gray"
+                                   />
+                    </StackPanel>
+                </controls:Expander.Header>
+            </controls:Expander>
+            <controls:Expander HorizontalAlignment="Stretch"
+                               Margin="0,12,0,0">
+                <controls:Expander.Header>
+                    <StackPanel Orientation="Horizontal">
+                        <SymbolIcon Symbol="Admin"/>
+                        <TextBlock Margin="12,0,0,0"
+                                   Text="Личная информация"/>
+                        <TextBlock Text="Номер телефона, адрес"
+                                   Margin="12,0,0,0"
+                                   Foreground="Gray"
+                                   />
+                    </StackPanel>
+                </controls:Expander.Header>
+            </controls:Expander>
+            <controls:Expander HorizontalAlignment="Stretch"
+                               Margin="0,12,0,0">
+                <controls:Expander.Header>
+                    <StackPanel Orientation="Horizontal">
+                        <FontIcon FontFamily="Segoe MDL2 Assets"
+                                  Glyph="&#xE736;"/>
+                        <TextBlock Margin="12,0,0,0"
+                                   Text="Обучение"/>
+                        <TextBlock Text="Номер телефона, адрес"
+                                   Margin="12,0,0,0"
+                                   Foreground="Gray"
+                                   />
+                    </StackPanel>
+                </controls:Expander.Header>
+            </controls:Expander>
+        </StackPanel>
+
+        <StackPanel Grid.Row="2"
+                    Orientation="Horizontal">
+            <TextBlock Text="Вы можете удалить свой аккаунт"
+                       VerticalAlignment="Center"/>
+            <HyperlinkButton Content="Удалить"
+                             Margin="0,0,0,-3"/>
+        </StackPanel>
         
     </Grid>
 </Page>

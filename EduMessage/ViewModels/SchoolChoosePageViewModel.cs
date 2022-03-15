@@ -75,33 +75,33 @@ namespace EduMessage.ViewModels
         {
             try
             {
-                var schools = (await (App.Address + "Home/Schools")
-                    .PostBoolAsync(City))
+                var schools = (await (App.Address + "Login/Schools")
+                    .SendRequestAsync(City, HttpRequestType.Post))
                     .DeserializeJson<List<School>>();
 
                 Schools = schools;
 
 
-                var groups = (await (App.Address + "Home/Groups")
-                    .GetStringAsync())
+                var groups = (await (App.Address + "Login/Groups")
+                    .SendRequestAsync("", HttpRequestType.Get))
                     .DeserializeJson<List<Group>>();
 
                 Groups = groups;
 
-                var specialities = (await (App.Address + "Home/Specialities")
-                    .GetStringAsync())
+                var specialities = (await (App.Address + "Login/Specialities")
+                    .SendRequestAsync("", HttpRequestType.Get))
                     .DeserializeJson<List<Speciality>>();
 
                 Spetialities = specialities;
 
-                var forms = (await (App.Address + "Home/EducationForms")
-                    .GetStringAsync())
+                var forms = (await (App.Address + "Login/EducationForms")
+                    .SendRequestAsync("", HttpRequestType.Get))
                     .DeserializeJson<List<EducationForm>>();
 
                 EducationForms = forms;
 
-                var roles = (await (App.Address + "Home/Roles")
-                    .GetStringAsync())
+                var roles = (await (App.Address + "Login/Roles")
+                    .SendRequestAsync("", HttpRequestType.Get))
                     .DeserializeJson<List<Role>>();
 
                 Roles = roles;
@@ -121,8 +121,8 @@ namespace EduMessage.ViewModels
 
             try
             {
-                var result = (await (App.Address + $"Home/Specialities.idGroup={Group.Id}")
-                    .GetStringAsync())
+                var result = (await (App.Address + $"Login/Specialities.idGroup={Group.Id}")
+                    .SendRequestAsync("", HttpRequestType.Get))
                     .DeserializeJson<Speciality>();
 
                 Speciality = result;

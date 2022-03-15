@@ -124,6 +124,7 @@
     <RestoreProjectStyle>PackageReference</RestoreProjectStyle>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="AnimatedVisuals\Fire.cs" />
     <Compile Include="AnimatedVisuals\Loader.cs" />
     <Compile Include="AnimatedVisuals\The_woman_sitting_on_the_phone.cs" />
     <Compile Include="App.xaml.cs">
@@ -187,6 +188,7 @@
     <Compile Include="Services\Account.cs" />
     <Compile Include="Services\ColorManager.cs" />
     <Compile Include="Services\ControlContainer.cs" />
+    <Compile Include="Services\Dummy.cs" />
     <Compile Include="Services\Email.cs" />
     <Compile Include="Services\Extensions.cs" />
     <Compile Include="Services\FrameType.cs" />
@@ -202,6 +204,7 @@
     <Compile Include="Services\UserBuilder.cs" />
     <Compile Include="Services\ValidateStatusType.cs" />
     <Compile Include="Services\ValidationResponse.cs" />
+    <Compile Include="ViewModels\AccountImageUploadedEvent.cs" />
     <Compile Include="ViewModels\AccountInfoViewModel.cs" />
     <Compile Include="ViewModels\BaseLoginPageViewModel.cs" />
     <Compile Include="ViewModels\EducationFolderPageViewModel.cs" />
@@ -385,6 +388,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="AnimatedVisuals\the-woman-sitting-on-the-phone.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="AnimatedVisuals\fire.json" />
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
