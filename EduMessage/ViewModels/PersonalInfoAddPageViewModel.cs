@@ -17,6 +17,7 @@ using Windows.UI.Xaml.Media.Animation;
 namespace EduMessage.ViewModels
 {
     [ViewModel]
+    [Inject(typeof(INotificator))]
     public partial class PersonalInfoAddPageViewModel
     {
         [Property] private string _personName;
@@ -97,12 +98,8 @@ namespace EduMessage.ViewModels
             }
             catch (Exception e)
             {
-                await new ContentDialog
-                {
-                    Title = "Ошибка",
-                    Content = "При подключении к серверу произошла ошибка: " + e.Message,
-                    PrimaryButtonText = "Ok"
-                }.ShowAsync();
+                var message = "При подключении к серверу произошла ошибка: " + e.Message;
+                Notificator.Notificate("Ошибка", message);               
             }
             finally
             {

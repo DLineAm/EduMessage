@@ -33,7 +33,7 @@ namespace EduMessage
         public static Border AppTitleBorder;
         public MainPage()
         {
-            ViewModel = new MainPageViewModel();
+            ViewModel = ControlContainer.Get().ResolveConstructor<MainPageViewModel>();
             ViewModel.Initialize();
             this.DataContext = ViewModel;
             this.InitializeComponent();

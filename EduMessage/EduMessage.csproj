@@ -188,10 +188,12 @@
     <Compile Include="Services\Account.cs" />
     <Compile Include="Services\ColorManager.cs" />
     <Compile Include="Services\ControlContainer.cs" />
+    <Compile Include="Services\DialogNotificator.cs" />
     <Compile Include="Services\Dummy.cs" />
     <Compile Include="Services\Email.cs" />
     <Compile Include="Services\Extensions.cs" />
     <Compile Include="Services\FrameType.cs" />
+    <Compile Include="Services\INotificator.cs" />
     <Compile Include="Services\IUserBuilder.cs" />
     <Compile Include="Services\IValidator.cs" />
     <Compile Include="Services\JsonFile.cs" />
@@ -207,6 +209,8 @@
     <Compile Include="ViewModels\AccountImageUploadedEvent.cs" />
     <Compile Include="ViewModels\AccountInfoViewModel.cs" />
     <Compile Include="ViewModels\BaseLoginPageViewModel.cs" />
+    <Compile Include="Models\CourseFiles.cs" />
+    <Compile Include="Models\EducationFile.cs" />
     <Compile Include="ViewModels\EducationFolderPageViewModel.cs" />
     <Compile Include="ViewModels\EducationListPageViewModel.cs" />
     <Compile Include="ViewModels\EducationMainPageViewModel.cs" />

@@ -11,6 +11,7 @@ using EduMessage.Pages;
 namespace EduMessage.ViewModels
 {
     [ViewModel]
+    [Inject(typeof(INotificator))]
     public partial class PrimaryRegisterPageViewModel
     {
         private IValidator _passwordValidator;
@@ -120,14 +121,8 @@ namespace EduMessage.ViewModels
             }
             catch (Exception e)
             {
-
-                await new ContentDialog
-                    {
-                        Title = "Ошибка",
-                        Content = "При отправке почты произошла ошибка: " + e.Message,
-                        PrimaryButtonText = "Ok"
-                    }
-                    .ShowAsync();
+                var message = "При отправке почты произошла ошибка: " + e.Message;
+                Notificator.Notificate("Ошибка", message);
             }
             finally
             {

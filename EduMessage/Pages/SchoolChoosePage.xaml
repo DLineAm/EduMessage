@@ -13,7 +13,7 @@
                    Margin="12"
                    Text="Регистрация"
                    Style="{StaticResource 26TitleTextBlock}"></TextBlock>
-        <TextBlock Text="Шаг 3/5"
+        <TextBlock Text="Шаг 3/3"
                    HorizontalAlignment="Center"
                    FontSize="20"
                    Margin="0,0,0,12"></TextBlock>

@@ -11,97 +11,240 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="auto"/>
             <RowDefinition/>
-            <RowDefinition Height="auto"/>
         </Grid.RowDefinitions>
-
-        <StackPanel >
-            <TextBlock Style="{StaticResource 26TitleTextBlock}"
+        
+        <TextBlock Style="{StaticResource 26TitleTextBlock}"
                        Text="Аккаунт"
                        Margin="0,12"/>
-            <Grid Margin="0,12,0,0">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="auto"/>
-                    <ColumnDefinition/>
-                </Grid.ColumnDefinitions>
-
+        <ScrollViewer Grid.Row="1">
+            <Grid>
                 <Grid.RowDefinitions>
+                    <RowDefinition Height="auto"/>
                     <RowDefinition/>
                     <RowDefinition Height="auto"/>
                 </Grid.RowDefinitions>
+                <StackPanel>
+                    <Grid Margin="0,12,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="auto"/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
 
-                <PersonPicture ProfilePicture="{Binding ProfilePicture}"/>
-                <HyperlinkButton Content="Выбрать фото"
+                        <Grid.RowDefinitions>
+                            <RowDefinition/>
+                            <RowDefinition Height="auto"/>
+                        </Grid.RowDefinitions>
+
+                        <PersonPicture ProfilePicture="{Binding ProfilePicture}"/>
+                        <HyperlinkButton Content="Выбрать фото"
                                  Grid.Row="1"
                                  Margin="0,12,0,0"
                                  Command="{Binding PickImageCommand}"/>
-                <StackPanel Grid.Column="1"
+                        <StackPanel Grid.Column="1"
                         VerticalAlignment="Top"
                         Margin="12,-10,0,0">
-                    <TextBlock Text="{Binding FullName}"
-                           FontSize="40"
-                           Style="{StaticResource 26TitleTextBlock}"/>
-                    <TextBlock Text="{Binding User.Email}"
+                            <TextBlock FontSize="40"
+                           Style="{StaticResource 26TitleTextBlock}">
+                        <Run Text="{Binding FullName}"/>
+                        <Run Text="("/>
+                        <Run Text="{Binding User.Login}"/>
+                        <Run Text=")"/>
+                            </TextBlock>
+                            <TextBlock Text="{Binding User.Email}"
                                Margin="0,0,0,0"/>
-                    <TextBlock Text="{Binding User.IdRoleNavigation.Title}"
+                            <TextBlock Text="{Binding User.IdRoleNavigation.Title}"
                                Margin="0,4,0,0"/>
+                        </StackPanel>
+
+                    </Grid>
+                </StackPanel>
+                <StackPanel Grid.Row="1"
+                            Margin="0,12,0,0">
+                    <StackPanel.Resources>
+                        <Style TargetType="controls:Expander">
+                            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                        </Style>
+                    </StackPanel.Resources>
+                    <controls:Expander HorizontalAlignment="Stretch">
+                        <controls:Expander.Header>
+                            <StackPanel Orientation="Horizontal">
+                                <SymbolIcon Symbol="Account"/>
+                                <TextBlock Margin="12,0,0,0"
+                                   Text="Аккаунт"/>
+                                <TextBlock Text="Login, E-mail, пароль"
+                                   Margin="12,0,0,0"
+                                   Foreground="Gray"
+                                   />
+                            </StackPanel>
+                        </controls:Expander.Header>
+                        <controls:Expander.Content>
+                            <StackPanel>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Width="100"
+                                       Text="Логин"
+                                       VerticalAlignment="Center"
+                                       Foreground="Gray"/>
+                                    <TextBlock Text="{Binding User.Login}"
+                                       Foreground="Gray"/>
+                                    <!--<TextBox MaxWidth="350"
+                                     MinWidth="250"/>-->
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal"
+                                    Margin="0,12,0,0">
+                                    <TextBlock Width="100"
+                                       Text="Email"
+                                       VerticalAlignment="Center"
+                                       Foreground="Gray"/>
+                                    <TextBlock Text="{Binding User.Email}"
+                                       Foreground="Gray"/>
+                                    <!--<TextBox MaxWidth="350"
+                                     MinWidth="250"/>-->
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal"
+                                    Margin="0,12,0,0">
+                                    <TextBlock Width="100"
+                                       Text="Пароль"
+                                       VerticalAlignment="Center"
+                                       Foreground="Gray"/>
+                                    <Button Content="Изменить пароль"/>
+                                    <!--<TextBox MaxWidth="350"
+                                     MinWidth="250"/>-->
+                                </StackPanel>
+                            </StackPanel>
+                        </controls:Expander.Content>
+                    </controls:Expander>
+                    <controls:Expander HorizontalAlignment="Stretch"
+                               Margin="0,12,0,0">
+                        <controls:Expander.Header>
+                            <StackPanel Orientation="Horizontal">
+                                <SymbolIcon Symbol="Admin"/>
+                                <TextBlock Margin="12,0,0,0"
+                                   Text="Личная информация"/>
+                                <TextBlock Text="Номер телефона, адрес"
+                                   Margin="12,0,0,0"
+                                   Foreground="Gray"
+                                   />
+                            </StackPanel>
+                        </controls:Expander.Header>
+                        <controls:Expander.Content>
+                            <StackPanel>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Width="150"
+                                       Text="Номер телефона"
+                                       VerticalAlignment="Center"
+                                       Foreground="Gray"/>
+                                    <TextBlock Text="{Binding User.Phone}"
+                                       Foreground="Gray"/>
+                                    <!--<TextBox MaxWidth="350"
+                                     MinWidth="250"/>-->
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal"
+                                    Margin="0,12,0,0">
+                                    <TextBlock Width="150"
+                                       Text="Город"
+                                       VerticalAlignment="Center"
+                                       Foreground="Gray"/>
+                                    <TextBlock Text="{Binding User.IdCityNavigation.Name}"
+                                       Foreground="Gray"/>
+                                    <!--<TextBox MaxWidth="350"
+                                     MinWidth="250"/>-->
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal"
+                                    Margin="0,12,0,0">
+                                    <TextBlock Width="150"
+                                       Text="Адрес"
+                                       VerticalAlignment="Center"
+                                       Foreground="Gray"/>
+                                    <TextBlock Text="{Binding User.Address}"
+                                       Foreground="Gray"/>
+                                    <!--<TextBox MaxWidth="350"
+                                     MinWidth="250"/>-->
+                                </StackPanel>
+                            </StackPanel>
+                        </controls:Expander.Content>
+                    </controls:Expander>
+                    <controls:Expander HorizontalAlignment="Stretch"
+                               Margin="0,12,0,0">
+                        <controls:Expander.Header>
+                            <StackPanel Orientation="Horizontal">
+                                <FontIcon FontFamily="Segoe MDL2 Assets"
+                                  Glyph="&#xE736;"/>
+                                <TextBlock Margin="12,0,0,0"
+                                   Text="Обучение"/>
+                                <!--<TextBlock Text="Учебное заведение, адрес"
+                                   Margin="12,0,0,0"
+                                   Foreground="Gray"
+                                   />-->
+                            </StackPanel>
+                        </controls:Expander.Header>
+                        <controls:Expander.Content>
+                            <StackPanel>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Width="150"
+                                       Text="Учебное заведение"
+                                       VerticalAlignment="Center"
+                                       Foreground="Gray"/>
+                                    <TextBlock Text="{Binding User.IdSchoolNavigation.Name}"
+                                       Foreground="Gray"/>
+                                    <!--<TextBox MaxWidth="350"
+                                     MinWidth="250"/>-->
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal"
+                                    Margin="0,12,0,0">
+                                    <TextBlock Width="150"
+                                       Visibility="{Binding StudentInfoVisibility}"
+                                       Text="Форма обучения"
+                                       VerticalAlignment="Center"
+                                       Foreground="Gray"/>
+                                    <TextBlock Text="{Binding User.IdEducationFormNavigation.Title}"
+                                       Foreground="Gray"/>
+                                    <!--<TextBox MaxWidth="350"
+                                     MinWidth="250"/>-->
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal"
+                                    Margin="0,12,0,0"
+                                    Visibility="{Binding StudentInfoVisibility}">
+                                    <TextBlock Width="150"
+                                       Text="Группа"
+                                       VerticalAlignment="Center"
+                                       Foreground="Gray"/>
+                                    <TextBlock Text="{Binding User.IdGroupNavigation.Title}"
+                                       Foreground="Gray"/>
+                                    <!--<TextBox MaxWidth="350"
+                                     MinWidth="250"/>-->
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal"
+                                    Margin="0,12,0,0"
+                                    Visibility="{Binding StudentInfoVisibility}">
+                                    <TextBlock Width="150"
+                                       Text="Специальность"
+                                       VerticalAlignment="Center"
+                                       Foreground="Gray"/>
+                                    <TextBlock Foreground="Gray">
+                                <Run Text="{Binding User.IdGroupNavigation.IdSpecialityNavigation.Code}"/>                               
+                                <Run Text="{Binding User.IdGroupNavigation.IdSpecialityNavigation.Title}"/>
+                                    </TextBlock>
+                                    <!--<TextBox MaxWidth="350"
+                                     MinWidth="250"/>-->
+                                </StackPanel>
+                            </StackPanel>
+                        </controls:Expander.Content>
+                    </controls:Expander>
                 </StackPanel>
 
-            </Grid>
-        </StackPanel>
 
-        <StackPanel Grid.Row="1"
-                    Margin="0,12,0,0">
-            <controls:Expander HorizontalAlignment="Stretch">
-                <controls:Expander.Header>
-                    <StackPanel Orientation="Horizontal">
-                        <SymbolIcon Symbol="Account"/>
-                        <TextBlock Margin="12,0,0,0"
-                                   Text="Аккаунт"/>
-                        <TextBlock Text="Login, E-mail, пароль"
-                                   Margin="12,0,0,0"
-                                   Foreground="Gray"
-                                   />
-                    </StackPanel>
-                </controls:Expander.Header>
-            </controls:Expander>
-            <controls:Expander HorizontalAlignment="Stretch"
-                               Margin="0,12,0,0">
-                <controls:Expander.Header>
-                    <StackPanel Orientation="Horizontal">
-                        <SymbolIcon Symbol="Admin"/>
-                        <TextBlock Margin="12,0,0,0"
-                                   Text="Личная информация"/>
-                        <TextBlock Text="Номер телефона, адрес"
-                                   Margin="12,0,0,0"
-                                   Foreground="Gray"
-                                   />
-                    </StackPanel>
-                </controls:Expander.Header>
-            </controls:Expander>
-            <controls:Expander HorizontalAlignment="Stretch"
-                               Margin="0,12,0,0">
-                <controls:Expander.Header>
-                    <StackPanel Orientation="Horizontal">
-                        <FontIcon FontFamily="Segoe MDL2 Assets"
-                                  Glyph="&#xE736;"/>
-                        <TextBlock Margin="12,0,0,0"
-                                   Text="Обучение"/>
-                        <TextBlock Text="Номер телефона, адрес"
-                                   Margin="12,0,0,0"
-                                   Foreground="Gray"
-                                   />
-                    </StackPanel>
-                </controls:Expander.Header>
-            </controls:Expander>
-        </StackPanel>
-
-        <StackPanel Grid.Row="2"
-                    Orientation="Horizontal">
-            <TextBlock Text="Вы можете удалить свой аккаунт"
+                <StackPanel Grid.Row="2"
+                    Orientation="Horizontal"
+                            Margin="0,12,0,0">
+                    <TextBlock Text="Вы можете удалить свой аккаунт"
                        VerticalAlignment="Center"/>
-            <HyperlinkButton Content="Удалить"
+                    <HyperlinkButton Content="Удалить"
                              Margin="0,0,0,-3"/>
-        </StackPanel>
+                </StackPanel>
+            </Grid>
+        </ScrollViewer>
+        
+        
         
     </Grid>
 </Page>

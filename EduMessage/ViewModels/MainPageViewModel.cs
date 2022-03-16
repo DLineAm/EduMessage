@@ -2,6 +2,7 @@
 using EduMessage.Services;
 
 using MvvmGen;
+using MvvmGen.Events;
 
 using System;
 using System.Collections.Generic;
@@ -12,23 +13,30 @@ using System.Threading.Tasks;
 namespace EduMessage.ViewModels
 {
     [ViewModel]
-    public partial class MainPageViewModel
+    public partial class MainPageViewModel : IEventSubscriber<UserExitedEvent>
     {
         [Property] private object _selectedContent;
+
+        private LoginPage LoginPage;
 
         public async void Initialize()
         {
             var result = await App.Account.TryLoadToken();
             if (result)
             {
-                _selectedContent = new MainMenuPage();
+                SelectedContent = new MainMenuPage();
             }
             else
             {
-                _selectedContent = new LoginPage();
+                SelectedContent = new LoginPage();
             }
               
 
+        }
+
+        public void OnEvent(UserExitedEvent eventData)
+        {
+            SelectedContent = new LoginPage();
         }
     }
 }

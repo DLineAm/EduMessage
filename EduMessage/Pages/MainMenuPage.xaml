@@ -209,7 +209,8 @@
                 <controls:NavigationViewItem >
                     <controls:NavigationViewItem.ContextFlyout>
                         <MenuFlyout>
-                            <MenuFlyoutItem Text="Выйти">
+                            <MenuFlyoutItem Text="Выйти"
+                                            Command="{Binding ExitCommand}">
                                 <MenuFlyoutItem.Icon>
                                     <SymbolIcon Symbol="Cancel"/>
                                 </MenuFlyoutItem.Icon>

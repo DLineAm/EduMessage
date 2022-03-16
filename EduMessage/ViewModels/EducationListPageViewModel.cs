@@ -1,26 +1,22 @@
 ﻿using EduMessage.Services;
 
+using Microsoft.Toolkit.Uwp.Helpers;
+
 using MvvmGen;
+using MvvmGen.Events;
 
 using SignalIRServerTest;
 
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
-using System.Text;
 using System.Threading.Tasks;
-using Windows.Security.Cryptography;
+
 using Windows.Storage;
-using Windows.Storage.Streams;
 using Windows.System;
 using Windows.UI.Xaml;
-using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Media.Imaging;
-using Microsoft.Toolkit.Uwp.Helpers;
-using MvvmGen.Events;
 
 namespace EduMessage.ViewModels
 {
@@ -33,6 +29,9 @@ namespace EduMessage.ViewModels
         [Property] private bool _isClearButtonEnabled;
         [Property] private string _courseTitle;
         [Property] private string _courseDescription;
+        [Property] private Visibility _noResultsFoundAnimationVisibility = Visibility.Collapsed;
+        [Property] private Visibility _teacherInputVisibility;
+        [Property] private GridLength _gridWidth;
 
         private Speciality _speciality;
 
@@ -40,11 +39,13 @@ namespace EduMessage.ViewModels
         {
             App.DropCompleted += App_DropCompleted;
             _speciality = speciality;
+            var role = App.Account.User.IdRole;
+            TeacherInputVisibility = role == 2 ? Visibility.Visible : Visibility.Collapsed;
 
             try
             {
                 var response = (await (App.Address + $"Education/Courses.SpecialityId={speciality.Id}")
-                    .SendRequestAsync("",HttpRequestType.Get, App.Account.Jwt))
+                    .SendRequestAsync("", HttpRequestType.Get, App.Account.Jwt))
                     .DeserializeJson<List<CourseAttachment>>();
 
                 var courses = response
@@ -94,11 +95,24 @@ namespace EduMessage.ViewModels
                     savedCourseId = course.Id;
                 }
 
+                if (Courses.Count == 0)
+                {
+                    UpdateNoResultsFoundVisibility(Visibility.Visible);
+                }
+
             }
             catch (Exception e)
             {
 
             }
+        }
+
+        private void UpdateNoResultsFoundVisibility(Visibility visibility)
+        {
+            NoResultsFoundAnimationVisibility = visibility;
+            GridWidth = visibility == Visibility.Visible 
+                ? new GridLength( 80, GridUnitType.Pixel) 
+                : new GridLength(0, GridUnitType.Pixel);
         }
 
         [Command]
@@ -137,7 +151,7 @@ namespace EduMessage.ViewModels
                 IdCourseNavigation = course
             }).ToList();
 
-            var attachments = coursesList.Select(c => c.IdAttachmanentNavigation).ToList();
+            List<Attachment> attachments = coursesList.Select(c => c.IdAttachmanentNavigation).ToList();
             try
             {
                 int response;
@@ -191,7 +205,7 @@ namespace EduMessage.ViewModels
                 }
 
                 EventAggregator.Publish(new LoaderVisibilityChanged(Visibility.Collapsed, string.Empty));
-
+                UpdateNoResultsFoundVisibility(Visibility.Collapsed);
             }
             catch (Exception e)
             {
@@ -287,7 +301,7 @@ namespace EduMessage.ViewModels
                 else if (item is StorageFile file)
                 {
                     var fileProps = await file.GetBasicPropertiesAsync();
-                    if (fileProps.Size == 0 && fileProps.Size >= 250*1024*1024)
+                    if (fileProps.Size == 0 && fileProps.Size >= 250 * 1024 * 1024)
                     {
                         continue;
                     }
@@ -328,12 +342,17 @@ namespace EduMessage.ViewModels
                 try
                 {
                     var response = (await (App.Address + $"Education/Courses.id={course.Course.Id}")
-                            .SendRequestAsync("", HttpRequestType.Delete,App.Account.Jwt))
+                            .SendRequestAsync("", HttpRequestType.Delete, App.Account.Jwt))
                         .DeserializeJson<bool>();
 
                     if (response)
                     {
                         Courses.Remove(course);
+                    }
+
+                    if (Courses.Count == 0)
+                    {
+                        UpdateNoResultsFoundVisibility(Visibility.Visible);
                     }
                 }
                 catch (Exception e)
@@ -343,27 +362,6 @@ namespace EduMessage.ViewModels
 
             }
         }
-    }
-
-    public class EducationFile
-    {
-        public string Name { get; set; }
-        public string Type { get; set; }
-        public object ImagePath { get; set; }
-
-        public byte[] Data { get; set; }
-    }
-
-    public class CourseFiles
-    {
-        public Course Course { get; set; }
-        public List<EducationFile> Files { get; set; }
-
-        public Visibility FilesInfoVisibility => Files == null
-        || Files.Count == 0
-        || Files.Count == 1 && Files[0] == null
-        ? Visibility.Collapsed
-        : Visibility.Visible;
     }
 
     public record LoaderVisibilityChanged(Visibility LoaderVisibility, string LoaderText);

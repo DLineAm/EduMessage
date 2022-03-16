@@ -33,7 +33,7 @@ namespace EduMessage.Pages
                 var passwordValidator = App.Container.Resolve<IValidator>("password");
                 var personValidator = App.Container.Resolve<IValidator>("login");
 
-                ViewModel = new PrimaryRegisterPageViewModel();
+                ViewModel = App.Container.ResolveConstructor<PrimaryRegisterPageViewModel>();
 
                 ViewModel.SetValidator(passwordValidator);
                 ViewModel.SetValidator(personValidator);

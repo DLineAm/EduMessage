@@ -43,7 +43,7 @@ namespace EduMessage.Services
                 {
                     resolvedObject = InvokeConstructor(concreteType);
                     _singletonComponents.Add(resolvedObject);
-                }               
+                }            
             }
             else
             {

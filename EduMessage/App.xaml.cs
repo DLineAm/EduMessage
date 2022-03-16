@@ -44,6 +44,8 @@ namespace EduMessage
 
         public static event Action CrumbItemClicked;
 
+        public static event Action UserExited;
+
         public static ColorManager ColorManager { get; } = new();
         public static ControlContainer Container { get; } = ControlContainer.Get();
         public static Account Account { get; private set; }
@@ -77,6 +79,7 @@ namespace EduMessage
             Container.Register(Component.For<IValidator>().ImplementedBy<PersonNameValidator>().Named("person"));
             Container.Register(Component.For<IEventAggregator>().ImplementedBy<EventAggregator>().Singleton());
             Container.Register(Component.For<IUserBuilder>().ImplementedBy<UserBuilder>());
+            Container.Register(Component.For<INotificator>().ImplementedBy<DialogNotificator>());
 
             Account = Container.ResolveConstructor<Account>();
             EventAggregator = Container.Resolve<IEventAggregator>();
@@ -133,6 +136,11 @@ namespace EduMessage
         public static void InvokeLoaderVisibilityChanged(Visibility visibility)
         {
             LoaderVisibiltyChanged?.Invoke(visibility);
+        }
+
+        public static void InvokeUserExited()
+        {
+            UserExited?.Invoke();
         }
 
         public static void InvokeColorChanged(Color color)

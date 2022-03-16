@@ -13,6 +13,7 @@ using Windows.UI.Xaml.Media.Animation;
 namespace EduMessage.ViewModels
 {
     [ViewModel]
+    [Inject(typeof(INotificator))]
     public partial class EmailConfirmingPageViewModel
     {
         [Property] private string _code;
@@ -52,12 +53,8 @@ namespace EduMessage.ViewModels
             }
             catch (System.Exception e)
             {
-                await new ContentDialog
-                {
-                    Title = "Ошибка",
-                    Content = "При отправке почты произошла ошибка: " + e.Message,
-                    PrimaryButtonText = "Ok"
-                }.ShowAsync();
+                var message = "При отправке запроса произошла ошибка: " + e.Message;
+                Notificator.Notificate("Ошибка", message);
             }
             finally
             {

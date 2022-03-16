@@ -15,11 +15,20 @@
             <ColumnDefinition/>
             <ColumnDefinition Width="auto"/>
         </Grid.ColumnDefinitions>
-        <controls:AnimatedVisualPlayer Height="100">
-            <lottie:LottieVisualSource UriSource="ms-appx:///AnimatedVisuals/Fire.json"/>
+        <StackPanel VerticalAlignment="Center"
+                    Visibility="{Binding NoResultsFoundAnimationVisibility}">
+            <controls:AnimatedVisualPlayer Height="130">
+                <animatedvisuals:Fire/>
+            </controls:AnimatedVisualPlayer>
 
-            <!--<animatedvisuals:Fire/>-->
-        </controls:AnimatedVisualPlayer>
+            <TextBlock Text="Здесь ничего нет, может быть что-то появится позже"
+                       HorizontalAlignment="Center"
+                       TextWrapping="Wrap"
+                       Width="200"
+                       TextAlignment="Center"
+                       Foreground="{ThemeResource TextBoxButtonForegroundThemeBrush}"/>
+        </StackPanel>
+
         <ListView ItemsSource="{Binding Courses}"
                   HorizontalContentAlignment="Stretch"
                   ScrollViewer.VerticalScrollBarVisibility="Auto"
@@ -46,7 +55,7 @@
                         </Interactivity:Interaction.Behaviors>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition/>
-                            <ColumnDefinition Width="80"/>
+                            <ColumnDefinition Width="{Binding DataContext.GridWidth, ElementName=window}"/>
                         </Grid.ColumnDefinitions>
                         <controls:Expander HorizontalAlignment="Stretch"
                                            VerticalAlignment="Stretch"
@@ -117,41 +126,44 @@
                                                     VerticalAlignment="Bottom">
                                             <AppBarButton Label="Изменить"
                                                           Icon="Edit"
-                                                          HorizontalAlignment="Right"/>
+                                                          HorizontalAlignment="Right"
+                                                          Visibility="{Binding DataContext.TeacherInputVisibility, ElementName=window}"/>
                                             <AppBarButton Label="Отправить"
                                                           Icon="Share"
                                                           HorizontalAlignment="Right"/>
                                         </StackPanel>
                                     </Grid>
-                                    
+
                                 </Grid>
-                                
+
                             </controls:Expander.Content>
                         </controls:Expander>
-
-                        <AppBarButton Grid.Column="1"
-                                     Icon="Delete"
+                        <Grid Visibility="{Binding DataContext.TeacherInputVisibility, ElementName=window}"
+                              Grid.Column="1">
+                            <AppBarButton Icon="Delete"
                                       Label="Удалить"
                                       x:Name="BarButton"
                                      Visibility="Collapsed">
-                            <AppBarButton.Flyout>
-                                <Flyout>
-                                    <StackPanel>
-                                        <TextBlock Style="{ThemeResource BaseTextBlockStyle}">
+                                <AppBarButton.Flyout>
+                                    <Flyout>
+                                        <StackPanel>
+                                            <TextBlock Style="{ThemeResource BaseTextBlockStyle}">
                                             <Run Text="Вы действительно хотите удалить курс "/>
                                             <Run Text="{Binding Course.Id}"/>
                                             <Run Text="?"/>
-                                        </TextBlock>
-                                        <StackPanel Orientation="Horizontal"
+                                            </TextBlock>
+                                            <StackPanel Orientation="Horizontal"
                                                     Margin="0,12,0,0">
-                                            <Button Content="Да, удалить"
+                                                <Button Content="Да, удалить"
                                                     Command="{Binding DataContext.DeleteCourseCommand, ElementName=window}"
                                                     CommandParameter="{Binding }"/>
+                                            </StackPanel>
                                         </StackPanel>
-                                    </StackPanel>
-                                </Flyout>
-                            </AppBarButton.Flyout>
-                        </AppBarButton>
+                                    </Flyout>
+                                </AppBarButton.Flyout>
+                            </AppBarButton>
+                        </Grid>
+
                     </Grid>
                 </DataTemplate>
             </ListView.ItemTemplate>
@@ -164,14 +176,15 @@
                     <RowDefinition Height="auto"/>
                     <RowDefinition />
                 </Grid.RowDefinitions>
-                
+
                 <TextBlock Text="Действия"
                            Style="{StaticResource 26TitleTextBlock}"/>
 
                 <StackPanel Grid.Row="1"
                             Margin="0,12,0,0">
                     <HyperlinkButton Content="Добавить курс"
-                                     Click="HyperlinkButton_Click"/>
+                                     Click="HyperlinkButton_Click"
+                                     Visibility="{Binding TeacherInputVisibility}"/>
                 </StackPanel>
             </Grid>
         </Border>
@@ -222,7 +235,7 @@
                         <ListView.ItemTemplate>
                             <DataTemplate x:DataType="viewmodels:EducationFile">
                                 <Grid>
-                                    
+
                                     <StackPanel Width="100"
                                             Margin="0,5">
                                         <Image Source="{Binding ImagePath}"
@@ -244,7 +257,7 @@
                                         </Button.Content>
                                     </Button>
                                 </Grid>
-                                
+
                             </DataTemplate>
                         </ListView.ItemTemplate>
                     </ListView>
@@ -255,7 +268,7 @@
                                   VerticalContentAlignment="Bottom"
                                   IsEnabled="{Binding DataContext.IsClearButtonEnabled, ElementName=window}"
                                   Command="{Binding CleanFilesListCommand}">
-                        
+
                     </AppBarButton>
                     <local:ItemsPickPage Height="100"
                                      Width="400"
@@ -265,9 +278,9 @@
                 </Grid>
                 <StackPanel Orientation="Horizontal"
                             Margin="0,12">
-                   
+
                 </StackPanel>
-                
+
             </StackPanel>
         </ContentDialog>
 

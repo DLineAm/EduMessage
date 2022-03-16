@@ -16,6 +16,7 @@ using System.Threading.Tasks;
 
 using Windows.Storage;
 using Windows.Storage.Pickers;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 
 namespace EduMessage.ViewModels
@@ -27,6 +28,7 @@ namespace EduMessage.ViewModels
         [Property] private User _user;
         [Property] private string _fullName;
         [Property] private object _profilePicture;
+        [Property] private Visibility _studentInfoVisibility;
 
         public async void Initialize()
         {
@@ -37,7 +39,8 @@ namespace EduMessage.ViewModels
             {
                 ProfilePicture = await User.Image.CreateBitmap();
             }
-            
+
+            StudentInfoVisibility = User.IdRole == 2 ? Visibility.Collapsed : Visibility.Visible;
         }
 
         [Command]

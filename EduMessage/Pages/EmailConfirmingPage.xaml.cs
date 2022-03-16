@@ -28,7 +28,7 @@ namespace EduMessage.Pages
         public EmailConfirmingPage()
         {
             this.InitializeComponent();
-            ViewModel = new EmailConfirmingPageViewModel();
+            ViewModel = App.Container.ResolveConstructor<EmailConfirmingPageViewModel>();
             this.DataContext = ViewModel;
         }
 

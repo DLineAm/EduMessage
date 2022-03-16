@@ -15,11 +15,11 @@ namespace EduMessage.Pages
         public PersonalInfoAddPage()
         {
             this.InitializeComponent();
-            ViewModel = new PersonalInfoAddPageViewModel();
+            ViewModel = App.Container.ResolveConstructor<PersonalInfoAddPageViewModel>();
             var validator = App.Container.Resolve<IValidator>("person");
             ViewModel.SetValidator(validator);
-            this.DataContext = ViewModel;
             ViewModel.LoadData();
+            this.DataContext = ViewModel;
         }
 
         public PersonalInfoAddPageViewModel ViewModel { get; }

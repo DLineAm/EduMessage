@@ -12,6 +12,7 @@ using Windows.UI.Xaml;
 namespace EduMessage.ViewModels
 {
     [ViewModel]
+    [Inject(typeof(IEventAggregator))]
     public partial class MainMenuViewModel : IEventSubscriber<AccountImageUploadedEvent>, IEventSubscriber<LoaderVisibilityChanged>, IEventSubscriber<ColorChangedEvent>
     {
         [Property] private string _accountName;
@@ -56,5 +57,14 @@ namespace EduMessage.ViewModels
                 AccountImage = bitmap;
             }
         }
+
+        [Command]
+        private void Exit()
+        {
+            App.Account.UpdateToken(false);
+            EventAggregator.Publish(new UserExitedEvent());
+        }
     }
+
+    public record UserExitedEvent();
 }
