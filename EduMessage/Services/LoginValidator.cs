@@ -9,7 +9,24 @@
                 return ValidationResponse.LengthResponse;
             }
 
-            return ValidationResponse.OkResponse;
+            try
+            {
+                var response = (App.Address + $"Login/Validate.login={value}")
+                    .SendRequestAsync("", HttpRequestType.Get).Result
+                    .DeserializeJson<bool>();
+
+                if (!response)
+                {
+                    return ValidationResponse.ExistsResponse;
+                }
+
+                return ValidationResponse.OkResponse;
+
+            }
+            catch (System.Exception e)
+            {
+                return ValidationResponse.ServerErrorResponse;
+            }
         }
     }
 }

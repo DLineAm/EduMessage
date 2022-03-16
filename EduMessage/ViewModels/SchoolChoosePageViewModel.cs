@@ -54,7 +54,12 @@ namespace EduMessage.ViewModels
 
                 var result = await App.Account.Register(App.Account.UserBuilder);
 
-                ErrorText = result ? "Ok" : "ne ok";
+                if (!result)
+                {
+                    ErrorText = "Произошла ошибка при создании аккаунта, повторите попытку позже";
+                }
+
+                new Navigator().Navigate(typeof(MainMenuPage), null, new DrillInNavigationTransitionInfo());
             }
             catch (Exception e)
             {

@@ -15,7 +15,11 @@ namespace EduMessage.Services
 {
     public static class Extensions
     {
-        public static async Task<string> SendRequestAsync<T>(this string address, T value, HttpRequestType requestType, string token = "", bool passCertificateValidation = true)
+        public static async Task<string> SendRequestAsync<T>(this string address
+            , T value
+            , HttpRequestType requestType
+            , string token = ""
+            , bool passCertificateValidation = true)
         {
             HttpClient client;
             if (passCertificateValidation)

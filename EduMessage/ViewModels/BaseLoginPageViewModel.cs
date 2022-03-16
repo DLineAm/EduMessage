@@ -32,7 +32,6 @@ namespace EduMessage.ViewModels
                 return;
             }
 
-            //ErrorText = "Ok";
             await SetLoaderVisibility(Visibility.Collapsed);
 
             new Navigator().Navigate(typeof(MainMenuPage), null, new DrillInNavigationTransitionInfo());
