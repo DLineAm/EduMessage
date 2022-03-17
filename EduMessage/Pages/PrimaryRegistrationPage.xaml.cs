@@ -32,11 +32,13 @@ namespace EduMessage.Pages
             {
                 var passwordValidator = App.Container.Resolve<IValidator>("password");
                 var personValidator = App.Container.Resolve<IValidator>("login");
+                var emailValidator = App.Container.Resolve<IValidator>("email");
 
                 ViewModel = App.Container.ResolveConstructor<PrimaryRegisterPageViewModel>();
 
                 ViewModel.SetValidator(passwordValidator);
                 ViewModel.SetValidator(personValidator);
+                ViewModel.SetValidator(emailValidator);
 
                 this.DataContext = ViewModel;
             }

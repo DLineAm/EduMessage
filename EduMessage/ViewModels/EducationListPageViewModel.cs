@@ -32,6 +32,12 @@ namespace EduMessage.ViewModels
         [Property] private Visibility _noResultsFoundAnimationVisibility = Visibility.Collapsed;
         [Property] private Visibility _teacherInputVisibility;
         [Property] private GridLength _gridWidth;
+        [Property] private string _dialogTitle;
+
+        private List<CourseAttachment> _dbCourses;
+
+        private bool _isCourseAddMode;
+        private CourseFiles _selectedCourse;
 
         private Speciality _speciality;
 
@@ -40,7 +46,8 @@ namespace EduMessage.ViewModels
             App.DropCompleted += App_DropCompleted;
             _speciality = speciality;
             var role = App.Account.User.IdRole;
-            TeacherInputVisibility = role == 2 ? Visibility.Visible : Visibility.Collapsed;
+
+            UpdateTeacherInputVisibility(role == 2 ? Visibility.Visible : Visibility.Collapsed);
 
             try
             {
@@ -48,9 +55,10 @@ namespace EduMessage.ViewModels
                     .SendRequestAsync("", HttpRequestType.Get, App.Account.Jwt))
                     .DeserializeJson<List<CourseAttachment>>();
 
+                _dbCourses = response;
+
                 var courses = response
                     .Select(c => c.IdCourseNavigation)
-                    .Distinct()
                     .ToList();
 
                 var savedCourseId = -1;
@@ -76,7 +84,6 @@ namespace EduMessage.ViewModels
 
                         convertedAttachments.Add(new EducationFile
                         {
-
                             Name = attachment.Title,
                             Type = "." + attachment.Title.Split('.').Last(),
                             Data = attachment.Data,
@@ -107,12 +114,18 @@ namespace EduMessage.ViewModels
             }
         }
 
+        private void UpdateTeacherInputVisibility(Visibility visibility)
+        {
+            TeacherInputVisibility = visibility;
+            GridWidth = visibility == Visibility.Visible
+                ? new GridLength(80, GridUnitType.Pixel)
+                : new GridLength(0, GridUnitType.Pixel);
+        }
+
+
         private void UpdateNoResultsFoundVisibility(Visibility visibility)
         {
             NoResultsFoundAnimationVisibility = visibility;
-            GridWidth = visibility == Visibility.Visible 
-                ? new GridLength( 80, GridUnitType.Pixel) 
-                : new GridLength(0, GridUnitType.Pixel);
         }
 
         [Command]
@@ -120,6 +133,29 @@ namespace EduMessage.ViewModels
         {
             Files.Clear();
             UpdateAccessibility();
+        }
+
+        [Command]
+        private void InitializeChangeCourseDialog(object courseObj)
+        {
+            if (courseObj is CourseFiles course)
+            {
+                _isCourseAddMode = false;
+
+                DialogTitle = "Изменение курса";
+                var educationCourse = course.Course;
+
+                _selectedCourse = course;
+
+                course.Files.ForEach(Files.Add);
+
+                CourseTitle = educationCourse.Title;
+                CourseDescription = educationCourse.Description;
+
+                EventAggregator.Publish(new CourseDialogStartShowing(_isCourseAddMode));
+            }
+
+
         }
 
         [Command]
@@ -133,12 +169,21 @@ namespace EduMessage.ViewModels
 
             EventAggregator.Publish(new LoaderVisibilityChanged(Visibility.Visible, "Сохранение курса"));
 
-            var course = new Course
+            Course course;
+
+            if (_selectedCourse != null)
             {
-                Title = CourseTitle,
-                Description = CourseDescription,
-                IdSpecialityNavigation = _speciality
-            };
+                course = _selectedCourse.Course;
+            }
+            else
+            {
+                course = new Course
+                {
+                    Title = CourseTitle,
+                    Description = CourseDescription,
+                    IdSpecialityNavigation = _speciality
+                };
+            }           
 
             List<CourseAttachment> coursesList = Files.Select(s => new CourseAttachment
             {
@@ -148,13 +193,40 @@ namespace EduMessage.ViewModels
                     Data = s.Data,
                     Title = s.Name
                 },
-                IdCourseNavigation = course
+                IdCourseNavigation = course,
+                IdCourse = course.Id
             }).ToList();
 
             List<Attachment> attachments = coursesList.Select(c => c.IdAttachmanentNavigation).ToList();
             try
             {
                 int response;
+                if (_selectedCourse != null)
+                {
+                    if (coursesList.Count == 0)
+                    {
+                        coursesList.Add(new CourseAttachment
+                        {
+                            IdCourse = course.Id,
+                            IdCourseNavigation = course
+                        });
+                    }
+
+                    var putResponse = (await (App.Address + "Education/Courses")
+                        .SendRequestAsync(coursesList, HttpRequestType.Put, App.Account.Jwt))
+                        .DeserializeJson<bool>();
+
+                    if (putResponse)
+                    {
+                        _selectedCourse.Course.Title = CourseTitle;
+                        _selectedCourse.Course.Description = CourseDescription;
+                        _selectedCourse.Files = Files.ToList();
+                    }
+
+                    EventAggregator.Publish(new LoaderVisibilityChanged(Visibility.Collapsed, ""));
+
+                    return;
+                }
                 if (coursesList.Count == 0)
                 {
                     var courseAttachment = new CourseAttachment
@@ -324,6 +396,7 @@ namespace EduMessage.ViewModels
             return result;
         }
 
+        //public TYPE Type { get; set; }
 
         private async Task<object> GetImage(string type, byte[] data) => type switch
         {
@@ -333,6 +406,19 @@ namespace EduMessage.ViewModels
             ".png" or ".jpg" or ".jpeg" => await data.CreateBitmap(),
             _ => "ms-appx:///Assets/file.png"
         };
+
+        [Command]
+        private void InitializeAddCourseDialog()
+        {
+            _selectedCourse = null;
+            _isCourseAddMode = true;
+
+            Files.Clear();
+            CourseTitle = string.Empty;
+            CourseDescription = string.Empty;
+
+            EventAggregator.Publish(new CourseDialogStartShowing(_isCourseAddMode));
+        }
 
         [Command]
         private async void DeleteCourse(object courseObj)
@@ -365,4 +451,5 @@ namespace EduMessage.ViewModels
     }
 
     public record LoaderVisibilityChanged(Visibility LoaderVisibility, string LoaderText);
+    public record CourseDialogStartShowing(bool isAddMode);
 }

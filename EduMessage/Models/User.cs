@@ -8,12 +8,6 @@ namespace SignalIRServerTest
 {
     public partial class User
     {
-        public User()
-        {
-            Devices = new HashSet<Device>();
-            MessageIdRecipientNavigations = new HashSet<Message>();
-            MessageIdUserNavigations = new HashSet<Message>();
-        }
         public int Id { get; set; }
         public string FirstName { get; set; }
         public string MiddleName { get; set; }
@@ -21,7 +15,7 @@ namespace SignalIRServerTest
         public string Login { get; set; }
         public string Password { get; set; }
         public string Email { get; set; }
-        public int Phone { get; set; }
+        public long Phone { get; set; }
         public string Address { get; set; }
         public int? IdCity { get; set; }
         public int IdSchool { get; set; }

@@ -21,7 +21,7 @@ namespace EduMessage.ViewModels
     public partial class PersonalInfoAddPageViewModel
     {
         [Property] private string _personName;
-        [Property] private int _phone;
+        [Property] private long _phone;
         [Property] private City _city;
         [Property] private List<City> _cities;
         [Property] private string _errorText;

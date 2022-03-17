@@ -17,5 +17,7 @@ namespace EduMessage.ViewModels
         || Files.Count == 1 && Files[0] == null
         ? Visibility.Collapsed
         : Visibility.Visible;
+
+        public int Id { get; internal set; }
     }
 }

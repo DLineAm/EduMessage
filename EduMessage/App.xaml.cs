@@ -33,7 +33,9 @@ namespace EduMessage
     {
         //"https://169.254.77.140:5001/"
         //public static string Address = "https://192.168.1.2:5001/";
+
         public static string Address = "https://169.254.77.140:5001/";
+
         public static IEventAggregator EventAggregator;
 
         public static event Action<Color> ColorChanged;
@@ -77,7 +79,10 @@ namespace EduMessage
             Container.Register(Component.For<IValidator>().ImplementedBy<PasswordValidator>().Named("password"));
             Container.Register(Component.For<IValidator>().ImplementedBy<LoginValidator>().Named("login"));
             Container.Register(Component.For<IValidator>().ImplementedBy<PersonNameValidator>().Named("person"));
+            Container.Register(Component.For<IValidator>().ImplementedBy<EmailValidator>().Named("email"));
+
             Container.Register(Component.For<IEventAggregator>().ImplementedBy<EventAggregator>().Singleton());
+
             Container.Register(Component.For<IUserBuilder>().ImplementedBy<UserBuilder>());
             Container.Register(Component.For<INotificator>().ImplementedBy<DialogNotificator>());
 

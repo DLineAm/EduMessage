@@ -4,11 +4,16 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:EduMessage.Pages"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:signalirservertest="using:SignalIRServerTest" xmlns:controls="using:Microsoft.UI.Xaml.Controls"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:signalirservertest="using:SignalIRServerTest"
+    xmlns:controls="using:Microsoft.UI.Xaml.Controls"
     mc:Ignorable="d"
       xmlns:Interactivity="using:Microsoft.Xaml.Interactivity"
-  xmlns:Core="using:Microsoft.Xaml.Interactions.Core" xmlns:viewmodels="using:EduMessage.ViewModels" xmlns:animatedvisuals="using:AnimatedVisuals" xmlns:lottie="using:Microsoft.Toolkit.Uwp.UI.Lottie"
-    x:Name="window">
+  xmlns:Core="using:Microsoft.Xaml.Interactions.Core" xmlns:viewmodels="using:EduMessage.ViewModels"
+    xmlns:animatedvisuals="using:AnimatedVisuals"
+    xmlns:lottie="using:Microsoft.Toolkit.Uwp.UI.Lottie"
+    x:Name="window"
+    Loaded="Page_Loaded">
 
     <Grid Margin="-12,0">
         <Grid.ColumnDefinitions>
@@ -127,6 +132,8 @@
                                             <AppBarButton Label="Изменить"
                                                           Icon="Edit"
                                                           HorizontalAlignment="Right"
+                                                          Command="{Binding DataContext.InitializeChangeCourseDialogCommand, ElementName=window}"
+                                                          CommandParameter="{Binding }"
                                                           Visibility="{Binding DataContext.TeacherInputVisibility, ElementName=window}"/>
                                             <AppBarButton Label="Отправить"
                                                           Icon="Share"
@@ -183,7 +190,7 @@
                 <StackPanel Grid.Row="1"
                             Margin="0,12,0,0">
                     <HyperlinkButton Content="Добавить курс"
-                                     Click="HyperlinkButton_Click"
+                                     Command="{Binding InitializeAddCourseDialogCommand}"
                                      Visibility="{Binding TeacherInputVisibility}"/>
                 </StackPanel>
             </Grid>

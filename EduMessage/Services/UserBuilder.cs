@@ -4,7 +4,6 @@ namespace EduMessage.Services
 {
     public class UserBuilder : IUserBuilder
     {
-        private static bool IsUserBuilded;
         private static User _user;
 
         public UserBuilder()
@@ -32,8 +31,7 @@ namespace EduMessage.Services
                     _user.MiddleName = names[2];
                     break;
                 case "phone":
-                    var phone = int.Parse(value);
-
+                    var phone = long.Parse(value);
                     _user.Phone = phone;
                     break;
             }
@@ -98,7 +96,6 @@ namespace EduMessage.Services
 
         public User Build()
         {
-            IsUserBuilded = true;
             return _user;
         }
     }

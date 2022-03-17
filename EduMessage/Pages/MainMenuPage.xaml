@@ -30,10 +30,9 @@
                 
             </StackPanel>
         </Grid>
-        
-        
+
+
         <controls:NavigationView IsTitleBarAutoPaddingEnabled="False"
-                                 PaneTitle="Главное меню"
                                  Grid.Row="1"
                          Canvas.ZIndex="0"
                          Margin="0,0,0,0"        
@@ -42,6 +41,32 @@
                          IsBackButtonVisible="Collapsed"
                          ItemInvoked="NavigationViewControl_ItemInvoked"
                          SelectionChanged="NavigationViewControl_SelectionChanged">
+
+            <controls:NavigationView.PaneHeader>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition Width="auto"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="Главное меню"
+                               FontWeight="SemiBold"
+                               VerticalAlignment="Center"
+                               Margin="7,0,0,1"/>
+                    <HyperlinkButton Grid.Column="1"
+                                     Margin="0,0,14,0">
+                        <HyperlinkButton.Content>
+                            <Grid>
+                                <SymbolIcon Symbol="Edit"/>
+                                <FontIcon FontFamily="Segoe MDL2 Assets"
+                                          Glyph="&#xE710;"
+                                          FontSize="7"
+                                          VerticalAlignment="Top"
+                                          HorizontalAlignment="Left"/>
+                            </Grid>
+                        </HyperlinkButton.Content>
+                    </HyperlinkButton>
+                </Grid>
+            </controls:NavigationView.PaneHeader>
 
             <controls:NavigationView.MenuItemContainerStyle>
                 <Style TargetType="controls:NavigationViewItem">

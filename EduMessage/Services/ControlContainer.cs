@@ -10,7 +10,7 @@ namespace EduMessage.Services
 
         private ControlContainer()
         {
-            
+
         }
 
         public static ControlContainer Get()
@@ -43,7 +43,7 @@ namespace EduMessage.Services
                 {
                     resolvedObject = InvokeConstructor(concreteType);
                     _singletonComponents.Add(resolvedObject);
-                }            
+                }
             }
             else
             {
@@ -108,7 +108,6 @@ namespace EduMessage.Services
         public Component ImplementedBy<TImplementation>() where TImplementation : class
         {
             ImplementationType = typeof(TImplementation);
-            
             return this;
         }
 

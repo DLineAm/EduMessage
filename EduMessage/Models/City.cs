@@ -7,12 +7,6 @@ namespace SignalIRServerTest
 {
     public partial class City
     {
-        public City()
-        {
-            //Schools = new HashSet<School>();
-            //Users = new HashSet<User>();
-        }
-
         public int Id { get; set; }
         public string Name { get; set; }
 

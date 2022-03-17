@@ -5,11 +5,6 @@ namespace SignalIRServerTest
 {
     public partial class AttachmentType
     {
-        public AttachmentType()
-        {
-            
-        }
-
         public int Id { get; set; }
         public string Title { get; set; }
 

@@ -1,5 +1,7 @@
 ﻿using EduMessage.ViewModels;
 
+using MvvmGen.Events;
+
 using SignalIRServerTest;
 
 using System;
@@ -25,8 +27,9 @@ namespace EduMessage.Pages
     /// <summary>
     /// Пустая страница, которую можно использовать саму по себе или для перехода внутри фрейма.
     /// </summary>
-    public sealed partial class EducationCourseListPage : Page
+    public sealed partial class EducationCourseListPage : Page, IEventSubscriber<CourseDialogStartShowing>
     {
+        private bool _isPageLoaded;
         public EducationCourseListPage()
         {
             this.InitializeComponent();
@@ -41,6 +44,8 @@ namespace EduMessage.Pages
 
             await ViewModel.Initialize(parameter);
             this.DataContext = ViewModel;
+
+            App.EventAggregator.RegisterSubscriber(this);
         }
 
         public EducationListPageViewModel ViewModel{ get; }
@@ -48,6 +53,25 @@ namespace EduMessage.Pages
         private async void HyperlinkButton_Click(object sender, RoutedEventArgs e)
         {
             await CourseAddDialog.ShowAsync();
+        }
+
+        public async void OnEvent(CourseDialogStartShowing eventData)
+        {
+            if (!_isPageLoaded)
+            {
+                return;
+            }
+
+            var parameter = eventData.isAddMode;
+
+            CourseAddDialog.Title = parameter ? "Добавление курса" : "Изменение курса";
+
+            await CourseAddDialog.ShowAsync();
+        }
+
+        private void Page_Loaded(object sender, RoutedEventArgs e)
+        {
+            _isPageLoaded = true;
         }
     }
 }

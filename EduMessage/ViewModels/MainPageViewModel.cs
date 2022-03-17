@@ -17,8 +17,6 @@ namespace EduMessage.ViewModels
     {
         [Property] private object _selectedContent;
 
-        private LoginPage LoginPage;
-
         public async void Initialize()
         {
             var result = await App.Account.TryLoadToken();

@@ -16,6 +16,7 @@ namespace EduMessage.ViewModels
     {
         private IValidator _passwordValidator;
         private IValidator _loginValidator;
+        private IValidator _emailValidator;
 
         [Property] private string _email;
         [Property] private string _login;
@@ -30,9 +31,13 @@ namespace EduMessage.ViewModels
             {
                 _passwordValidator = validator;
             }
-            else
+            else if (validator is LoginValidator)
             {
                 _loginValidator = validator;
+            }
+            else
+            {
+                _emailValidator = validator;
             }
         }
 
@@ -86,6 +91,22 @@ namespace EduMessage.ViewModels
                     ValidateStatusType.Other => "Неизвестная ошибка",
                     _ => throw new ArgumentOutOfRangeException()
                 };
+                await SetLoaderVisibility(Visibility.Collapsed);
+                return;
+            }
+
+            var emailResponse = _emailValidator.Validate(Email);
+
+            if (!emailResponse)
+            {
+                ErrorText = emailResponse.Status switch
+                {
+                    ValidateStatusType.Format => "Неверный формат почты",
+                    ValidateStatusType.Exists => "Почта уже существует в базе данных",
+                    ValidateStatusType.Server => "Ошибка подключения к серверу, повторите попытку позже",
+                    ValidateStatusType.Other => "Неизвестная ошибка",
+                };
+
                 await SetLoaderVisibility(Visibility.Collapsed);
                 return;
             }

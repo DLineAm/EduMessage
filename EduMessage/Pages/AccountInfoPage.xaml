@@ -4,7 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:EduMessage.Pages"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:controls="using:Microsoft.UI.Xaml.Controls"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:controls="using:Microsoft.UI.Xaml.Controls" xmlns:interactivity="using:Microsoft.Xaml.Interactivity" xmlns:core="using:Microsoft.Xaml.Interactions.Core" xmlns:services="using:EduMessage.Services"
     mc:Ignorable="d">
 
     <Grid Margin="48,12">
@@ -239,7 +239,22 @@
                     <TextBlock Text="Вы можете удалить свой аккаунт"
                        VerticalAlignment="Center"/>
                     <HyperlinkButton Content="Удалить"
-                             Margin="0,0,0,-3"/>
+                             Margin="0,0,0,-3">
+                        <interactivity:Interaction.Behaviors>
+                            <core:EventTriggerBehavior EventName="Tapped">
+                                <services:OpenFlyoutAction/>
+                            </core:EventTriggerBehavior>
+                        </interactivity:Interaction.Behaviors>
+                        <FlyoutBase.AttachedFlyout>
+                            <Flyout>
+                                <StackPanel>
+                                    <TextBlock Text="Вы действительно хотите удалить аккаунт?"/>
+                                    <Button Content="Да, удалить"
+                                            Margin="0,12,0,0"/>
+                                </StackPanel>
+                            </Flyout>
+                        </FlyoutBase.AttachedFlyout>
+                    </HyperlinkButton>
                 </StackPanel>
             </Grid>
         </ScrollViewer>
