@@ -35,7 +35,7 @@ namespace EduMessage.Services
                 }
 
                 Jwt = jwt as string;
-                //.SendRequestAsync("", HttpRequestType.Get, Jwt))
+
                 var user = (await (App.Address + "Login/GetUser.ByToken")
                     .SendRequestAsync("", HttpRequestType.Get, Jwt))
                     .DeserializeJson<User>();
@@ -106,7 +106,10 @@ namespace EduMessage.Services
 
             var user = builder.Build();
             User = user;
-            var result = (await (App.Address + "Login/Register").SendRequestAsync(User, HttpRequestType.Post)).DeserializeJson<KeyValuePair<int, string>>();
+
+            var result = (await (App.Address + "Login/Register")
+                .SendRequestAsync(User, HttpRequestType.Post))
+                .DeserializeJson<KeyValuePair<int, string>>();
 
             var savedUserId = result.Key;
             var token = result.Value;

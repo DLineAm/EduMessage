@@ -113,8 +113,6 @@ namespace EduMessage.ViewModels
 
             try
             {
-                new MailAddress(Email);
-
                 var responseString = await (App.Address + $"Login/Send.email={Email}")
                     .SendRequestAsync("", HttpRequestType.Get);
 
@@ -148,8 +146,7 @@ namespace EduMessage.ViewModels
             finally
             {
                 await SetLoaderVisibility(Visibility.Collapsed);
-            }
-            
+            }           
         }
 
         private async Task SetLoaderVisibility(Visibility visibility)

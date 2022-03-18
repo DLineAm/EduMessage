@@ -177,12 +177,30 @@ namespace EduMessage.ViewModels
 
             EventAggregator.Publish(new LoaderVisibilityChanged(Visibility.Visible, "Сохранение курса"));
 
-            Course course = _selectedCourse?.Course ?? new Course
+            Course course = new Course
             {
+                Id = _selectedCourse?.Course?.Id ?? 0,
                 Title = CourseTitle,
                 Description = CourseDescription,
-                IdSpecialityNavigation = _speciality,
-            };        
+                IdSpeciality = _speciality.Id,
+                IdSpecialityNavigation = _speciality
+            };
+
+            //if (_selectedCourse != null)
+            //{
+            //    course = _selectedCourse.Course;
+            //    course.Title = CourseTitle;
+            //    course.Description = CourseDescription;
+            //}
+            //else
+            //{
+            //    course = new Course
+            //    {
+            //        Title = CourseTitle,
+            //        Description = CourseDescription,
+            //        IdSpecialityNavigation = _speciality,
+            //    };
+            //}     
 
             List<CourseAttachment> coursesList = Files.Select(s => new CourseAttachment
             {

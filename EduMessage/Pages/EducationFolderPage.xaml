@@ -38,7 +38,7 @@
                                        TextWrapping="Wrap"
                                        TextAlignment="Center"
                                        TextTrimming="WordEllipsis"
-                                       Height="70">
+                                       Height="80">
                                 <Paragraph >
                                     <Run Text="{Binding Code}"/>
                                 </Paragraph>
