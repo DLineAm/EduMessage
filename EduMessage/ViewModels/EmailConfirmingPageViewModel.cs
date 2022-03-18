@@ -19,6 +19,7 @@ namespace EduMessage.ViewModels
         [Property] private string _code;
         [Property] private string _errorText;
         [Property] private bool _isLoginEnabled = true;
+
         public string Email; 
 
         [Command(CanExecuteMethod = nameof(CanConfirm))]
@@ -27,7 +28,7 @@ namespace EduMessage.ViewModels
             try
             {
                 await SetLoaderVisibility(Visibility.Visible);
-                var responseString = await (App.Address + $"Login/Validate.email={Email}.emailCode={Code}")
+                var responseString = await (App.Address + $"Login/ValidateCode.email={Email}.emailCode={Code}")
                     .SendRequestAsync("", HttpRequestType.Get);
 
                 if (string.IsNullOrEmpty(responseString))

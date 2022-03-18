@@ -198,7 +198,7 @@
 
         <ContentDialog Grid.ColumnSpan="2"
                        Title="Добавление курса"
-                       PrimaryButtonText="Добавить"
+                       PrimaryButtonText="Применить"
                        PrimaryButtonCommand="{Binding ApplyCommand}"
                        SecondaryButtonText="Отмена"
                        x:Name="CourseAddDialog">
