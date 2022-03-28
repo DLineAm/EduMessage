@@ -44,7 +44,8 @@
                         VerticalAlignment="Top"
                         Margin="12,-10,0,0">
                             <TextBlock FontSize="40"
-                           Style="{StaticResource 26TitleTextBlock}">
+                           Style="{StaticResource 26TitleTextBlock}"
+                           TextTrimming="CharacterEllipsis">
                         <Run Text="{Binding FullName}"/>
                         <Run Text="("/>
                         <Run Text="{Binding User.Login}"/>
@@ -74,7 +75,7 @@
                                 <TextBlock Text="Login, E-mail, пароль"
                                    Margin="12,0,0,0"
                                    Foreground="Gray"
-                                   />
+                                   TextTrimming="CharacterEllipsis"/>
                             </StackPanel>
                         </controls:Expander.Header>
                         <controls:Expander.Content>
@@ -116,15 +117,23 @@
                     <controls:Expander HorizontalAlignment="Stretch"
                                Margin="0,12,0,0">
                         <controls:Expander.Header>
-                            <StackPanel Orientation="Horizontal">
-                                <SymbolIcon Symbol="Admin"/>
-                                <TextBlock Margin="12,0,0,0"
-                                   Text="Личная информация"/>
-                                <TextBlock Text="Номер телефона, адрес"
+                            <Grid HorizontalAlignment="Left">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"></ColumnDefinition>
+                                    <ColumnDefinition></ColumnDefinition>
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Orientation="Horizontal">
+                                    <SymbolIcon Symbol="Admin"/>
+                                    <TextBlock Margin="12,0,0,0"
+                                               Text="Личная информация"/>
+                                </StackPanel>
+                                
+                                <TextBlock Grid.Column="1"
+                                    Text="Номер телефона, адрес"
                                    Margin="12,0,0,0"
                                    Foreground="Gray"
-                                   />
-                            </StackPanel>
+                                   TextTrimming="CharacterEllipsis"/>
+                            </Grid>
                         </controls:Expander.Header>
                         <controls:Expander.Content>
                             <StackPanel>
@@ -248,7 +257,8 @@
                         <FlyoutBase.AttachedFlyout>
                             <Flyout>
                                 <StackPanel>
-                                    <TextBlock Text="Вы действительно хотите удалить аккаунт?"/>
+                                    <TextBlock Text="Вы действительно хотите удалить аккаунт?"
+                                               Style="{ThemeResource BaseTextBlockStyle}"/>
                                     <Button Content="Да, удалить"
                                             Margin="0,12,0,0"/>
                                 </StackPanel>

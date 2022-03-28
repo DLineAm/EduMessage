@@ -1,4 +1,5 @@
-﻿using EduMessage.ViewModels;
+﻿using EduMessage.Services;
+using EduMessage.ViewModels;
 
 using MvvmGen.Events;
 
@@ -34,6 +35,13 @@ namespace EduMessage.Pages
         {
             this.InitializeComponent();
             ViewModel = App.Container.ResolveConstructor<EducationListPageViewModel>();
+
+            ContentFrame.Navigate(typeof(ItemsPickPage));
+
+            var page = ContentFrame.Content as ItemsPickPage;
+
+            var eventAggregator = ControlContainer.Get().Resolve<IEventAggregator>();
+            page.Initialize(eventAggregator);
         }
 
         protected override async void OnNavigatedTo(NavigationEventArgs e)
@@ -50,11 +58,6 @@ namespace EduMessage.Pages
 
         public EducationListPageViewModel ViewModel{ get; }
 
-        private async void HyperlinkButton_Click(object sender, RoutedEventArgs e)
-        {
-            await CourseAddDialog.ShowAsync();
-        }
-
         public async void OnEvent(CourseDialogStartShowing eventData)
         {
             if (!_isPageLoaded)
@@ -66,7 +69,15 @@ namespace EduMessage.Pages
 
             CourseAddDialog.Title = parameter ? "Добавление курса" : "Изменение курса";
 
-            await CourseAddDialog.ShowAsync();
+            try
+            {
+                await CourseAddDialog.ShowAsync();
+            }
+            catch (Exception e)
+            {
+
+            }
+
         }
 
         private void Page_Loaded(object sender, RoutedEventArgs e)

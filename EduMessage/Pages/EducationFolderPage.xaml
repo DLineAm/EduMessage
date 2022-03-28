@@ -8,7 +8,7 @@
     mc:Ignorable="d"
     DataContextChanged="Page_DataContextChanged">
 
-    <Grid>
+    <Grid Margin="-48,0">
         <Grid.RowDefinitions>
             <RowDefinition/>
             <RowDefinition Height="auto"/>
@@ -17,7 +17,8 @@
                   SelectedItem="{Binding Speciality, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
             <ListView.ItemsPanel>
                 <ItemsPanelTemplate>
-                    <ItemsWrapGrid Orientation="Horizontal"/>
+                    <ItemsWrapGrid Orientation="Horizontal"
+                                   Margin="48,0"/>
                 </ItemsPanelTemplate>
             </ListView.ItemsPanel>
 

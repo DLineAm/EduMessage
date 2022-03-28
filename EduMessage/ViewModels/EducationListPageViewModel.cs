@@ -1,4 +1,5 @@
-﻿using EduMessage.Services;
+﻿using EduMessage.Pages;
+using EduMessage.Services;
 
 using Microsoft.Toolkit.Uwp.Helpers;
 
@@ -22,7 +23,7 @@ namespace EduMessage.ViewModels
 {
     [ViewModel]
     [Inject(typeof(IEventAggregator))]
-    public partial class EducationListPageViewModel
+    public partial class EducationListPageViewModel : IEventSubscriber<DropCompletedEvent>
     {
         [Property] private ObservableCollection<CourseFiles> _courses = new();
         [Property] private ObservableCollection<EducationFile> _files = new();
@@ -40,7 +41,7 @@ namespace EduMessage.ViewModels
 
         public async Task Initialize(Speciality speciality)
         {
-            App.DropCompleted += App_DropCompleted;
+            //App.DropCompleted += App_DropCompleted;
             _speciality = speciality;
             var role = App.Account.User.IdRole;
 
@@ -74,7 +75,6 @@ namespace EduMessage.ViewModels
             foreach (var courseAttachmanent in courseAttachments)
             {
                 var course = courseAttachmanent.IdCourseNavigation;
-                var convertedAttachments = new List<EducationFile>();
                 if (savedCourseId != -1
                     && savedCourseId == course.Id)
                 {
@@ -82,28 +82,7 @@ namespace EduMessage.ViewModels
                 }
 
                 var sortedList = courseAttachments.Where(c => c.IdCourse == course.Id).ToList();
-                var attachments = sortedList.Select(f => f.IdAttachmanentNavigation).ToList();
-
-                foreach (var attachment in attachments)
-                {
-
-                    if (attachment == null)
-                    {
-                        continue;
-                    }
-
-                    var courseId = sortedList.FirstOrDefault(a => a.IdAttachmanentNavigation.Id == attachment.Id);
-
-                    convertedAttachments.Add(new EducationFile
-                    {
-                        Id = courseId.Id,
-                        AttachmentId = attachment.Id,
-                        Name = attachment.Title,
-                        Type = "." + attachment.Title.Split('.').Last(),
-                        Data = attachment.Data,
-                        ImagePath = await GetImage("." + attachment.Title.Split('.').Last(), attachment.Data)
-                    });
-                }
+                List<EducationFile> convertedAttachments = await CreateEducationFileList(sortedList);
 
                 var filesPair = convertedAttachments.Select(f => new KeyValuePair<EducationFile, int>(f, f.Id));
 
@@ -123,6 +102,35 @@ namespace EduMessage.ViewModels
             return result;
         }
 
+        private async Task<List<EducationFile>> CreateEducationFileList(List<CourseAttachment> sortedList)
+        {
+            var convertedAttachments = new List<EducationFile>();
+
+            var attachments = sortedList.Select(f => f.IdAttachmanentNavigation).ToList();
+            foreach (var attachment in attachments)
+            {
+
+                if (attachment == null)
+                {
+                    continue;
+                }
+
+                var courseId = sortedList.FirstOrDefault(a => a.IdAttachmanentNavigation.Id == attachment.Id);
+
+                convertedAttachments.Add(new EducationFile
+                {
+                    Id = courseId.Id,
+                    AttachmentId = attachment.Id,
+                    Name = attachment.Title,
+                    Type = "." + attachment.Title.Split('.').Last(),
+                    Data = attachment.Data,
+                    ImagePath = await GetImage("." + attachment.Title.Split('.').Last(), attachment.Data)
+                });
+            }
+
+            return convertedAttachments;
+        }
+
         private void UpdateTeacherInputVisibility(Visibility visibility)
         {
             TeacherInputVisibility = visibility;
@@ -130,7 +138,6 @@ namespace EduMessage.ViewModels
                 ? new GridLength(80, GridUnitType.Pixel)
                 : new GridLength(0, GridUnitType.Pixel);
         }
-
 
         private void UpdateNoResultsFoundVisibility(Visibility visibility)
         {
@@ -186,22 +193,6 @@ namespace EduMessage.ViewModels
                 IdSpecialityNavigation = _speciality
             };
 
-            //if (_selectedCourse != null)
-            //{
-            //    course = _selectedCourse.Course;
-            //    course.Title = CourseTitle;
-            //    course.Description = CourseDescription;
-            //}
-            //else
-            //{
-            //    course = new Course
-            //    {
-            //        Title = CourseTitle,
-            //        Description = CourseDescription,
-            //        IdSpecialityNavigation = _speciality,
-            //    };
-            //}     
-
             List<CourseAttachment> coursesList = Files.Select(s => new CourseAttachment
             {
                 IdAttachmanentNavigation = new Attachment
@@ -218,6 +209,7 @@ namespace EduMessage.ViewModels
             }).ToList();
 
             List<Attachment> attachments = coursesList.Select(c => c.IdAttachmanentNavigation).ToList();
+
             try
             {
                 var response = new KeyValuePair<int, List<int>>();
@@ -249,21 +241,13 @@ namespace EduMessage.ViewModels
 
                     return;
                 }
+
                 if (coursesList.Count == 0)
                 {
                     coursesList.Add( new CourseAttachment
                     {
                         IdCourseNavigation = course
                     });
-                    //var courseAttachment = new CourseAttachment
-                    //{
-                    //    IdCourseNavigation = course
-                    //};
-                    //var pairResponse = (await (App.Address + "Education/Courses")
-                    //        .SendRequestAsync(courseAttachment, HttpRequestType.Post, App.Account.Jwt))
-                    //    .DeserializeJson<KeyValuePair<int, int>>();
-
-                    //response = new KeyValuePair<int, List<int>>(pairResponse.Key, new List<int>{pairResponse.Value});
                 }
 
                     response = (await (App.Address + "Education/Courses.FromList")
@@ -408,6 +392,7 @@ namespace EduMessage.ViewModels
                     {
                         continue;
                     }
+
                     var buffer = await FileIO.ReadBufferAsync(file);
                     var data = buffer.ToArray();
                     await Task.Delay(TimeSpan.FromMilliseconds(1));
@@ -474,6 +459,27 @@ namespace EduMessage.ViewModels
                 {
 
                 }
+
+            }
+        }
+
+        public async void OnEvent(DropCompletedEvent eventData)
+        {
+            var items = eventData.Items;
+
+            try
+            {
+                var files = await ReadFiles(items);
+
+                foreach (var file in files)
+                {
+                    Files.Add(file);
+                }
+
+                UpdateAccessibility();
+            }
+            catch (Exception e)
+            {
 
             }
         }

@@ -39,20 +39,12 @@ namespace EduMessage.Pages
 
             ContentFrame.Navigate(typeof(BaseLoginPage), null, new DrillInNavigationTransitionInfo());
 
-            //App.ColorChanged += App_ColorChanged;
         }
-
-        //private void App_ColorChanged(Color color)
-        //{
-        //    LoaderColor = color;
-        //    Bindings.Update();
-        //}
 
         //TODO: Визибилиту лоадер, сохранение jwt токена
 
         public Visibility LoaderVisibility { get; set; }
 
-        //public Color LoaderColor { get; set; } = App.ColorManager.GetAccentColor();
 
         public LoginPageViewModel ViewModel { get; private set; }
 

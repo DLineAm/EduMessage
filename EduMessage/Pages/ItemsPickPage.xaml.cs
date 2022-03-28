@@ -1,5 +1,7 @@
 ﻿using EduMessage.Resources;
 
+using MvvmGen.Events;
+
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -27,12 +29,18 @@ namespace EduMessage.Pages
     /// </summary>
     public sealed partial class ItemsPickPage : Page
     {
+        private IEventAggregator _eventAggregator;
         public SolidColorBrush RectColor { get; private set; }
         public ItemsPickPage()
         {
             this.InitializeComponent();
 
             ChangeRectColor(false);
+        }
+
+        public void Initialize(IEventAggregator eventAggregator)
+        {
+            _eventAggregator = eventAggregator;
         }
 
         private void Rectangle_DragOver(object sender, DragEventArgs e)
@@ -47,7 +55,9 @@ namespace EduMessage.Pages
 
             IReadOnlyList<IStorageItem> items = await e.DataView.GetStorageItemsAsync();
 
-            App.InvokeDropCompleted(items);
+            _eventAggregator.Publish(new DropCompletedEvent(items));
+
+            //!!!App.InvokeDropCompleted(items);
 
             //var files = items.Select(i => i as StorageFile);
 
@@ -75,5 +85,9 @@ namespace EduMessage.Pages
             RectColor = Application.Current.Resources["AccentTextFillColorDisabledBrush"] as SolidColorBrush;
             Bindings.Update();
         }
+
+
     }
+
+    public record DropCompletedEvent(IReadOnlyList<IStorageItem> Items);
 }

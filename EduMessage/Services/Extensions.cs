@@ -21,6 +21,59 @@ namespace EduMessage.Services
             , string token = ""
             , bool passCertificateValidation = true)
         {
+            using HttpClient client = CreateClient(token, passCertificateValidation);
+
+            HttpResponseMessage response = null;
+            StringContent httpContent = null;
+
+            if (value != null)
+            {
+                var json = JsonConvert.SerializeObject(value);
+                httpContent = new StringContent(json, Encoding.UTF8, "application/json");
+            }
+
+            if (requestType != HttpRequestType.Get && requestType != HttpRequestType.Delete && httpContent == null)
+            {
+                throw new NullReferenceException(nameof(value));
+            }
+
+            response = await Send(address, requestType, client, httpContent);
+
+            response.EnsureSuccessStatusCode();
+            var result = await response.Content.ReadAsStringAsync();
+
+            return result;
+        }
+
+        private static async Task<HttpResponseMessage> Send(string address
+            , HttpRequestType requestType
+            , HttpClient client
+            , StringContent httpContent)
+        {
+            HttpResponseMessage response;
+            switch (requestType)
+            {
+                case HttpRequestType.Get:
+                    response = client.GetAsync(address).Result;
+                    break;
+                case HttpRequestType.Post:
+                    response = await client.PostAsync(address, httpContent);
+                    break;
+                case HttpRequestType.Put:
+                    response = await client.PutAsync(address, httpContent);
+                    break;
+                case HttpRequestType.Delete:
+                    response = await client.DeleteAsync(address);
+                    break;
+                default:
+                    throw new ArgumentException("Unknown HttpRequestType value");
+            }
+
+            return response;
+        }
+
+        private static HttpClient CreateClient(string token, bool passCertificateValidation)
+        {
             HttpClient client;
             if (passCertificateValidation)
             {
@@ -37,43 +90,8 @@ namespace EduMessage.Services
                 client.DefaultRequestHeaders.Authorization =
                new System.Net.Http.Headers.AuthenticationHeaderValue("bearer", token);
             }
-            
-            HttpResponseMessage response = null;
-            StringContent httpContent = null;
-            if (value != null)
-            {
-                var json = JsonConvert.SerializeObject(value);
-                httpContent = new StringContent(json, Encoding.UTF8, "application/json");
-            }
 
-            if (requestType != HttpRequestType.Get && requestType != HttpRequestType.Delete && httpContent == null)
-            {
-                throw new NullReferenceException(nameof(value));
-            }
-
-            switch (requestType)
-            {
-                case HttpRequestType.Get:
-                    response = client.GetAsync(address).Result;
-                    break;
-                case HttpRequestType.Post:
-                    response = await client.PostAsync(address, httpContent);
-                    break;
-                case HttpRequestType.Put:
-                    response = await client.PutAsync(address, httpContent);
-                    break;
-                case HttpRequestType.Delete:
-                    response = await client.DeleteAsync(address);
-                    break;
-                default:
-                    throw new Exception("Unknown HttpRequestType value");
-            }
-
-
-            response.EnsureSuccessStatusCode();
-            var result = await response.Content.ReadAsStringAsync();
-
-            return result;
+            return client;
         }
 
         public static T DeserializeJson<T>(this string value)

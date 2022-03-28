@@ -120,9 +120,7 @@ namespace EduMessage
                 }
                 // Обеспечение активности текущего окна
                 Window.Current.Activate();
-            }
-
-            //await Account.TryLoadTokenFromJson();         
+            }       
 
             var uiSettings = new Windows.UI.ViewManagement.UISettings();
             var color = uiSettings.GetColorValue(Windows.UI.ViewManagement.UIColorType.Accent);

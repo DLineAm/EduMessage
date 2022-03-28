@@ -16,6 +16,7 @@ using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
+
 using NavigationView = Microsoft.UI.Xaml.Controls.NavigationView;
 using NavigationViewDisplayModeChangedEventArgs = Microsoft.UI.Xaml.Controls.NavigationViewDisplayModeChangedEventArgs;
 using NavigationViewItemInvokedEventArgs = Microsoft.UI.Xaml.Controls.NavigationViewItemInvokedEventArgs;
@@ -49,22 +50,7 @@ namespace EduMessage.Pages
         private void NavigationViewControl_ItemInvoked(NavigationView sender, NavigationViewItemInvokedEventArgs args)
         {
             var invokedItem = args.InvokedItem;
-
-            var item = string.Empty;
-
-            if (invokedItem is StackPanel panel)
-            {
-                var dataContext = panel.DataContext;
-
-                if (dataContext is MainMenuViewModel menuModel)
-                {
-                    item = menuModel.AccountName;
-                }
-            }
-            else
-            {
-                item = (string)invokedItem;
-            }
+            string item = UnboxItem(invokedItem);
 
             if (item == App.Account.User.FirstName + " " + App.Account.User.LastName)
             {
@@ -82,6 +68,27 @@ namespace EduMessage.Pages
                 default:
                     break;
             }
+        }
+
+        private static string UnboxItem(object invokedItem)
+        {
+            var item = string.Empty;
+
+            if (invokedItem is StackPanel panel)
+            {
+                var dataContext = panel.DataContext;
+
+                if (dataContext is MainMenuViewModel menuModel)
+                {
+                    item = menuModel.AccountName;
+                }
+
+                return item;
+            }
+
+            item = (string)invokedItem;
+            return item;
+
         }
 
         private void NavigationViewControl_DisplayModeChanged(NavigationView sender, NavigationViewDisplayModeChangedEventArgs args)

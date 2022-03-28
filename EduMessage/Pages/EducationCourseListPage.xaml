@@ -68,7 +68,8 @@
                                            HorizontalContentAlignment="Stretch">
                             <controls:Expander.Header>
                                 <Grid Height="50">
-                                    <TextBlock VerticalAlignment="Center">
+                                    <TextBlock VerticalAlignment="Center"
+                                               TextTrimming="CharacterEllipsis">
                                     <Run Text="Тема "/>
                                     <Run Text="{Binding Course.Id}"/>
                                     <Run Text=". "/>
@@ -277,11 +278,17 @@
                                   Command="{Binding CleanFilesListCommand}">
 
                     </AppBarButton>
-                    <local:ItemsPickPage Height="100"
+                    <Frame x:Name="ContentFrame"
+                           Height="100"
+                           Width="400"
+                           Margin="0,12,0,0"
+                           Grid.Row="1"
+                           Grid.Column="1"/>
+                    <!--<local:ItemsPickPage Height="100"
                                      Width="400"
                                      Margin="0,12,0,0"
                                          Grid.Row="1"
-                                         Grid.Column="1"/>
+                                         Grid.Column="1"/>-->
                 </Grid>
                 <StackPanel Orientation="Horizontal"
                             Margin="0,12">
