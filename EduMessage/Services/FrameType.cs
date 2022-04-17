@@ -2,6 +2,7 @@
 {
     public enum FrameType
     {
-        ContentFrame, MainFrame, LoginFrame, EducationFrame
+        ContentFrame, MainFrame, LoginFrame, EducationFrame,
+        MenuFrame
     }
 }

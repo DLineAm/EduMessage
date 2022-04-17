@@ -37,14 +37,13 @@ namespace EduMessage.ViewModels
 
             if (User.Image != null)
             {
-                ProfilePicture = await User.Image.CreateBitmap();
+                ProfilePicture = await User.Image.CreateBitmap(256);
             }
 
             StudentInfoVisibility = User.IdRole == 2 ? Visibility.Collapsed : Visibility.Visible;
         }
 
-        [Command]
-        private async void PickImage()
+        private async Task<StorageFile> PickSingleImageAsync()
         {
             var picker = new FileOpenPicker();
             picker.ViewMode = PickerViewMode.Thumbnail;
@@ -53,7 +52,15 @@ namespace EduMessage.ViewModels
             picker.FileTypeFilter.Add(".png");
             picker.FileTypeFilter.Add(".jpeg");
 
-            StorageFile pickedFile = await picker.PickSingleFileAsync();
+            var file = await picker.PickSingleFileAsync();
+
+            return file;
+        }
+
+        [Command]
+        private async void PickImage()
+        {
+            StorageFile pickedFile = await PickSingleImageAsync();
 
             if (pickedFile != null)
             {

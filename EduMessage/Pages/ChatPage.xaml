@@ -1,0 +1,201 @@
+﻿<Page
+    x:Class="EduMessage.Pages.ChatPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:EduMessage.Pages"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:utils="using:EduMessage.Utils"
+    xmlns:controls="using:Microsoft.UI.Xaml.Controls"
+    xmlns:animatedVisuals="using:AnimatedVisuals"
+    mc:Ignorable="d"
+    NavigationCacheMode="Required">
+
+    <Page.Resources>
+        <utils:ByteToImageConverter x:Key="ImageConverter"></utils:ByteToImageConverter>
+    </Page.Resources>
+
+    <Grid Margin="48,12">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition></RowDefinition>
+            <RowDefinition Height="Auto"></RowDefinition>
+        </Grid.RowDefinitions>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"></ColumnDefinition>
+                <ColumnDefinition></ColumnDefinition>
+                <ColumnDefinition Width="Auto"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+
+            <Grid>
+                <PersonPicture ProfilePicture="{Binding User.Image, Converter={StaticResource ImageConverter}}"
+                               Height="48"
+                               Width="48"
+                               Margin="12,0"></PersonPicture>
+                <controls:InfoBadge
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Bottom"
+                    Height="10"
+                    Width="10"
+                    Margin="0,0,15,10"
+                    BorderBrush="Black"
+                    BorderThickness="1"></controls:InfoBadge>
+            </Grid>
+            
+
+            <StackPanel Grid.Column="1">
+                <TextBlock FontSize="26"
+                           FontWeight="SemiBold">
+                    <Run Text="{Binding User.FirstName}"></Run>
+                    <Run Text="{Binding User.LastName}"></Run>
+                </TextBlock>
+
+                <TextBlock Text="Онлайн"></TextBlock>
+            </StackPanel>
+
+            <controls:TeachingTip Grid.Column="2"
+                                  Target="{x:Bind ActionsButton}"
+                                  Title="Нужные действия под рукой"
+                                  IsOpen="True"
+                                  Subtitle="Основные действия с чатом находятся в этой кнопке">
+                <controls:TeachingTip.IconSource>
+                    <controls:SymbolIconSource Symbol="Like"></controls:SymbolIconSource>
+                </controls:TeachingTip.IconSource>
+            </controls:TeachingTip>
+
+            <AppBarButton Grid.Column="2"
+                          Icon="List"
+                          IsCompact="True"
+                          x:Name="ActionsButton">
+                <AppBarButton.Flyout>
+                    <MenuFlyout>
+                        <MenuFlyoutItem Text="Вложения">
+                            <MenuFlyoutItem.Icon>
+                                <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE9F9;"/>
+                            </MenuFlyoutItem.Icon>
+                        </MenuFlyoutItem>
+                        <MenuFlyoutItem Icon="Contact"
+                                        Text="Профиль"></MenuFlyoutItem>
+                    </MenuFlyout>
+                </AppBarButton.Flyout>
+            </AppBarButton>
+        </Grid>
+
+        <StackPanel Grid.Row="1"
+                    VerticalAlignment="Center"
+                    Visibility="{Binding NoResultsVisualVisibility}">
+            <controls:AnimatedVisualPlayer Height="130">
+                <animatedVisuals:Fire 
+                />
+            </controls:AnimatedVisualPlayer>
+            <TextBlock Text="Чтобы начать диалог, напишите что-нибудь"
+                       TextAlignment="Center"
+                       TextWrapping="Wrap"
+                       Width="190"
+                       Foreground="Gray"></TextBlock>
+        </StackPanel>
+
+        <utils:ChatView IncrementalLoadingThreshold="2"
+                        SelectionMode="None"
+                        Grid.Row="1">
+            <ListView.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <ItemsStackPanel ItemsUpdatingScrollMode="KeepLastItemInView"
+                                     VerticalAlignment="Bottom"></ItemsStackPanel>
+                </ItemsPanelTemplate>
+            </ListView.ItemsPanel>
+
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <Grid Margin="10">
+                        <Grid.RowDefinitions>
+                            <RowDefinition></RowDefinition>
+                            <RowDefinition Height="Auto"></RowDefinition>
+                            <RowDefinition></RowDefinition>
+                        </Grid.RowDefinitions>
+
+                        <Polygon Points="0,0 0,18, 18,18"
+                                 Fill="{StaticResource ReceivedMessageBackground}"
+                                 Visibility="Visible"
+                                 Margin="10,0,10,0"></Polygon>
+
+                        <Border Grid.Row="1"
+                                Background="{StaticResource ReceivedMessageBackground}"
+                                Visibility="Visible"
+                                CornerRadius="10"></Border>
+
+                        <Border Grid.Row="1"
+                              Background="{StaticResource SentMessageBackground}"
+                              Visibility="Visible"
+                              CornerRadius="10"></Border>
+
+                        <Grid Grid.Row="1">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"></RowDefinition>
+                                <RowDefinition Height="Auto"></RowDefinition>
+                            </Grid.RowDefinitions>
+
+                            <TextBlock Text="{Binding }"
+                                       TextWrapping="Wrap"
+                                       MinWidth="300"
+                                       MaxWidth="400"
+                                       FontSize="20"
+                                       Padding="10,10,5,0"></TextBlock>
+
+                            <TextBlock Text="02.02.2002"
+                                       Grid.Row="1"
+                                       FontSize="12"
+                                       TextWrapping="Wrap"
+                                       Opacity="0.7"
+                                       Padding="10"></TextBlock>
+                        </Grid>
+
+                        <Polygon Grid.Row="2"
+                                 HorizontalAlignment="Right"
+                                 Points="0,0 18,0 18,18"
+                                 Fill="{StaticResource SentMessageBackground}"
+                                 Visibility="Visible"
+                                 Margin="0,0,10,0"></Polygon>
+                    </Grid>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </utils:ChatView>
+
+        <Grid Grid.Row="2">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
+            </Grid.RowDefinitions>
+
+            <Grid Grid.Row="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition></ColumnDefinition>
+                    <ColumnDefinition Width="Auto"></ColumnDefinition>
+                    <ColumnDefinition Width="Auto"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <TextBox TextWrapping="Wrap"
+                         PlaceholderText="Напишите что-нибудь..."></TextBox>
+                <Button Grid.Column="2"
+                        Height="40"
+                        ToolTipService.ToolTip="Прикрепить">
+                    <Button.Content>
+                        <SymbolIcon Symbol="Attach"></SymbolIcon>
+                    </Button.Content>
+                </Button>
+                <Button Grid.Column="1"
+                        Margin="12,0"
+                        ToolTipService.ToolTip="Отправить"
+                        Height="40"
+                        Foreground="White">
+                    <Button.Background>
+                        <SolidColorBrush Color="{StaticResource SystemAccentColor}"></SolidColorBrush>
+                    </Button.Background>
+                    <Button.Content>
+                        <SymbolIcon Symbol="Send"></SymbolIcon>
+                    </Button.Content>
+                </Button>
+            </Grid>
+        </Grid>
+    </Grid>
+</Page>

@@ -53,7 +53,7 @@ namespace EduMessage.ViewModels
         {
             if (imageBytes != null)
             {
-                var bitmap = await imageBytes.CreateBitmap();
+                var bitmap = await imageBytes.CreateBitmap(36);
                 AccountImage = bitmap;
             }
         }

@@ -12,8 +12,13 @@
   xmlns:Core="using:Microsoft.Xaml.Interactions.Core" xmlns:viewmodels="using:EduMessage.ViewModels"
     xmlns:animatedvisuals="using:AnimatedVisuals"
     xmlns:lottie="using:Microsoft.Toolkit.Uwp.UI.Lottie"
+    xmlns:services="using:EduMessage.Services"
     x:Name="window"
     Loaded="Page_Loaded">
+    <Page.Resources>
+        <services:BoolToVisibilityConverter x:Key="TextBoxVisibilityConverter"/>
+        <services:TextBlockVisibilityConverter x:Key="TextBlockVisibilityConverter"/>
+    </Page.Resources>
 
     <Grid Margin="-12,0">
         <Grid.ColumnDefinitions>
@@ -63,18 +68,32 @@
                             <ColumnDefinition Width="{Binding DataContext.GridWidth, ElementName=window}"/>
                         </Grid.ColumnDefinitions>
                         <controls:Expander HorizontalAlignment="Stretch"
+                                           IsExpanded="{Binding IsAddMode}"
                                            VerticalAlignment="Stretch"
                                            Margin="0,5,0,0"
                                            HorizontalContentAlignment="Stretch">
                             <controls:Expander.Header>
                                 <Grid Height="50">
-                                    <TextBlock VerticalAlignment="Center"
-                                               TextTrimming="CharacterEllipsis">
-                                    <Run Text="Тема "/>
-                                    <Run Text="{Binding Course.Id}"/>
-                                    <Run Text=". "/>
-                                    <Run Text="{Binding Course.Title}"/>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"></ColumnDefinition>
+                                        <ColumnDefinition></ColumnDefinition>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock VerticalAlignment="Center">
+                                        <Run Text="Тема "/>
+                                        <Run Text="{Binding Course.Id}"/>
+                                        <Run Text=". "/>
                                     </TextBlock>
+                                    <TextBlock VerticalAlignment="Center"
+                                               TextTrimming="CharacterEllipsis"
+                                               Grid.Column="1"
+                                               Visibility="{Binding IsAddMode, Converter={StaticResource TextBlockVisibilityConverter}}"
+                                               Text="{Binding Course.Title}"
+                                               Margin="12,0,0,0"/>
+                                    <TextBox Text="{Binding Course.Title}"
+                                             VerticalAlignment="Center"
+                                             Margin="12,0,0,0"
+                                             Grid.Column="1"
+                                             Visibility="{Binding IsAddMode, Converter={StaticResource TextBoxVisibilityConverter}}"></TextBox>
                                 </Grid>
                             </controls:Expander.Header>
                             <controls:Expander.Content>
@@ -85,6 +104,11 @@
                                     </Grid.RowDefinitions>
                                     <TextBlock Text="{Binding Course.Description}"
                                                TextWrapping="Wrap"/>
+
+                                    <TextBox Text="{Binding Course.Description, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                             Height="150"
+                                             TextWrapping="Wrap"
+                                             Visibility="{Binding IsAddMode, Converter={StaticResource TextBoxVisibilityConverter}}"></TextBox>
 
                                     <Grid Grid.Row="1">
                                         <Grid.ColumnDefinitions>
@@ -125,21 +149,40 @@
                                                     </DataTemplate>
                                                 </ListView.ItemTemplate>
                                             </ListView>
+                                            <local:ItemsPickPage Visibility="{Binding IsAddMode, Converter={StaticResource TextBoxVisibilityConverter}}"></local:ItemsPickPage>
                                         </StackPanel>
 
                                         <StackPanel Grid.Column="1"
-                                                    Orientation="Horizontal"
-                                                    VerticalAlignment="Bottom">
-                                            <AppBarButton Label="Изменить"
-                                                          Icon="Edit"
-                                                          HorizontalAlignment="Right"
-                                                          Command="{Binding DataContext.InitializeChangeCourseDialogCommand, ElementName=window}"
-                                                          CommandParameter="{Binding }"
-                                                          Visibility="{Binding DataContext.TeacherInputVisibility, ElementName=window}"/>
-                                            <AppBarButton Label="Отправить"
-                                                          Icon="Share"
-                                                          HorizontalAlignment="Right"/>
+                                            Orientation="Horizontal"
+                                            VerticalAlignment="Bottom"
+                                            Margin="12,0">
+                                            <StackPanel Orientation="Horizontal"
+                                                        VerticalAlignment="Bottom"
+                                                        Visibility="{Binding IsAddMode, Converter={StaticResource TextBlockVisibilityConverter}}">
+                                                <AppBarButton Label="Изменить"
+                                                              Icon="Edit"
+                                                              HorizontalAlignment="Right"
+                                                              Command="{Binding DataContext.InitializeChangeCourseDialogCommand, ElementName=window}"
+                                                              CommandParameter="{Binding }"
+                                                              Visibility="{Binding DataContext.TeacherInputVisibility, ElementName=window}"/>
+                                                <AppBarButton Label="Отправить"
+                                                              Icon="Share"
+                                                              HorizontalAlignment="Right"/>
+                                            </StackPanel>
+
+                                            <StackPanel Orientation="Horizontal"
+                                                        Visibility="{Binding IsAddMode, Converter={StaticResource TextBoxVisibilityConverter}}">
+                                                <AppBarButton Icon="Folder"
+                                                              Label="Добавить файлы"></AppBarButton>
+                                                <AppBarButton Icon="Cancel"
+                                                              Label="Отмена"></AppBarButton>
+                                                <AppBarButton Icon="Accept"
+                                                              Label="Принять"></AppBarButton>
+                                                
+                                            </StackPanel>
+                                           
                                         </StackPanel>
+                                        
                                     </Grid>
 
                                 </Grid>
@@ -200,7 +243,10 @@
         <ContentDialog Grid.ColumnSpan="2"
                        Title="Добавление курса"
                        PrimaryButtonText="Применить"
+                       Closing="CourseAddDialog_OnClosing"
                        PrimaryButtonCommand="{Binding ApplyCommand}"
+                       PrimaryButtonClick="CourseAddDialog_OnPrimaryButtonClick"
+                       SecondaryButtonClick="CourseAddDialog_OnSecondaryButtonClick"
                        SecondaryButtonText="Отмена"
                        x:Name="CourseAddDialog">
             <StackPanel Margin="0,12,0,0">

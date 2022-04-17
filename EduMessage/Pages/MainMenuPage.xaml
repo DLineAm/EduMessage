@@ -6,7 +6,10 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:controls="using:Microsoft.UI.Xaml.Controls" xmlns:animatedVisuals="using:AnimatedVisuals"
-    mc:Ignorable="d">
+    xmlns:animatedVisuals1="using:Microsoft.UI.Xaml.Controls.AnimatedVisuals"
+    xmlns:ui="using:Microsoft.Toolkit.Uwp.UI"
+    mc:Ignorable="d"
+    Loaded="MainMenuPage_OnLoaded">
 
     <Grid>
         <Grid.RowDefinitions>
@@ -40,7 +43,8 @@
                          DisplayModeChanged="NavigationViewControl_DisplayModeChanged"
                          IsBackButtonVisible="Collapsed"
                          ItemInvoked="NavigationViewControl_ItemInvoked"
-                         SelectionChanged="NavigationViewControl_SelectionChanged">
+                         SelectionChanged="NavigationViewControl_SelectionChanged"
+                                 IsSettingsVisible="False">
 
             <controls:NavigationView.PaneHeader>
                 <Grid>
@@ -53,7 +57,9 @@
                                VerticalAlignment="Center"
                                Margin="7,0,0,1"/>
                     <HyperlinkButton Grid.Column="1"
-                                     Margin="0,0,14,0">
+                                     Margin="0,0,14,0"
+                                     Click="ButtonBase_OnClick"
+                                     ToolTipService.ToolTip="Новый диалог">
                         <HyperlinkButton.Content>
                             <Grid>
                                 <SymbolIcon Symbol="Edit"/>
@@ -207,23 +213,6 @@
                 </Style>
             </controls:NavigationView.MenuItemContainerStyle>
 
-            <controls:NavigationView.MenuItems>
-                <controls:NavigationViewItem Content="Жмышенко">
-                    <controls:NavigationViewItem.Icon>
-                        <controls:ImageIcon Source="/Assets/zhma.jpg" />
-                    </controls:NavigationViewItem.Icon>
-                </controls:NavigationViewItem>
-                <controls:NavigationViewItem Content="Валерий">
-                    <controls:NavigationViewItem.Icon>
-                        <controls:ImageIcon Source="/Assets/zhma.jpg" />
-                    </controls:NavigationViewItem.Icon>
-                </controls:NavigationViewItem>
-                <controls:NavigationViewItem Content="Альбертович">
-                    <controls:NavigationViewItem.Icon>
-                        <controls:ImageIcon Source="/Assets/zhma.jpg" />
-                    </controls:NavigationViewItem.Icon>
-                </controls:NavigationViewItem>
-            </controls:NavigationView.MenuItems>
 
             <controls:NavigationView.FooterMenuItems>
                 <controls:NavigationViewItem Content="Обучение">
@@ -254,6 +243,22 @@
                         </StackPanel>
                     </controls:NavigationViewItem.Content>
                 </controls:NavigationViewItem>
+                <controls:NavigationViewItem Content="Параметры"
+                                             Tapped="SettingsNavigationViewItem_Tapped"
+                                             
+                                             controls:AnimatedIcon.State="Normal">
+                    <controls:NavigationViewItem.Icon>
+                        <controls:AnimatedIcon x:Name='SettingsIcon'>
+                            <controls:AnimatedIcon.Source>
+                                <animatedVisuals1:AnimatedSettingsVisualSource/>
+                            </controls:AnimatedIcon.Source>
+                            <controls:AnimatedIcon.FallbackIconSource>
+                                <controls:FontIconSource FontFamily="Segoe MDL2 Assets" Glyph="&#xE713;"/>
+                            </controls:AnimatedIcon.FallbackIconSource>
+                        </controls:AnimatedIcon>
+                    </controls:NavigationViewItem.Icon>
+                </controls:NavigationViewItem>
+
             </controls:NavigationView.FooterMenuItems>
 
             <controls:NavigationView.AutoSuggestBox>

@@ -11,22 +11,24 @@ namespace EduMessage.Services
         private readonly Frame _contentFrame = ((MainPage)((Frame)Window.Current.Content).Content).ContentFrame;
         public void Navigate(Type pageType, object parameter, NavigationTransitionInfo navigationTransitionInfo, FrameType type = FrameType.ContentFrame)
         {
-            if (type == FrameType.ContentFrame)
+            switch (type)
             {
-                _contentFrame.Navigate(pageType, parameter,
-                    navigationTransitionInfo);
-            }
-
-            if (type == FrameType.LoginFrame)
-            {
-                ((((Frame)Window.Current.Content).Content as MainPage).ContentFrame.Content as LoginPage).ContentFrame
-                    ?.Navigate(pageType, parameter, navigationTransitionInfo);
-            }
-
-            if (type == FrameType.EducationFrame)
-            {
-                (((((Frame)Window.Current.Content).Content as MainPage).ContentFrame.Content as MainMenuPage).NavFrame.Content as EducationMainPage).ContentFrame
-                    ?.Navigate(pageType, parameter, navigationTransitionInfo);
+                case FrameType.ContentFrame:
+                    _contentFrame.Navigate(pageType, parameter,
+                        navigationTransitionInfo);
+                    break;
+                case FrameType.LoginFrame:
+                    ((((Frame)Window.Current.Content).Content as MainPage).ContentFrame.Content as LoginPage).ContentFrame
+                        ?.Navigate(pageType, parameter, navigationTransitionInfo);
+                    break;
+                case FrameType.EducationFrame:
+                    (((((Frame)Window.Current.Content).Content as MainPage).ContentFrame.Content as MainMenuPage).NavFrame.Content as EducationMainPage).ContentFrame
+                        ?.Navigate(pageType, parameter, navigationTransitionInfo);
+                    break;
+                case FrameType.MenuFrame:
+                    ((((Frame)Window.Current.Content).Content as MainPage).ContentFrame.Content as MainMenuPage).NavFrame
+                        ?.Navigate(pageType, parameter, navigationTransitionInfo);
+                    break;
             }
         }
 

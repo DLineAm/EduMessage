@@ -1,4 +1,5 @@
-﻿using EduMessage.ViewModels;
+﻿using EduMessage.Services;
+using EduMessage.ViewModels;
 
 using System;
 using System.Collections.Generic;
@@ -28,7 +29,7 @@ namespace EduMessage.Pages
         public EmailConfirmingPage()
         {
             this.InitializeComponent();
-            ViewModel = App.Container.ResolveConstructor<EmailConfirmingPageViewModel>();
+            ViewModel = ControlContainer.Get().ResolveConstructor<EmailConfirmingPageViewModel>();
             this.DataContext = ViewModel;
         }
 

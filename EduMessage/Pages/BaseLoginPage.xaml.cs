@@ -15,6 +15,7 @@ using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using EduMessage.Services;
 using EduMessage.ViewModels;
+using MvvmGen.Events;
 
 // Документацию по шаблону элемента "Пустая страница" см. по адресу https://go.microsoft.com/fwlink/?LinkId=234238
 
@@ -28,9 +29,11 @@ namespace EduMessage.Pages
         public BaseLoginPage()
         {
             this.InitializeComponent();
+            var eventAggregator = ControlContainer.Get().Resolve<IEventAggregator>();
+            ViewModel = new BaseLoginPageViewModel(eventAggregator);
             this.DataContext = ViewModel;
         }
 
-        public BaseLoginPageViewModel ViewModel { get; } = new();
+        public BaseLoginPageViewModel ViewModel { get; }
     }
 }

@@ -57,15 +57,6 @@ namespace EduMessage.Pages
 
             _eventAggregator.Publish(new DropCompletedEvent(items));
 
-            //!!!App.InvokeDropCompleted(items);
-
-            //var files = items.Select(i => i as StorageFile);
-
-            //foreach (var item in files)
-            //{
-            //    //var
-            //}
-
             ChangeRectColor(false);
         }
 

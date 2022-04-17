@@ -1,6 +1,7 @@
 ﻿using EduMessage.Services;
 
 using MvvmGen;
+using MvvmGen.Events;
 
 using SignalIRServerTest;
 
@@ -13,10 +14,11 @@ using System.Threading.Tasks;
 namespace EduMessage.ViewModels
 {
     [ViewModel]
+    [Inject(typeof(IEventAggregator))]
     public partial class EducationFolderPageViewModel
     {
         [Property] private List<Speciality> _specialities;
-        [PropertyCallMethod(nameof(Navigate))]
+        [PropertyCallMethod(nameof(Navigate))]        
         [Property] private Speciality _speciality;
 
         public async Task Initialize()
@@ -38,7 +40,9 @@ namespace EduMessage.ViewModels
 
         private void Navigate()
         {
-            App.InvokeSelectedSpecialityChanged(Speciality);
+            EventAggregator.Publish(new SelectedSpecialityChangedeEvent(Speciality));
         }
     }
+
+    public record SelectedSpecialityChangedeEvent(Speciality Speciality);
 }

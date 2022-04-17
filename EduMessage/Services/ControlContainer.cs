@@ -8,15 +8,9 @@ namespace EduMessage.Services
     {
         private static ControlContainer _instance;
 
-        private ControlContainer()
-        {
+        private ControlContainer() { }
 
-        }
-
-        public static ControlContainer Get()
-        {
-            return _instance ??= new ControlContainer();
-        }
+        public static ControlContainer Get() => _instance ??= new ControlContainer();
 
         private readonly Dictionary<string, Component> _types = new();
         private readonly List<object> _singletonComponents = new();

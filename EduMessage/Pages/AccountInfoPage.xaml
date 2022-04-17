@@ -35,7 +35,7 @@
                             <RowDefinition Height="auto"/>
                         </Grid.RowDefinitions>
 
-                        <PersonPicture ProfilePicture="{Binding ProfilePicture}"/>
+                        <PersonPicture ProfilePicture="{Binding ProfilePicture}"></PersonPicture>
                         <HyperlinkButton Content="Выбрать фото"
                                  Grid.Row="1"
                                  Margin="0,12,0,0"

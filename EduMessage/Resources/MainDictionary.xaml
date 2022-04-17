@@ -2,6 +2,8 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     x:Class="EduMessage.Resources.MainDictionary">
+    <SolidColorBrush x:Key="ReceivedMessageBackground" Color="Crimson"></SolidColorBrush>
+    <SolidColorBrush x:Key="SentMessageBackground" Color="BlueViolet"></SolidColorBrush>
     <SolidColorBrush x:Key="DisabledAccentColor" Color="{ThemeResource AccentTextFillColorDisabledBrush}"></SolidColorBrush>
     <SolidColorBrush x:Key="PrimaryAccentColor" Color="{ThemeResource AccentTextFillColorPrimaryBrush}"></SolidColorBrush>
     <Style TargetType="Button">

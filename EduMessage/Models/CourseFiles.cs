@@ -27,6 +27,12 @@ namespace EduMessage.ViewModels
                 : Visibility.Visible;
         }
 
+        
+        private bool _isAddMode;
+        public bool IsAddMode { get => _isAddMode;
+            set { _isAddMode = value; OnPropertyChanged(); }
+        }
+
         public Visibility FilesInfoVisibility { get => _filesInfoVisibility; set { _filesInfoVisibility = value; OnPropertyChanged(); } }
         public IEnumerable<KeyValuePair<EducationFile, int>> TestFiles { get; internal set; }
         public List<int> CoursesId { get; internal set; }

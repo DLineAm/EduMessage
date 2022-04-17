@@ -19,6 +19,7 @@ namespace SignalIRServerTest
         public virtual Speciality IdSpecialityNavigation { get; set; }
         public virtual ICollection<CourseAttachment> CourseAttachments { get; set; }
 
+
         public event PropertyChangedEventHandler PropertyChanged;
         private void OnPropertyChanged([CallerMemberName] string s = null)
         {

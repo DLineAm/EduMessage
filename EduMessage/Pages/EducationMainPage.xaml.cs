@@ -1,4 +1,7 @@
-﻿using EduMessage.ViewModels;
+﻿using EduMessage.Services;
+using EduMessage.ViewModels;
+
+using MvvmGen.Events;
 
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -12,10 +15,13 @@ namespace EduMessage.Pages
     /// </summary>
     public sealed partial class EducationMainPage : Page
     {
+        private IEventAggregator _eventAggregator;
         public EducationMainPage()
         {
             this.InitializeComponent();
-            ViewModel = new EducationMainPageViewModel();
+            var eventAggregator = ControlContainer.Get().Resolve<IEventAggregator>();
+            _eventAggregator = eventAggregator;
+            ViewModel = new EducationMainPageViewModel(eventAggregator);
             this.DataContext = ViewModel;
             ContentFrame.Navigate(typeof(EducationFolderPage));
         }
@@ -29,7 +35,8 @@ namespace EduMessage.Pages
 
         private void BreadcrumbBar_ItemClicked(Microsoft.UI.Xaml.Controls.BreadcrumbBar sender, Microsoft.UI.Xaml.Controls.BreadcrumbBarItemClickedEventArgs args)
         {
-            App.InvokeSelectedSpecialityChanged(null);
+            _eventAggregator.Publish(new SelectedSpecialityChangedeEvent(null));
+            //App.InvokeSelectedSpecialityChanged(null);
             ContentFrame.Navigate(typeof(EducationFolderPage));           
         }
     }

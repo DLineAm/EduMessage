@@ -28,13 +28,15 @@ namespace EduMessage.Pages
     /// <summary>
     /// Пустая страница, которую можно использовать саму по себе или для перехода внутри фрейма.
     /// </summary>
-    public sealed partial class EducationCourseListPage : Page, IEventSubscriber<CourseDialogStartShowing>
+    public sealed partial class EducationCourseListPage : Page, IEventSubscriber<CourseDialogStartShowing>, IEventSubscriber<CourseAddedOrChangedEvent>
     {
         private bool _isPageLoaded;
+        private bool _isCancelButtonPressed;
+        private bool _isSuccessCourseAddOrChange;
         public EducationCourseListPage()
         {
             this.InitializeComponent();
-            ViewModel = App.Container.ResolveConstructor<EducationListPageViewModel>();
+            ViewModel = ControlContainer.Get().ResolveConstructor<EducationListPageViewModel>();
 
             ContentFrame.Navigate(typeof(ItemsPickPage));
 
@@ -56,7 +58,7 @@ namespace EduMessage.Pages
             App.EventAggregator.RegisterSubscriber(this);
         }
 
-        public EducationListPageViewModel ViewModel{ get; }
+        public EducationListPageViewModel ViewModel { get; }
 
         public async void OnEvent(CourseDialogStartShowing eventData)
         {
@@ -65,7 +67,7 @@ namespace EduMessage.Pages
                 return;
             }
 
-            var parameter = eventData.isAddMode;
+            var parameter = eventData.IsAddMode;
 
             CourseAddDialog.Title = parameter ? "Добавление курса" : "Изменение курса";
 
@@ -83,6 +85,26 @@ namespace EduMessage.Pages
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
             _isPageLoaded = true;
+        }
+
+        private void CourseAddDialog_OnClosing(ContentDialog sender, ContentDialogClosingEventArgs args)
+        {
+            args.Cancel = !_isCancelButtonPressed && !_isSuccessCourseAddOrChange;
+        }
+
+        private void CourseAddDialog_OnPrimaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
+        {
+            _isCancelButtonPressed = false;
+        }
+
+        private void CourseAddDialog_OnSecondaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
+        {
+            _isCancelButtonPressed = true;
+        }
+
+        public void OnEvent(CourseAddedOrChangedEvent eventData)
+        {
+            _isSuccessCourseAddOrChange = eventData.IsSuccess;
         }
     }
 }

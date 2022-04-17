@@ -2,6 +2,7 @@
 using EduMessage.Services;
 
 using MvvmGen;
+using MvvmGen.Events;
 
 using System;
 using System.Threading.Tasks;
@@ -14,6 +15,7 @@ namespace EduMessage.ViewModels
 {
     [ViewModel]
     [Inject(typeof(INotificator))]
+    [Inject(typeof(IEventAggregator))]
     public partial class EmailConfirmingPageViewModel
     {
         [Property] private string _code;
@@ -66,7 +68,8 @@ namespace EduMessage.ViewModels
         private async Task SetLoaderVisibility(Visibility visibility)
         {
             IsLoginEnabled = visibility != Visibility.Visible;
-            App.InvokeLoaderVisibilityChanged(visibility);
+            EventAggregator.Publish(new BaseLoaderVisibilityChangedEvent(visibility));
+            //App.InvokeLoaderVisibilityChanged(visibility);
 
             if (visibility == Visibility.Visible)
             {

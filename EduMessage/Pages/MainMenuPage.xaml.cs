@@ -1,26 +1,19 @@
-﻿using EduMessage.ViewModels;
+﻿using System.Threading.Tasks;
+using EduMessage.Services;
+using EduMessage.ViewModels;
 
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
+using SignalIRServerTest;
 
-using Windows.Foundation;
-using Windows.Foundation.Collections;
-using Windows.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Navigation;
-
+using Microsoft.UI.Xaml.Controls;
 using NavigationView = Microsoft.UI.Xaml.Controls.NavigationView;
 using NavigationViewDisplayModeChangedEventArgs = Microsoft.UI.Xaml.Controls.NavigationViewDisplayModeChangedEventArgs;
+using NavigationViewItem = Microsoft.UI.Xaml.Controls.NavigationViewItem;
 using NavigationViewItemInvokedEventArgs = Microsoft.UI.Xaml.Controls.NavigationViewItemInvokedEventArgs;
 using NavigationViewSelectionChangedEventArgs = Microsoft.UI.Xaml.Controls.NavigationViewSelectionChangedEventArgs;
+using PersonPicture = Microsoft.UI.Xaml.Controls.PersonPicture;
 
 // Документацию по шаблону элемента "Пустая страница" см. по адресу https://go.microsoft.com/fwlink/?LinkId=234238
 
@@ -33,32 +26,35 @@ namespace EduMessage.Pages
     {
         public MainMenuPage()
         {
-            ViewModel = App.Container.ResolveConstructor<MainMenuViewModel>();
+            ViewModel = ControlContainer.Get().ResolveConstructor<MainMenuViewModel>();
             ViewModel.Initialize();
             this.DataContext = ViewModel;
 
             this.InitializeComponent();
+
+            AnimatedIcon.SetState(SettingsIcon, "Normal");
         }
 
         public MainMenuViewModel ViewModel { get; }
 
         private void NavigationViewControl_SelectionChanged(NavigationView sender, NavigationViewSelectionChangedEventArgs args)
         {
-            var item = (Microsoft.UI.Xaml.Controls.NavigationViewItem)args.SelectedItem;
+            var item = (NavigationViewItem)args.SelectedItem;
         }
 
         private void NavigationViewControl_ItemInvoked(NavigationView sender, NavigationViewItemInvokedEventArgs args)
         {
             var invokedItem = args.InvokedItem;
-            string item = UnboxItem(invokedItem);
-
-            if (item == App.Account.User.FirstName + " " + App.Account.User.LastName)
-            {
-                NavFrame.Navigate(typeof(AccountInfoPage));
-            }
+            object item = UnboxItem(invokedItem);
 
             switch (item)
             {
+                case string itemString when itemString == App.Account.User.FirstName + " " + App.Account.User.LastName:
+                    NavFrame.Navigate(typeof(AccountInfoPage));
+                    return;
+                case User user:
+                    NavFrame.Navigate(typeof(ChatPage), user);
+                    return;
                 case "Обучение":
                     NavFrame.Navigate(typeof(EducationMainPage));
                     break;
@@ -70,9 +66,9 @@ namespace EduMessage.Pages
             }
         }
 
-        private static string UnboxItem(object invokedItem)
+        private static object UnboxItem(object invokedItem)
         {
-            var item = string.Empty;
+            object item = string.Empty;
 
             if (invokedItem is StackPanel panel)
             {
@@ -83,10 +79,15 @@ namespace EduMessage.Pages
                     item = menuModel.AccountName;
                 }
 
+                if (dataContext is User user)
+                {
+                    item = user;
+                }
+
                 return item;
             }
 
-            item = (string)invokedItem;
+            item = invokedItem;
             return item;
 
         }
@@ -117,6 +118,46 @@ namespace EduMessage.Pages
             {
                 titleBar.Margin = new Thickness(expandedIndent, currMargin.Top, currMargin.Right, currMargin.Bottom);
             }
+        }
+
+        private async void MainMenuPage_OnLoaded(object sender, RoutedEventArgs e)
+        {
+            var user = App.Account.User;
+
+            NavigationViewControl.MenuItems.Add(new NavigationViewItem
+            {
+                Content = new StackPanel
+                {
+                    DataContext = user,
+                    Margin = new Thickness(-35, 0, 0, 0),
+                    Orientation = Orientation.Horizontal,
+                    Children =
+                    {
+                        new PersonPicture
+                        {
+                            Height = 20,
+                            ProfilePicture = await user.Image.CreateBitmap(36)
+                        },
+                        new TextBlock
+                        {
+                            Text = user.FirstName + " " + user.LastName,
+                            Margin = new Thickness(16,0,0,0)
+                        }
+                    }
+                }
+            });
+        }
+
+        private void ButtonBase_OnClick(object sender, RoutedEventArgs e)
+        {
+            NavFrame.Navigate(typeof(UserPickPage));
+        }
+
+        private async void SettingsNavigationViewItem_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+            AnimatedIcon.SetState(SettingsIcon, "Pressed");
+            await Task.Delay(1);
+            AnimatedIcon.SetState(SettingsIcon, "Normal");
         }
     }
 }

@@ -19,6 +19,7 @@ using Windows.UI.Xaml.Navigation;
 using EduMessage.ViewModels;
 using Microsoft.Toolkit.Uwp.UI.Helpers;
 using Microsoft.UI.Xaml.Controls;
+using EduMessage.Services;
 
 // Документацию по шаблону элемента "Пустая страница" см. по адресу https://go.microsoft.com/fwlink/?LinkId=234238
 
@@ -33,7 +34,7 @@ namespace EduMessage.Pages
         public LoginPage()
         {
             this.InitializeComponent();
-            ViewModel = App.Container.ResolveConstructor<LoginPageViewModel>();
+            ViewModel = ControlContainer.Get().ResolveConstructor<LoginPageViewModel>();
             ViewModel.Initialize();
             this.DataContext = ViewModel;
 

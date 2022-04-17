@@ -10,7 +10,7 @@ namespace EduMessage.Services
 {
     public class DialogNotificator : INotificator, IDialogNotificator
     {
-        private List<ContentDialog> _dialogs = new List<ContentDialog>();
+        private List<ContentDialog> _dialogs = new();
         public async void Notificate(string title, string message)
         {
             await new ContentDialog

@@ -100,9 +100,13 @@ namespace EduMessage.Services
             return result;
         }
 
-        public static async Task<BitmapImage> CreateBitmap(this byte[] data)
+        public static async Task<BitmapImage> CreateBitmap(this byte[] data, int decodedHeightWidth = -1)
         {
             var source = new BitmapImage();
+            if (decodedHeightWidth != -1)
+            {
+                source.DecodePixelHeight = decodedHeightWidth;
+            }
             using var stream = new InMemoryRandomAccessStream();
             await stream.WriteAsync(data.AsBuffer());
             stream.Seek(0);

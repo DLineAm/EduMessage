@@ -2,6 +2,7 @@
 using EduMessage.Services;
 
 using MvvmGen;
+using MvvmGen.Events;
 
 using SignalIRServerTest;
 
@@ -14,6 +15,7 @@ using Windows.UI.Xaml.Media.Animation;
 namespace EduMessage.ViewModels
 {
     [ViewModel]
+    [Inject(typeof(IEventAggregator))]
     public partial class SchoolChoosePageViewModel
     {
         [Property] private List<School> _schools;
@@ -142,7 +144,9 @@ namespace EduMessage.ViewModels
         private async Task SetLoaderVisibility(Visibility visibility)
         {
             IsLoginEnabled = visibility != Visibility.Visible;
-            App.InvokeLoaderVisibilityChanged(visibility);
+            EventAggregator.Publish(new BaseLoaderVisibilityChangedEvent(visibility));
+
+            //App.InvokeLoaderVisibilityChanged(visibility);
 
             if (visibility == Visibility.Visible)
             {

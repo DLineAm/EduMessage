@@ -6,16 +6,18 @@ using MvvmGen;
 using Microsoft.Toolkit.Uwp.Notifications;
 using Windows.UI.Xaml;
 using System.Threading.Tasks;
+using MvvmGen.Events;
 
 namespace EduMessage.ViewModels
 {
     [ViewModel]
+    [Inject(typeof(IEventAggregator))]
     public partial class BaseLoginPageViewModel
     {
         [Property] private string _login;
         [Property] private string _password;
-        [Property] private bool _isSaveLogin = true;
         [Property] private string _errorText;
+        [Property] private bool _isSaveLogin = true;
         [Property] private bool _isLoginEnabled = true;
 
         [Command(CanExecuteMethod = nameof(CanLogin))]
@@ -23,16 +25,16 @@ namespace EduMessage.ViewModels
         {
             ErrorText = string.Empty;
             await SetLoaderVisibility(Visibility.Visible);
-           
+
             var result = await App.Account.Login(Login, Password, _isSaveLogin);
+
+            await SetLoaderVisibility(Visibility.Collapsed);
+
             if (result != string.Empty)
             {
                 ErrorText = result;
-                await SetLoaderVisibility(Visibility.Collapsed);
                 return;
             }
-
-            await SetLoaderVisibility(Visibility.Collapsed);
 
             new Navigator().Navigate(typeof(MainMenuPage), null, new DrillInNavigationTransitionInfo());
         }
@@ -40,7 +42,8 @@ namespace EduMessage.ViewModels
         private async Task SetLoaderVisibility(Visibility visibility)
         {
             IsLoginEnabled = visibility != Visibility.Visible;
-            App.InvokeLoaderVisibilityChanged(visibility);
+            EventAggregator.Publish(new BaseLoaderVisibilityChangedEvent(visibility));
+            //App.InvokeLoaderVisibilityChanged(visibility);
 
             if (visibility == Visibility.Visible)
             {
@@ -59,11 +62,11 @@ namespace EduMessage.ViewModels
         {
             new Navigator().Navigate(typeof(PrimaryRegistrationPage),
                 null,
-                new SlideNavigationTransitionInfo{ Effect = SlideNavigationTransitionEffect.FromLeft },
+                new SlideNavigationTransitionInfo { Effect = SlideNavigationTransitionEffect.FromLeft },
                 FrameType.LoginFrame);
         }
 
-        
+
 
         [CommandInvalidate(nameof(Login), nameof(Password), nameof(IsLoginEnabled))]
         private bool CanLogin()
@@ -71,4 +74,6 @@ namespace EduMessage.ViewModels
             return !string.IsNullOrWhiteSpace(Login) && !string.IsNullOrWhiteSpace(Password) && IsLoginEnabled;
         }
     }
+
+    public record BaseLoaderVisibilityChangedEvent(Visibility Visibility);
 }

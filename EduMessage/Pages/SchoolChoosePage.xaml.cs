@@ -1,4 +1,7 @@
-﻿using EduMessage.ViewModels;
+﻿using EduMessage.Services;
+using EduMessage.ViewModels;
+
+using MvvmGen.Events;
 
 using SignalIRServerTest;
 
@@ -30,7 +33,7 @@ namespace EduMessage.Pages
         public SchoolChoosePage()
         {
             this.InitializeComponent();
-            ViewModel = new SchoolChoosePageViewModel();
+            ViewModel = ControlContainer.Get().ResolveConstructor<SchoolChoosePageViewModel>();
         }
 
         protected override void OnNavigatedTo(NavigationEventArgs e)

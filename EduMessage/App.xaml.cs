@@ -1,13 +1,17 @@
 ﻿using EduMessage.Services;
 
+using Microsoft.AspNetCore.SignalR.Client;
+
 using MvvmGen.Events;
 
 using SignalIRServerTest;
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
@@ -32,32 +36,15 @@ namespace EduMessage
     sealed partial class App : Application
     {
         //"https://169.254.77.140:5001/"
-        //public static string Address = "https://192.168.1.2:5001/";
+        public static string Address = "https://192.168.1.6:5001/";
 
-        public static string Address = "https://169.254.77.140:5001/";
+        //public static string Address = "https://169.254.77.140:5001/";
 
         public static IEventAggregator EventAggregator;
 
-        public static event Action<Color> ColorChanged;
-
-        public static event Action<Speciality> SelectedSpeciallityChanged;
-
-        public static event Action<IReadOnlyList<IStorageItem>> DropCompleted;
-
-        public static event Action CrumbItemClicked;
-
-        public static event Action UserExited;
-
         public static ColorManager ColorManager { get; } = new();
-        public static ControlContainer Container { get; } = ControlContainer.Get();
+        //public static ControlContainer Container { get; } = ControlContainer.Get();
         public static Account Account { get; private set; }
-
-        public static event Action<Visibility> LoaderVisibiltyChanged;
-
-        internal static void InvokeDropCompleted(IReadOnlyList<IStorageItem> items)
-        {
-            DropCompleted?.Invoke(items);
-        }
 
         /// <summary>
         /// Инициализирует одноэлементный объект приложения. Это первая выполняемая строка разрабатываемого
@@ -76,18 +63,50 @@ namespace EduMessage
         /// <param name="e">Сведения о запросе и обработке запуска.</param>
         protected override async void OnLaunched(LaunchActivatedEventArgs e)
         {
-            Container.Register(Component.For<IValidator>().ImplementedBy<PasswordValidator>().Named("password"));
-            Container.Register(Component.For<IValidator>().ImplementedBy<LoginValidator>().Named("login"));
-            Container.Register(Component.For<IValidator>().ImplementedBy<PersonNameValidator>().Named("person"));
-            Container.Register(Component.For<IValidator>().ImplementedBy<EmailValidator>().Named("email"));
+            var clientHandler = new HttpClientHandler { ServerCertificateCustomValidationCallback = (_, _, _, _) => true };
+            var client = new HttpClient(clientHandler);
+            var connection = new HubConnectionBuilder()
+                .WithUrl(App.Address + "chat")
+                .Build();
 
-            Container.Register(Component.For<IEventAggregator>().ImplementedBy<EventAggregator>().Singleton());
+            connection.On<string>("SendMessage", s => Debug.WriteLine(s));
 
-            Container.Register(Component.For<IUserBuilder>().ImplementedBy<UserBuilder>());
-            Container.Register(Component.For<INotificator>().ImplementedBy<DialogNotificator>());
+            try
+            {
+                await connection.StartAsync();
+                await connection.InvokeAsync("SendMessage", "Hello world");
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex.Message);
+            }
 
-            Account = Container.ResolveConstructor<Account>();
-            EventAggregator = Container.Resolve<IEventAggregator>();
+            var container = ControlContainer.Get();
+
+            container.Register(Component
+                .For<IValidator>()
+                .ImplementedBy<PasswordValidator>()
+                .Named("password"));
+            container.Register(Component
+                .For<IValidator>()
+                .ImplementedBy<LoginValidator>()
+                .Named("login"));
+            container.Register(Component
+                .For<IValidator>()
+                .ImplementedBy<PersonNameValidator>()
+                .Named("person"));
+            container.Register(Component
+                .For<IValidator>()
+                .ImplementedBy<EmailValidator>()
+                .Named("email"));
+
+            container.Register(Component.For<IEventAggregator>().ImplementedBy<EventAggregator>().Singleton());
+
+            container.Register(Component.For<IUserBuilder>().ImplementedBy<UserBuilder>());
+            container.Register(Component.For<INotificator>().ImplementedBy<DialogNotificator>());
+
+            Account = container.ResolveConstructor<Account>();
+            EventAggregator = container.Resolve<IEventAggregator>();
 
             Frame rootFrame = Window.Current.Content as Frame;
 
@@ -130,35 +149,6 @@ namespace EduMessage
                 var rgba = uiSettings.GetColorValue(Windows.UI.ViewManagement.UIColorType.Accent);
                 EventAggregator.Publish(new ColorChangedEvent(rgba));
             };
-        }
-
-        //new ToastContentBuilder()
-        //   .AddText("Login: " + Login, hintMaxLines: 1)
-        //   .AddText("Password: " + Password).Show();
-
-        public static void InvokeLoaderVisibilityChanged(Visibility visibility)
-        {
-            LoaderVisibiltyChanged?.Invoke(visibility);
-        }
-
-        public static void InvokeUserExited()
-        {
-            UserExited?.Invoke();
-        }
-
-        public static void InvokeColorChanged(Color color)
-        {
-            ColorChanged?.Invoke(color);
-        }
-
-        public static void InvokeCrumbItemClicked()
-        {
-            CrumbItemClicked?.Invoke();
-        }
-
-        public static void InvokeSelectedSpecialityChanged(Speciality speciality)
-        {
-            SelectedSpeciallityChanged?.Invoke(speciality);
         }
 
         /// <summary>

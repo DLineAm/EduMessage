@@ -13,8 +13,8 @@ using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
-using EduMessage.Services;
 using EduMessage.ViewModels;
+using SignalIRServerTest;
 
 // Документацию по шаблону элемента "Пустая страница" см. по адресу https://go.microsoft.com/fwlink/?LinkId=234238
 
@@ -23,28 +23,24 @@ namespace EduMessage.Pages
     /// <summary>
     /// Пустая страница, которую можно использовать саму по себе или для перехода внутри фрейма.
     /// </summary>
-    public sealed partial class PrimaryRegistrationPage : Page
+    public sealed partial class ChatPage : Page
     {
-        public PrimaryRegistrationPage()
+        public ChatPage()
         {
             this.InitializeComponent();
-            if (ViewModel == null)
-            {
-                var passwordValidator = ControlContainer.Get().Resolve<IValidator>("password");
-                var personValidator = ControlContainer.Get().Resolve<IValidator>("login");
-                var emailValidator = ControlContainer.Get().Resolve<IValidator>("email");
-
-                ViewModel = ControlContainer.Get().ResolveConstructor<PrimaryRegisterPageViewModel>();
-
-                ViewModel.SetValidator(passwordValidator);
-                ViewModel.SetValidator(personValidator);
-                ViewModel.SetValidator(emailValidator);
-
-                this.DataContext = ViewModel;
-            }
-            
         }
 
-        public PrimaryRegisterPageViewModel ViewModel { get; private set; }
+        protected override void OnNavigatedTo(NavigationEventArgs e)
+        {
+            base.OnNavigatedTo(e);
+
+            var parameter = e.Parameter as User;
+
+            ViewModel = new ChatPageViewModel();
+            ViewModel.Initialize(parameter);
+            this.DataContext = ViewModel;
+        }
+
+        public ChatPageViewModel ViewModel { get; private set; }
     }
 }

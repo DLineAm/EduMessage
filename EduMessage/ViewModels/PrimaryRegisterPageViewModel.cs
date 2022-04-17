@@ -7,11 +7,13 @@ using MvvmGen;
 using System.Net.Mail;
 using Windows.UI.Xaml;
 using EduMessage.Pages;
+using MvvmGen.Events;
 
 namespace EduMessage.ViewModels
 {
     [ViewModel]
     [Inject(typeof(INotificator))]
+    [Inject(typeof(IEventAggregator))]
     public partial class PrimaryRegisterPageViewModel
     {
         private IValidator _passwordValidator;
@@ -152,7 +154,10 @@ namespace EduMessage.ViewModels
         private async Task SetLoaderVisibility(Visibility visibility)
         {
             IsLoginEnabled = visibility != Visibility.Visible;
-            App.InvokeLoaderVisibilityChanged(visibility);
+            EventAggregator.Publish(new BaseLoaderVisibilityChangedEvent(visibility));
+
+            //
+            //App.InvokeLoaderVisibilityChanged(visibility);
 
             if (visibility == Visibility.Visible)
             {
