@@ -19,7 +19,8 @@ namespace EduMessage.Services
             , T value
             , HttpRequestType requestType
             , string token = ""
-            , bool passCertificateValidation = true)
+            , bool passCertificateValidation = true
+            , bool isLoopHandleIgnore = false)
         {
             using HttpClient client = CreateClient(token, passCertificateValidation);
 
@@ -28,7 +29,13 @@ namespace EduMessage.Services
 
             if (value != null)
             {
-                var json = JsonConvert.SerializeObject(value);
+                var settings = new JsonSerializerSettings();
+                if (isLoopHandleIgnore)
+                {
+                    settings.MaxDepth = 1;
+                    settings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+                }
+                var json = JsonConvert.SerializeObject(value, settings);
                 httpContent = new StringContent(json, Encoding.UTF8, "application/json");
             }
 

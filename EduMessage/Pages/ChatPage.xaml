@@ -8,11 +8,13 @@
     xmlns:utils="using:EduMessage.Utils"
     xmlns:controls="using:Microsoft.UI.Xaml.Controls"
     xmlns:animatedVisuals="using:AnimatedVisuals"
+    xmlns:models="using:SignalIRServerTest.Models"
     mc:Ignorable="d"
     NavigationCacheMode="Required">
 
     <Page.Resources>
         <utils:ByteToImageConverter x:Key="ImageConverter"></utils:ByteToImageConverter>
+        <utils:MessageVisibilityConverter x:Key="MessageVisibilityConverter"></utils:MessageVisibilityConverter>
     </Page.Resources>
 
     <Grid Margin="48,12">
@@ -67,7 +69,8 @@
             <AppBarButton Grid.Column="2"
                           Icon="List"
                           IsCompact="True"
-                          x:Name="ActionsButton">
+                          x:Name="ActionsButton"
+                          VerticalAlignment="Center">
                 <AppBarButton.Flyout>
                     <MenuFlyout>
                         <MenuFlyoutItem Text="Вложения">
@@ -98,7 +101,10 @@
 
         <utils:ChatView IncrementalLoadingThreshold="2"
                         SelectionMode="None"
-                        Grid.Row="1">
+                        Grid.Row="1"
+                        ItemsSource="{Binding Messages}"
+                        x:Name="ChatView"
+                        ContainerContentChanging="ChatView_OnContainerContentChanging">
             <ListView.ItemsPanel>
                 <ItemsPanelTemplate>
                     <ItemsStackPanel ItemsUpdatingScrollMode="KeepLastItemInView"
@@ -107,7 +113,7 @@
             </ListView.ItemsPanel>
 
             <ListView.ItemTemplate>
-                <DataTemplate>
+                <DataTemplate x:DataType="models:Message">
                     <Grid Margin="10">
                         <Grid.RowDefinitions>
                             <RowDefinition></RowDefinition>
@@ -117,17 +123,17 @@
 
                         <Polygon Points="0,0 0,18, 18,18"
                                  Fill="{StaticResource ReceivedMessageBackground}"
-                                 Visibility="Visible"
+                                 Visibility="{Binding IdUser, Converter={StaticResource MessageVisibilityConverter}, ConverterParameter=upper}"
                                  Margin="10,0,10,0"></Polygon>
 
                         <Border Grid.Row="1"
                                 Background="{StaticResource ReceivedMessageBackground}"
-                                Visibility="Visible"
+                                Visibility="{Binding IdUser, Converter={StaticResource MessageVisibilityConverter}, ConverterParameter=upper}"
                                 CornerRadius="10"></Border>
 
                         <Border Grid.Row="1"
                               Background="{StaticResource SentMessageBackground}"
-                              Visibility="Visible"
+                              Visibility="{Binding IdUser, Converter={StaticResource MessageVisibilityConverter}, ConverterParameter=bottom}"
                               CornerRadius="10"></Border>
 
                         <Grid Grid.Row="1">
@@ -136,12 +142,15 @@
                                 <RowDefinition Height="Auto"></RowDefinition>
                             </Grid.RowDefinitions>
 
-                            <TextBlock Text="{Binding }"
+                            <TextBlock Text="{Binding MessageContent}"
                                        TextWrapping="Wrap"
                                        MinWidth="300"
                                        MaxWidth="400"
                                        FontSize="20"
-                                       Padding="10,10,5,0"></TextBlock>
+                                       TextAlignment="Left"
+                                       HorizontalAlignment="Left"
+                                       Padding="10,10,5,0"
+                                       ></TextBlock>
 
                             <TextBlock Text="02.02.2002"
                                        Grid.Row="1"
@@ -155,7 +164,7 @@
                                  HorizontalAlignment="Right"
                                  Points="0,0 18,0 18,18"
                                  Fill="{StaticResource SentMessageBackground}"
-                                 Visibility="Visible"
+                                 Visibility="{Binding IdUser, Converter={StaticResource MessageVisibilityConverter}, ConverterParameter=bottom}"
                                  Margin="0,0,10,0"></Polygon>
                     </Grid>
                 </DataTemplate>
@@ -175,7 +184,8 @@
                     <ColumnDefinition Width="Auto"></ColumnDefinition>
                 </Grid.ColumnDefinitions>
                 <TextBox TextWrapping="Wrap"
-                         PlaceholderText="Напишите что-нибудь..."></TextBox>
+                         PlaceholderText="Напишите что-нибудь..."
+                         Text="{Binding Message, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"></TextBox>
                 <Button Grid.Column="2"
                         Height="40"
                         ToolTipService.ToolTip="Прикрепить">
@@ -187,7 +197,11 @@
                         Margin="12,0"
                         ToolTipService.ToolTip="Отправить"
                         Height="40"
-                        Foreground="White">
+                        Foreground="White"
+                        Command="{Binding SendMessageCommand}">
+                    <Button.KeyboardAccelerators>
+                        <KeyboardAccelerator Key="Enter"></KeyboardAccelerator>
+                    </Button.KeyboardAccelerators>
                     <Button.Background>
                         <SolidColorBrush Color="{StaticResource SystemAccentColor}"></SolidColorBrush>
                     </Button.Background>

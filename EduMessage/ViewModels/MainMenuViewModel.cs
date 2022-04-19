@@ -4,10 +4,12 @@ using MvvmGen;
 using MvvmGen.Events;
 
 using System;
-
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using Windows.UI;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
+using SignalIRServerTest.Models;
 
 namespace EduMessage.ViewModels
 {
@@ -21,11 +23,17 @@ namespace EduMessage.ViewModels
         [Property] private string _loaderText;
         [Property] private Color _loaderColor = App.ColorManager.GetAccentColor();
 
-        public void Initialize()
+        public async Task Initialize()
         {
             AccountName = App.Account.User.FirstName + " " + App.Account.User.LastName;
             var imageBytes = App.Account.User.Image;
             ChangeProfilePicture(imageBytes);
+
+            var response = (await (App.Address + "Message/All")
+                    .SendRequestAsync("", HttpRequestType.Get, App.Account.Jwt))
+                .DeserializeJson<List<UserConversation>>();
+
+            EventAggregator.Publish(new ConversationGot(response));
         }
 
         public void OnEvent(AccountImageUploadedEvent eventData)
@@ -67,4 +75,6 @@ namespace EduMessage.ViewModels
     }
 
     public record UserExitedEvent();
+
+    public record ConversationGot(List<UserConversation> Conversations);
 }

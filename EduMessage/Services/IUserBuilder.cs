@@ -1,4 +1,5 @@
 ﻿using SignalIRServerTest;
+using SignalIRServerTest.Models;
 
 namespace EduMessage.Services
 {

@@ -19,7 +19,8 @@ namespace EduMessage.ViewModels
 
         public async void Initialize()
         {
-            var result = await App.Account.TryLoadToken();
+            var chat = ControlContainer.Get().Resolve<IChat>();
+            var result = await App.Account.TryLoadToken(chat);
             if (result)
             {
                 SelectedContent = new MainMenuPage();

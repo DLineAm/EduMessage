@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using EduMessage.Services;
 using EduMessage.ViewModels;
 
@@ -7,7 +8,11 @@ using SignalIRServerTest;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
+using Windows.UI.Xaml.Navigation;
 using Microsoft.UI.Xaml.Controls;
+using MvvmGen;
+using MvvmGen.Events;
+using SignalIRServerTest.Models;
 using NavigationView = Microsoft.UI.Xaml.Controls.NavigationView;
 using NavigationViewDisplayModeChangedEventArgs = Microsoft.UI.Xaml.Controls.NavigationViewDisplayModeChangedEventArgs;
 using NavigationViewItem = Microsoft.UI.Xaml.Controls.NavigationViewItem;
@@ -22,20 +27,19 @@ namespace EduMessage.Pages
     /// <summary>
     /// Пустая страница, которую можно использовать саму по себе или для перехода внутри фрейма.
     /// </summary>
-    public sealed partial class MainMenuPage : Page
+    public partial class MainMenuPage : Page, IEventSubscriber<ConversationGot>
     {
         public MainMenuPage()
         {
-            ViewModel = ControlContainer.Get().ResolveConstructor<MainMenuViewModel>();
-            ViewModel.Initialize();
-            this.DataContext = ViewModel;
-
             this.InitializeComponent();
 
             AnimatedIcon.SetState(SettingsIcon, "Normal");
+
+            var aggregator = ControlContainer.Get().Resolve<IEventAggregator>();
+            aggregator.RegisterSubscriber(this);
         }
 
-        public MainMenuViewModel ViewModel { get; }
+        public MainMenuViewModel ViewModel { get; private set; }
 
         private void NavigationViewControl_SelectionChanged(NavigationView sender, NavigationViewSelectionChangedEventArgs args)
         {
@@ -79,9 +83,14 @@ namespace EduMessage.Pages
                     item = menuModel.AccountName;
                 }
 
-                if (dataContext is User user)
+                if (dataContext is UserConversation conversation)
                 {
-                    item = user;
+                    dataContext = conversation.IdUserNavigation;
+                }
+
+                if (dataContext is User)
+                {
+                    item = dataContext;
                 }
 
                 return item;
@@ -122,30 +131,9 @@ namespace EduMessage.Pages
 
         private async void MainMenuPage_OnLoaded(object sender, RoutedEventArgs e)
         {
-            var user = App.Account.User;
-
-            NavigationViewControl.MenuItems.Add(new NavigationViewItem
-            {
-                Content = new StackPanel
-                {
-                    DataContext = user,
-                    Margin = new Thickness(-35, 0, 0, 0),
-                    Orientation = Orientation.Horizontal,
-                    Children =
-                    {
-                        new PersonPicture
-                        {
-                            Height = 20,
-                            ProfilePicture = await user.Image.CreateBitmap(36)
-                        },
-                        new TextBlock
-                        {
-                            Text = user.FirstName + " " + user.LastName,
-                            Margin = new Thickness(16,0,0,0)
-                        }
-                    }
-                }
-            });
+            ViewModel = ControlContainer.Get().ResolveConstructor<MainMenuViewModel>();
+            this.DataContext = ViewModel;
+            await ViewModel.Initialize();
         }
 
         private void ButtonBase_OnClick(object sender, RoutedEventArgs e)
@@ -158,6 +146,48 @@ namespace EduMessage.Pages
             AnimatedIcon.SetState(SettingsIcon, "Pressed");
             await Task.Delay(1);
             AnimatedIcon.SetState(SettingsIcon, "Normal");
+        }
+
+        public async void OnEvent(ConversationGot eventData)
+        {
+            var conversations = eventData.Conversations;
+
+            await GenerateNavItems(conversations);
+        }
+
+        private async Task GenerateNavItems(List<UserConversation> conversations)
+        {
+            foreach (var userConversation in conversations)
+            {
+                var user = userConversation.IdUserNavigation;
+                var conversation = userConversation.IdConversationNavigation;
+                NavigationViewControl.MenuItems.Add(new NavigationViewItem
+                {
+                    Content = new StackPanel
+                    {
+                        DataContext = userConversation,
+                        Margin = new Thickness(-35, 0, 0, 0),
+                        Orientation = Orientation.Horizontal,
+                        Children =
+                        {
+                            new PersonPicture
+                            {
+                                Height = 20,
+                                ProfilePicture = conversation.Image == null
+                                    ? user.Image != null
+                                        ? await user.Image.CreateBitmap(36)
+                                        : null
+                                    : await conversation.Image.CreateBitmap(36)
+                            },
+                            new TextBlock
+                            {
+                                Text = conversation.Title ?? user.FirstName + " " + user.LastName,
+                                Margin = new Thickness(16,0,0,0)
+                            }
+                        }
+                    }
+                });
+            }
         }
     }
 }

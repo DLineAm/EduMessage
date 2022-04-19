@@ -15,16 +15,9 @@ namespace EduMessage.Utils
                 return null;
             }
 
-            int decodeHeightWidth = -1;
-
-            if (parameter is int intParameter)
-            {
-                decodeHeightWidth = intParameter;
-            }
-
             var source = new BitmapImage {DecodePixelHeight = 48, DecodePixelWidth = 48};
 
-            if (decodeHeightWidth != -1)
+            if (parameter is not null && int.TryParse(parameter.ToString(), out var decodeHeightWidth))
             {
                 source.DecodePixelWidth = decodeHeightWidth;
                 source.DecodePixelHeight = decodeHeightWidth;

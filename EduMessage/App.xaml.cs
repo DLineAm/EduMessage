@@ -4,28 +4,19 @@ using Microsoft.AspNetCore.SignalR.Client;
 
 using MvvmGen.Events;
 
-using SignalIRServerTest;
-
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
-using System.Linq;
 using System.Net.Http;
-using System.Runtime.InteropServices.WindowsRuntime;
+
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
-using Windows.Foundation;
 using Windows.Foundation.Collections;
-using Windows.Storage;
 using Windows.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
+using Microsoft.Toolkit.Uwp.Notifications;
+using SignalIRServerTest.Models;
 
 namespace EduMessage
 {
@@ -54,6 +45,40 @@ namespace EduMessage
         {
             this.InitializeComponent();
             this.Suspending += OnSuspending;
+        }
+
+        protected override void OnActivated(IActivatedEventArgs args)
+        {
+            base.OnActivated(args);
+
+            if (args is ToastNotificationActivatedEventArgs toastEventArgs)
+            {
+                ToastArguments toastArgs = ToastArguments.Parse(toastEventArgs.Argument);
+                if (toastArgs.Contains("dnd"))
+                {
+                    
+                }
+
+                if (toastArgs.TryGetValue("action", out var value))
+                {
+                    if (value.Contains("reply") && toastArgs.TryGetValue("userId", out var recipientIdString))
+                    {
+                        var recipientId = Convert.ToInt32(recipientIdString);
+                        var replyInput = toastEventArgs.UserInput["tbReply"];
+                        var chat = ControlContainer.Get().Resolve<IChat>();
+                        chat.SendMessage("SendToUser",recipientId, replyInput);
+
+                        var aggregator = ControlContainer.Get().Resolve<IEventAggregator>();
+                        aggregator.Publish(new ReplySentEvent(replyInput.ToString(), recipientId));
+                    }
+                    
+                }
+            }
+        }
+
+        protected override void OnBackgroundActivated(BackgroundActivatedEventArgs args)
+        {
+            base.OnBackgroundActivated(args);
         }
 
         /// <summary>
@@ -100,10 +125,19 @@ namespace EduMessage
                 .ImplementedBy<EmailValidator>()
                 .Named("email"));
 
-            container.Register(Component.For<IEventAggregator>().ImplementedBy<EventAggregator>().Singleton());
+            container.Register(Component.For<IEventAggregator>()
+                .ImplementedBy<EventAggregator>()
+                .Singleton());
 
-            container.Register(Component.For<IUserBuilder>().ImplementedBy<UserBuilder>());
-            container.Register(Component.For<INotificator>().ImplementedBy<DialogNotificator>());
+            container.Register(Component.For<IUserBuilder>()
+                .ImplementedBy<UserBuilder>());
+
+            container.Register(Component.For<INotificator>()
+                .ImplementedBy<DialogNotificator>());
+
+            container.Register(Component.For<IChat>()
+                .ImplementedBy<Chat>()
+                .Singleton());
 
             Account = container.ResolveConstructor<Account>();
             EventAggregator = container.Resolve<IEventAggregator>();
@@ -149,6 +183,20 @@ namespace EduMessage
                 var rgba = uiSettings.GetColorValue(Windows.UI.ViewManagement.UIColorType.Accent);
                 EventAggregator.Publish(new ColorChangedEvent(rgba));
             };
+
+            Window.Current.CoreWindow.Activated += Current_Activated;
+        }
+
+        private void Current_Activated(object sender, Windows.UI.Core.WindowActivatedEventArgs e)
+        {
+            if (e.WindowActivationState == Windows.UI.Core.CoreWindowActivationState.Deactivated)
+            {
+                System.Diagnostics.Debug.WriteLine("Deactivated " + DateTime.Now);
+            }
+            else
+            {
+                System.Diagnostics.Debug.WriteLine("Activated " + DateTime.Now);
+            }
         }
 
         /// <summary>
@@ -175,4 +223,6 @@ namespace EduMessage
             deferral.Complete();
         }
     }
+
+    public record ReplySentEvent(string Message, int recipientId);
 }

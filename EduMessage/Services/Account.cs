@@ -1,12 +1,17 @@
-﻿using Newtonsoft.Json;
+﻿
+using Microsoft.Toolkit.Uwp.Notifications;
 
-using SignalIRServerTest;
+using SignalIRServerTest.Models;
 
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 
-using Windows.UI.Xaml.Controls;
+using Windows.Storage;
+using Windows.UI.Core;
+using Windows.UI.Xaml;
 
 namespace EduMessage.Services
 {
@@ -23,7 +28,7 @@ namespace EduMessage.Services
             UserBuilder = userBuilder;
         }
 
-        public async Task<bool> TryLoadToken()
+        public async Task<bool> TryLoadToken(IChat chat)
         {
             try
             {
@@ -45,6 +50,34 @@ namespace EduMessage.Services
                     return false;
                 }
 
+                chat.Initialize(App.Address + "Chat", Jwt);
+                chat.SetOnMethod<string, User>("ReceiveForMe", async (m, u) =>
+                {
+                    if (Window.Current.CoreWindow.ActivationMode is CoreWindowActivationMode.None or CoreWindowActivationMode.ActivatedInForeground)
+                    {
+                        return;
+                    }
+                    new ToastContentBuilder()
+                        .AddText(u.FirstName + " " + u.LastName, hintMaxLines: 1)
+                        .AddAppLogoOverride(new Uri(await SaveImage(u.Image)), ToastGenericAppLogoCrop.Circle)
+                        .AddText(m)
+                        .AddInputTextBox("tbReply", "Напишите сообщение...")
+                        .AddButton(new ToastButton()
+                            .SetTextBoxId("tbReply")
+                            .SetContent("Ответить")
+                            .AddArgument("userId", u.Id)
+                            .AddArgument("action", "reply")
+                            .SetImageUri(new Uri("ms-appx:///Assets/" + (IsDarkTheme() ? "reply_light.png" : "reply_dark.png")))
+                        )
+                        .AddButton(new ToastButton()
+                            .SetContent("Заглушить на час")
+                            .AddArgument("action", "dnd")
+                            .AddArgument("parameters", u.Id)
+                            .SetImageUri(new Uri("ms-appx:///Assets/" + (IsDarkTheme() ? "dnd_light.png" : "dnd_dark.png"))))
+                        .Show();
+                });
+                await chat.OpenConnection();
+
                 User = user;
 
                 return true;
@@ -53,6 +86,26 @@ namespace EduMessage.Services
             {
                 return false;
             }
+        }
+
+        private async Task<string> SaveImage(byte[] image)
+        {
+            if (image == null)
+            {
+                
+                return "ms-appx:///Assets/" + (IsDarkTheme() ?  "user_white.png" : "user.png");
+            }
+            var folder = ApplicationData.Current.LocalFolder;
+            var files = await folder.GetFilesAsync();
+            var file = files.ToList().FirstOrDefault(f => f.Name == "notification.png") ??
+                       await folder.CreateFileAsync("notification.png");
+            await FileIO.WriteBytesAsync(file, image);
+            return file.Path;
+        }
+
+        private bool IsDarkTheme()
+        {
+            return Application.Current.RequestedTheme == ApplicationTheme.Dark;
         }
 
         public void UpdateToken(bool isAddMode)
