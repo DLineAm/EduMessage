@@ -2,6 +2,7 @@
 using EduMessage.ViewModels;
 
 using Windows.UI.Xaml.Controls;
+using MvvmGen.Events;
 
 // Документацию по шаблону элемента "Пустая страница" см. по адресу https://go.microsoft.com/fwlink/?LinkId=234238
 
@@ -15,7 +16,9 @@ namespace EduMessage.Pages
         public PersonalInfoAddPage()
         {
             this.InitializeComponent();
-            ViewModel = ControlContainer.Get().ResolveConstructor<PersonalInfoAddPageViewModel>();
+            var notificator = ControlContainer.Get().Resolve<INotificator>("Dialog");
+            var aggregator = ControlContainer.Get().Resolve<IEventAggregator>();
+            ViewModel = new PersonalInfoAddPageViewModel(aggregator, notificator);
             var validator = ControlContainer.Get().Resolve<IValidator>("person");
             ViewModel.SetValidator(validator);
             ViewModel.LoadData();

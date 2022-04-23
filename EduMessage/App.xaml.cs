@@ -1,21 +1,22 @@
 ﻿using EduMessage.Services;
 
 using Microsoft.AspNetCore.SignalR.Client;
+using Microsoft.Toolkit.Uwp.Notifications;
 
 using MvvmGen.Events;
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Net.Http;
+using System.Text.RegularExpressions;
 
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
-using Windows.Foundation.Collections;
 using Windows.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
-using Microsoft.Toolkit.Uwp.Notifications;
 using SignalIRServerTest.Models;
 
 namespace EduMessage
@@ -30,6 +31,7 @@ namespace EduMessage
         public static string Address = "https://192.168.1.6:5001/";
 
         //public static string Address = "https://169.254.77.140:5001/";
+        //public static string Address = "https://169.254.74.121:5001/";
 
         public static IEventAggregator EventAggregator;
 
@@ -65,20 +67,31 @@ namespace EduMessage
                     {
                         var recipientId = Convert.ToInt32(recipientIdString);
                         var replyInput = toastEventArgs.UserInput["tbReply"];
+
+                        var message = new Message
+                        {
+                            MessageContent = replyInput as string,
+                            IdRecipient = recipientId,
+                            IdUser = App.Account.User.Id,
+                            SendDate = DateTime.Now
+                        };
+
+                        var messageAttachments = new MessageAttachment
+                        {
+                            IdMessageNavigation = message
+                        };
+
+                        var list = new List<MessageAttachment> {messageAttachments};
+
                         var chat = ControlContainer.Get().Resolve<IChat>();
-                        chat.SendMessage("SendToUser",recipientId, replyInput);
+                        chat.SendMessage("SendToUser",recipientId, list);
 
                         var aggregator = ControlContainer.Get().Resolve<IEventAggregator>();
-                        aggregator.Publish(new ReplySentEvent(replyInput.ToString(), recipientId));
+                        aggregator.Publish(new ReplySentEvent(list, recipientId));
                     }
                     
                 }
             }
-        }
-
-        protected override void OnBackgroundActivated(BackgroundActivatedEventArgs args)
-        {
-            base.OnBackgroundActivated(args);
         }
 
         /// <summary>
@@ -133,13 +146,19 @@ namespace EduMessage
                 .ImplementedBy<UserBuilder>());
 
             container.Register(Component.For<INotificator>()
-                .ImplementedBy<DialogNotificator>());
+                .ImplementedBy<DialogNotificator>().Named("Dialog"));
+
+            container.Register(Component.For<INotificator>()
+                .ImplementedBy<ToastNotificator>().Named("Toast"));
 
             container.Register(Component.For<IChat>()
                 .ImplementedBy<Chat>()
                 .Singleton());
 
-            Account = container.ResolveConstructor<Account>();
+            var notificator = container.Resolve<INotificator>("Toast");
+            var userBuilder = container.Resolve<IUserBuilder>();
+
+            Account = new Account(userBuilder, notificator);
             EventAggregator = container.Resolve<IEventAggregator>();
 
             Frame rootFrame = Window.Current.Content as Frame;
@@ -176,7 +195,6 @@ namespace EduMessage
             }       
 
             var uiSettings = new Windows.UI.ViewManagement.UISettings();
-            var color = uiSettings.GetColorValue(Windows.UI.ViewManagement.UIColorType.Accent);
 
             uiSettings.ColorValuesChanged += (_, _) =>
             {
@@ -224,5 +242,5 @@ namespace EduMessage
         }
     }
 
-    public record ReplySentEvent(string Message, int recipientId);
+    public record ReplySentEvent(List<MessageAttachment> Message, int recipientId);
 }

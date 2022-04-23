@@ -35,7 +35,11 @@
         <Grid Margin="0,12">
             <Button Content="Войти"
                     HorizontalAlignment="Right"
-                    Command="{Binding TryLoginCommand}"></Button>
+                    Command="{Binding TryLoginCommand}">
+                <Button.KeyboardAccelerators>
+                    <KeyboardAccelerator Key="Enter"></KeyboardAccelerator>
+                </Button.KeyboardAccelerators>
+            </Button>
             <HyperlinkButton HorizontalAlignment="Left"
                              Content="Регистрация"
                              Command="{Binding RegisterCommand}"></HyperlinkButton>

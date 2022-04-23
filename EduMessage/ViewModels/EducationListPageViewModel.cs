@@ -18,6 +18,7 @@ using System.Threading.Tasks;
 using Windows.Storage;
 using Windows.System;
 using Windows.UI.Xaml;
+using SignalIRServerTest.Models;
 
 namespace EduMessage.ViewModels
 {

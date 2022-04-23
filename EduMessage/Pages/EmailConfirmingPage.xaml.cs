@@ -16,6 +16,7 @@ using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
+using MvvmGen.Events;
 
 // Документацию по шаблону элемента "Пустая страница" см. по адресу https://go.microsoft.com/fwlink/?LinkId=234238
 
@@ -29,7 +30,9 @@ namespace EduMessage.Pages
         public EmailConfirmingPage()
         {
             this.InitializeComponent();
-            ViewModel = ControlContainer.Get().ResolveConstructor<EmailConfirmingPageViewModel>();
+            var notificator = ControlContainer.Get().Resolve<INotificator>("Dialog");
+            var aggregator = ControlContainer.Get().Resolve<IEventAggregator>();
+            ViewModel = new EmailConfirmingPageViewModel(aggregator, notificator);
             this.DataContext = ViewModel;
         }
 

@@ -1,6 +1,6 @@
 ﻿using EduMessage.Services;
 using EduMessage.ViewModels;
-
+using MvvmGen.Events;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
 
@@ -22,7 +22,9 @@ namespace EduMessage.Pages
         {
             base.OnNavigatedTo(e);
 
-            ViewModel = ControlContainer.Get().ResolveConstructor<UserPickViewModel>();
+            var aggregator = ControlContainer.Get().Resolve<IEventAggregator>();
+            var notificator = ControlContainer.Get().Resolve<INotificator>("Dialog");
+            ViewModel = new UserPickViewModel(aggregator, notificator);
             await ViewModel.Initialize();
 
             DataContext = ViewModel;

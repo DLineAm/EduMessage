@@ -8,13 +8,19 @@
     xmlns:utils="using:EduMessage.Utils"
     xmlns:controls="using:Microsoft.UI.Xaml.Controls"
     xmlns:animatedVisuals="using:AnimatedVisuals"
-    xmlns:models="using:SignalIRServerTest.Models"
+    xmlns:models="using:SignalIRServerTest.Models" xmlns:interactivity="using:Microsoft.Xaml.Interactivity" xmlns:core="using:Microsoft.Xaml.Interactions.Core"
+    xmlns:viewModels="using:EduMessage.ViewModels"
     mc:Ignorable="d"
     NavigationCacheMode="Required">
 
     <Page.Resources>
         <utils:ByteToImageConverter x:Key="ImageConverter"></utils:ByteToImageConverter>
         <utils:MessageVisibilityConverter x:Key="MessageVisibilityConverter"></utils:MessageVisibilityConverter>
+        <utils:SystemAccentColorSetting x:Key="AccentColorSetting"></utils:SystemAccentColorSetting>
+        <utils:MessageDateConverter x:Key="DateConverter"></utils:MessageDateConverter>
+        <CollectionViewSource x:Name="ViewSource" IsSourceGrouped="True"
+                              Source="{Binding Messages, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}">
+        </CollectionViewSource>
     </Page.Resources>
 
     <Grid Margin="48,12">
@@ -34,7 +40,13 @@
                 <PersonPicture ProfilePicture="{Binding User.Image, Converter={StaticResource ImageConverter}}"
                                Height="48"
                                Width="48"
-                               Margin="12,0"></PersonPicture>
+                               Margin="12,0">
+                    <interactivity:Interaction.Behaviors>
+                        <core:EventTriggerBehavior EventName="Tapped">
+                            <core:InvokeCommandAction Command="{Binding NavigateToAccountInfoCommand}" CommandParameter="{Binding User}"/>
+                        </core:EventTriggerBehavior>
+                    </interactivity:Interaction.Behaviors>
+                </PersonPicture>
                 <controls:InfoBadge
                     HorizontalAlignment="Right"
                     VerticalAlignment="Bottom"
@@ -44,7 +56,7 @@
                     BorderBrush="Black"
                     BorderThickness="1"></controls:InfoBadge>
             </Grid>
-            
+
 
             <StackPanel Grid.Column="1">
                 <TextBlock FontSize="26"
@@ -79,7 +91,8 @@
                             </MenuFlyoutItem.Icon>
                         </MenuFlyoutItem>
                         <MenuFlyoutItem Icon="Contact"
-                                        Text="Профиль"></MenuFlyoutItem>
+                                        Text="Профиль"
+                                        Command="{Binding NavigateToAccountInfoCommand}" CommandParameter="{Binding User}"/>
                     </MenuFlyout>
                 </AppBarButton.Flyout>
             </AppBarButton>
@@ -99,50 +112,52 @@
                        Foreground="Gray"></TextBlock>
         </StackPanel>
 
+
         <utils:ChatView IncrementalLoadingThreshold="2"
                         SelectionMode="None"
                         Grid.Row="1"
-                        ItemsSource="{Binding Messages}"
+                        ItemsSource="{Binding View, ElementName=ViewSource, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
                         x:Name="ChatView"
                         ContainerContentChanging="ChatView_OnContainerContentChanging">
             <ListView.ItemsPanel>
                 <ItemsPanelTemplate>
                     <ItemsStackPanel ItemsUpdatingScrollMode="KeepLastItemInView"
-                                     VerticalAlignment="Bottom"></ItemsStackPanel>
+                                     VerticalAlignment="Bottom"
+                                     AreStickyGroupHeadersEnabled="True"></ItemsStackPanel>
                 </ItemsPanelTemplate>
             </ListView.ItemsPanel>
 
             <ListView.ItemTemplate>
-                <DataTemplate x:DataType="models:Message">
+                <DataTemplate x:DataType="viewModels:MessageList">
                     <Grid Margin="10">
-                        <Grid.RowDefinitions>
-                            <RowDefinition></RowDefinition>
-                            <RowDefinition Height="Auto"></RowDefinition>
-                            <RowDefinition></RowDefinition>
-                        </Grid.RowDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition></RowDefinition>
+                                        <RowDefinition Height="Auto"></RowDefinition>
+                                        <RowDefinition></RowDefinition>
+                                    </Grid.RowDefinitions>
 
-                        <Polygon Points="0,0 0,18, 18,18"
-                                 Fill="{StaticResource ReceivedMessageBackground}"
-                                 Visibility="{Binding IdUser, Converter={StaticResource MessageVisibilityConverter}, ConverterParameter=upper}"
+                                    <Polygon Points="0,0 0,18, 18,18"
+                                 Fill="{Binding SystemAccentColor, Source={StaticResource AccentColorSetting}}"
+                                 Visibility="{Binding Message.IdUser, Converter={StaticResource MessageVisibilityConverter}, ConverterParameter=upper}"
                                  Margin="10,0,10,0"></Polygon>
 
-                        <Border Grid.Row="1"
-                                Background="{StaticResource ReceivedMessageBackground}"
-                                Visibility="{Binding IdUser, Converter={StaticResource MessageVisibilityConverter}, ConverterParameter=upper}"
+                                    <Border Grid.Row="1"
+                                Background="{Binding SystemAccentColor, Source={StaticResource AccentColorSetting}}"
+                                Visibility="{Binding Message.IdUser, Converter={StaticResource MessageVisibilityConverter}, ConverterParameter=upper}"
                                 CornerRadius="10"></Border>
 
-                        <Border Grid.Row="1"
+                                    <Border Grid.Row="1"
                               Background="{StaticResource SentMessageBackground}"
-                              Visibility="{Binding IdUser, Converter={StaticResource MessageVisibilityConverter}, ConverterParameter=bottom}"
+                              Visibility="{Binding Message.IdUser, Converter={StaticResource MessageVisibilityConverter}, ConverterParameter=bottom}"
                               CornerRadius="10"></Border>
 
-                        <Grid Grid.Row="1">
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto"></RowDefinition>
-                                <RowDefinition Height="Auto"></RowDefinition>
-                            </Grid.RowDefinitions>
+                                    <Grid Grid.Row="1">
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto"></RowDefinition>
+                                            <RowDefinition Height="Auto"></RowDefinition>
+                                        </Grid.RowDefinitions>
 
-                            <TextBlock Text="{Binding MessageContent}"
+                                        <TextBlock Text="{Binding Message.MessageContent, Mode=OneWay}"
                                        TextWrapping="Wrap"
                                        MinWidth="300"
                                        MaxWidth="400"
@@ -150,25 +165,35 @@
                                        TextAlignment="Left"
                                        HorizontalAlignment="Left"
                                        Padding="10,10,5,0"
-                                       ></TextBlock>
+                                       Tag="Message"
+                                       DataContextChanged="FrameworkElement_OnDataContextChanged"></TextBlock>
 
-                            <TextBlock Text="02.02.2002"
+                                        <TextBlock Text="{Binding Message.SendDate, Converter={StaticResource DateConverter}}"
                                        Grid.Row="1"
                                        FontSize="12"
                                        TextWrapping="Wrap"
                                        Opacity="0.7"
                                        Padding="10"></TextBlock>
-                        </Grid>
+                                    </Grid>
 
-                        <Polygon Grid.Row="2"
+                                    <Polygon Grid.Row="2"
                                  HorizontalAlignment="Right"
                                  Points="0,0 18,0 18,18"
                                  Fill="{StaticResource SentMessageBackground}"
-                                 Visibility="{Binding IdUser, Converter={StaticResource MessageVisibilityConverter}, ConverterParameter=bottom}"
+                                 Visibility="{Binding Message.IdUser, Converter={StaticResource MessageVisibilityConverter}, ConverterParameter=bottom}"
                                  Margin="0,0,10,0"></Polygon>
-                    </Grid>
+                                </Grid>
                 </DataTemplate>
             </ListView.ItemTemplate>
+            <ListView.GroupStyle>
+                <GroupStyle>
+                    <GroupStyle.HeaderTemplate>
+                        <DataTemplate x:DataType="viewModels:MessageList">
+                            <TextBlock Text="{Binding Key}" Margin="10,0" Foreground="Gray" FontSize="12"/>
+                        </DataTemplate>
+                    </GroupStyle.HeaderTemplate>
+                </GroupStyle>
+            </ListView.GroupStyle>
         </utils:ChatView>
 
         <Grid Grid.Row="2">
@@ -176,6 +201,30 @@
                 <RowDefinition Height="Auto"></RowDefinition>
                 <RowDefinition Height="Auto"></RowDefinition>
             </Grid.RowDefinitions>
+
+            <Border Style="{StaticResource CardBorder}"
+                    Background="{ThemeResource AcrylicBackgroundFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    Padding="12,10"
+                    Margin="0,0,0,12"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Center">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="Редактирование сообщения"
+                               Foreground="{ThemeResource ApplicationForegroundThemeBrush}"
+                               VerticalAlignment="Center"
+                               />
+                    <Button  Style="{StaticResource ButtonRevealStyle}"
+                             VerticalAlignment="Center"
+                             Margin="12,0,0,0"
+                             Height="25">
+                        <Button.Content>
+                            <SymbolIcon Symbol="Cancel"
+                                        Height="9"/>
+                        </Button.Content>
+                    </Button>
+                </StackPanel>
+            </Border>
 
             <Grid Grid.Row="1">
                 <Grid.ColumnDefinitions>
@@ -198,13 +247,11 @@
                         ToolTipService.ToolTip="Отправить"
                         Height="40"
                         Foreground="White"
-                        Command="{Binding SendMessageCommand}">
+                        Command="{Binding SendMessageCommand}"
+                        Background="{Binding SystemAccentColor, Source={StaticResource AccentColorSetting}}">
                     <Button.KeyboardAccelerators>
                         <KeyboardAccelerator Key="Enter"></KeyboardAccelerator>
                     </Button.KeyboardAccelerators>
-                    <Button.Background>
-                        <SolidColorBrush Color="{StaticResource SystemAccentColor}"></SolidColorBrush>
-                    </Button.Background>
                     <Button.Content>
                         <SymbolIcon Symbol="Send"></SymbolIcon>
                     </Button.Content>

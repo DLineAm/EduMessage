@@ -35,6 +35,8 @@ namespace EduMessage.ViewModels
 
         public void OnEvent(UserExitedEvent eventData)
         {
+            var chat = ControlContainer.Get().Resolve<IChat>();
+            chat.CloseConnection();
             SelectedContent = new LoginPage();
         }
     }

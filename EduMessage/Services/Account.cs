@@ -1,15 +1,11 @@
 ﻿
-using Microsoft.Toolkit.Uwp.Notifications;
-
 using SignalIRServerTest.Models;
 
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
+using System.Diagnostics;
 using System.Threading.Tasks;
 
-using Windows.Storage;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
 
@@ -17,14 +13,16 @@ namespace EduMessage.Services
 {
     public class Account
     {
+        private readonly INotificator _notificator;
         public User User { get; private set; }
 
         public string Jwt { get; private set; }
 
         public IUserBuilder UserBuilder { get; }
 
-        public Account(IUserBuilder userBuilder)
+        public Account(IUserBuilder userBuilder, INotificator notificator)
         {
+            _notificator = notificator;
             UserBuilder = userBuilder;
         }
 
@@ -51,31 +49,7 @@ namespace EduMessage.Services
                 }
 
                 chat.Initialize(App.Address + "Chat", Jwt);
-                chat.SetOnMethod<string, User>("ReceiveForMe", async (m, u) =>
-                {
-                    if (Window.Current.CoreWindow.ActivationMode is CoreWindowActivationMode.None or CoreWindowActivationMode.ActivatedInForeground)
-                    {
-                        return;
-                    }
-                    new ToastContentBuilder()
-                        .AddText(u.FirstName + " " + u.LastName, hintMaxLines: 1)
-                        .AddAppLogoOverride(new Uri(await SaveImage(u.Image)), ToastGenericAppLogoCrop.Circle)
-                        .AddText(m)
-                        .AddInputTextBox("tbReply", "Напишите сообщение...")
-                        .AddButton(new ToastButton()
-                            .SetTextBoxId("tbReply")
-                            .SetContent("Ответить")
-                            .AddArgument("userId", u.Id)
-                            .AddArgument("action", "reply")
-                            .SetImageUri(new Uri("ms-appx:///Assets/" + (IsDarkTheme() ? "reply_light.png" : "reply_dark.png")))
-                        )
-                        .AddButton(new ToastButton()
-                            .SetContent("Заглушить на час")
-                            .AddArgument("action", "dnd")
-                            .AddArgument("parameters", u.Id)
-                            .SetImageUri(new Uri("ms-appx:///Assets/" + (IsDarkTheme() ? "dnd_light.png" : "dnd_dark.png"))))
-                        .Show();
-                });
+                chat.SetOnMethod<List<MessageAttachment>, User>("ReceiveForMe", ReceiveMessage);
                 await chat.OpenConnection();
 
                 User = user;
@@ -88,24 +62,21 @@ namespace EduMessage.Services
             }
         }
 
-        private async Task<string> SaveImage(byte[] image)
+        private async void ReceiveMessage(List<MessageAttachment> message, User user)
         {
-            if (image == null)
+            if (Window.Current.CoreWindow.ActivationMode is CoreWindowActivationMode.None or CoreWindowActivationMode.ActivatedInForeground)
             {
-                
-                return "ms-appx:///Assets/" + (IsDarkTheme() ?  "user_white.png" : "user.png");
+                return;
             }
-            var folder = ApplicationData.Current.LocalFolder;
-            var files = await folder.GetFilesAsync();
-            var file = files.ToList().FirstOrDefault(f => f.Name == "notification.png") ??
-                       await folder.CreateFileAsync("notification.png");
-            await FileIO.WriteBytesAsync(file, image);
-            return file.Path;
-        }
-
-        private bool IsDarkTheme()
-        {
-            return Application.Current.RequestedTheme == ApplicationTheme.Dark;
+            try
+            {
+                var pair = new KeyValuePair<List<MessageAttachment>, User>(message, user);
+                _notificator.Notificate("Message", pair);
+            }
+            catch (Exception e)
+            {
+                Debug.WriteLine(e.Message);
+            }
         }
 
         public void UpdateToken(bool isAddMode)
@@ -141,6 +112,12 @@ namespace EduMessage.Services
                 UpdateToken(isSaveLogin);
 
                 User = user;
+
+                var chat = ControlContainer.Get().Resolve<IChat>();
+                chat.Initialize(App.Address + "Chat", Jwt);
+                chat.SetOnMethod<List<MessageAttachment>, User>("ReceiveForMe", ReceiveMessage);
+                await chat.OpenConnection();
+
                 return string.Empty;
             }
             catch (Exception e)

@@ -11,7 +11,7 @@ namespace EduMessage.Services
     public class DialogNotificator : INotificator, IDialogNotificator
     {
         private List<ContentDialog> _dialogs = new();
-        public async void Notificate(string title, string message)
+        public async void Notificate(string title, object message)
         {
             await new ContentDialog
             {

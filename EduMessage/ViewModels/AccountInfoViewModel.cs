@@ -31,9 +31,20 @@ namespace EduMessage.ViewModels
         [Property] private object _profilePicture;
         [Property] private Visibility _studentInfoVisibility;
 
-        public async void Initialize()
+        public async Task Initialize()
         {
             User = App.Account.User;
+            await BaseInitialize();
+        }
+
+        public async Task Initialize(User user)
+        {
+            User = user;
+            await BaseInitialize();
+        }
+
+        private async Task BaseInitialize()
+        {
             FullName = User.LastName + " " + User.FirstName + " " + User.MiddleName;
 
             if (User.Image != null)

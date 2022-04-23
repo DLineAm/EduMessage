@@ -2,7 +2,7 @@
 using EduMessage.ViewModels;
 
 using MvvmGen.Events;
-
+using SignalIRServerTest.Models;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -31,11 +31,27 @@ namespace EduMessage.Pages
         public AccountInfoPage()
         {
             this.InitializeComponent();
+            
+        }
+
+        protected override async void OnNavigatedTo(NavigationEventArgs e)
+        {
+            base.OnNavigatedTo(e);
+
+            var parameter = e.Parameter as User;
             ViewModel = ControlContainer.Get().ResolveConstructor<AccountInfoViewModel>();
-            ViewModel.Initialize();
+
+            if (parameter != null)
+            {
+                await ViewModel.Initialize(parameter);
+                this.DataContext = ViewModel;
+                return;
+            }
+
+            await ViewModel.Initialize();
             this.DataContext = ViewModel;
         }
 
-        public AccountInfoViewModel ViewModel{ get;}
+        public AccountInfoViewModel ViewModel{ get; private set; }
     }
 }

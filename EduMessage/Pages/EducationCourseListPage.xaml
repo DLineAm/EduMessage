@@ -138,7 +138,8 @@
                                                             </Interactivity:Interaction.Behaviors>
                                                             <StackPanel>
                                                                 <Image Source="{Binding ImagePath}"
-                                                                   Height="32"></Image>
+                                                                   Height="32"
+                                                                   CacheMode="BitmapCache"></Image>
                                                                 <TextBlock HorizontalAlignment="Center"
                                                                        TextAlignment="Center"
                                                                        Text="{Binding Name}"

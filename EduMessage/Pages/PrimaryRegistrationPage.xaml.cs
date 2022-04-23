@@ -15,6 +15,7 @@ using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using EduMessage.Services;
 using EduMessage.ViewModels;
+using MvvmGen.Events;
 
 // Документацию по шаблону элемента "Пустая страница" см. по адресу https://go.microsoft.com/fwlink/?LinkId=234238
 
@@ -33,8 +34,10 @@ namespace EduMessage.Pages
                 var passwordValidator = ControlContainer.Get().Resolve<IValidator>("password");
                 var personValidator = ControlContainer.Get().Resolve<IValidator>("login");
                 var emailValidator = ControlContainer.Get().Resolve<IValidator>("email");
+                var notificator = ControlContainer.Get().Resolve<INotificator>("Dialog");
+                var eventAggregator = ControlContainer.Get().Resolve<IEventAggregator>();
 
-                ViewModel = ControlContainer.Get().ResolveConstructor<PrimaryRegisterPageViewModel>();
+                ViewModel = new PrimaryRegisterPageViewModel(eventAggregator, notificator);
 
                 ViewModel.SetValidator(passwordValidator);
                 ViewModel.SetValidator(personValidator);

@@ -239,7 +239,8 @@
                                            ProfilePicture="{Binding AccountImage}">
                             </PersonPicture>
                             <TextBlock Text="{Binding AccountName}"
-                                       Margin="16,0,0,0"/>
+                                       Margin="16,0,0,0"
+                                       x:Name="aboba"/>
                         </StackPanel>
                     </controls:NavigationViewItem.Content>
                 </controls:NavigationViewItem>
