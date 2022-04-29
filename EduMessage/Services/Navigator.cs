@@ -58,7 +58,16 @@ namespace EduMessage.Services
             {
                 var frame = ((((Frame)Window.Current.Content).Content as MainPage).ContentFrame.Content as LoginPage).ContentFrame;
 
-                if (frame != null && frame.CanGoBack)
+                if (frame is {CanGoBack: true})
+                {
+                    frame.GoBack();
+                }
+            }
+            else if (type == FrameType.MenuFrame)
+            {
+                var frame = ((((Frame)Window.Current.Content).Content as MainPage).ContentFrame.Content as MainMenuPage).NavFrame;
+
+                if (frame is {CanGoBack: true})
                 {
                     frame.GoBack();
                 }

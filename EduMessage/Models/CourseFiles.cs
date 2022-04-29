@@ -14,9 +14,9 @@ namespace EduMessage.ViewModels
     public class CourseFiles : INotifyPropertyChanged
     {
         private List<EducationFile> _files;
-        private Visibility _filesInfoVisibility;
         public Course Course { get; set; }
         public List<EducationFile> Files { get => _files; set { _files = value; OnPropertyChanged();  ChangeFileInfoVisibility(); } }
+        private Visibility _filesInfoVisibility;
 
         private void ChangeFileInfoVisibility()
         {
@@ -27,13 +27,13 @@ namespace EduMessage.ViewModels
                 : Visibility.Visible;
         }
 
+        public Visibility FilesInfoVisibility { get => _filesInfoVisibility; set { _filesInfoVisibility = value; OnPropertyChanged(); } }
         
         private bool _isAddMode;
         public bool IsAddMode { get => _isAddMode;
             set { _isAddMode = value; OnPropertyChanged(); }
         }
 
-        public Visibility FilesInfoVisibility { get => _filesInfoVisibility; set { _filesInfoVisibility = value; OnPropertyChanged(); } }
         public IEnumerable<KeyValuePair<EducationFile, int>> TestFiles { get; internal set; }
         public List<int> CoursesId { get; internal set; }
 

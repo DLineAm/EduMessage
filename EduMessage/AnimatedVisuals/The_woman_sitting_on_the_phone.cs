@@ -1479,7 +1479,7 @@ namespace AnimatedVisuals
             }
 
             // - - - - - - - PreComp layer: Comp 1
-            // - - - - - PreComp layer: Message
+            // - - - - - PreComp layer: FormattedMessageContent
             // - - - Shape tree root for layer: Shape Layer 3
             // - -  Scale:0.70826,0.70826, Offset:<-364, -349.5>
             // - Path 4+Path 5+Path 6+Path 1.PathGeometry
@@ -1493,7 +1493,7 @@ namespace AnimatedVisuals
             }
 
             // - - - - - - - - PreComp layer: Comp 1
-            // - - - - - - PreComp layer: Message
+            // - - - - - - PreComp layer: FormattedMessageContent
             // - - - - Shape tree root for layer: Shape Layer 3
             // - - -  Scale:0.70826,0.70826, Offset:<-364, -349.5>
             // - - Path 4+Path 5+Path 6+Path 1.PathGeometry
@@ -1521,7 +1521,7 @@ namespace AnimatedVisuals
             }
 
             // - - - - - - - - PreComp layer: Comp 1
-            // - - - - - - PreComp layer: Message
+            // - - - - - - PreComp layer: FormattedMessageContent
             // - - - - Shape tree root for layer: Shape Layer 3
             // - - -  Scale:0.70826,0.70826, Offset:<-364, -349.5>
             // - - Path 4+Path 5+Path 6+Path 1.PathGeometry
@@ -1543,7 +1543,7 @@ namespace AnimatedVisuals
             }
 
             // - - - - - - - - PreComp layer: Comp 1
-            // - - - - - - PreComp layer: Message
+            // - - - - - - PreComp layer: FormattedMessageContent
             // - - - - Shape tree root for layer: Shape Layer 3
             // - - -  Scale:0.70826,0.70826, Offset:<-364, -349.5>
             // - - Path 4+Path 5+Path 6+Path 1.PathGeometry
@@ -1565,7 +1565,7 @@ namespace AnimatedVisuals
             }
 
             // - - - - - - - - PreComp layer: Comp 1
-            // - - - - - - PreComp layer: Message
+            // - - - - - - PreComp layer: FormattedMessageContent
             // - - - - Shape tree root for layer: Shape Layer 3
             // - - -  Scale:0.70826,0.70826, Offset:<-364, -349.5>
             // - - Path 4+Path 5+Path 6+Path 1.PathGeometry
@@ -1587,7 +1587,7 @@ namespace AnimatedVisuals
             }
 
             // - - - - - - - PreComp layer: Comp 1
-            // - - - - - PreComp layer: Message
+            // - - - - - PreComp layer: FormattedMessageContent
             // - - - Shape tree root for layer: Shape Layer 3
             // - -  Scale:0.70826,0.70826, Offset:<-364, -349.5>
             CanvasGeometry Geometry_18()
@@ -1611,7 +1611,7 @@ namespace AnimatedVisuals
             }
 
             // - - - - - - - PreComp layer: Comp 1
-            // - - - - - PreComp layer: Message
+            // - - - - - PreComp layer: FormattedMessageContent
             // - - - Shape tree root for layer: Shape Layer 3
             // - -  Scale:0.70826,0.70826, Offset:<-364, -349.5>
             CanvasGeometry Geometry_19()
@@ -1636,7 +1636,7 @@ namespace AnimatedVisuals
             }
 
             // - - - - - - - PreComp layer: Comp 1
-            // - - - - - PreComp layer: Message
+            // - - - - - PreComp layer: FormattedMessageContent
             // - - - Shape tree root for layer: Shape Layer 3
             // - -  Scale:0.70826,0.70826, Offset:<-364, -349.5>
             CanvasGeometry Geometry_20()
@@ -2666,7 +2666,7 @@ namespace AnimatedVisuals
             }
 
             // - - - - - PreComp layer: Comp 1
-            // - - - PreComp layer: Message
+            // - - - PreComp layer: FormattedMessageContent
             // - Shape tree root for layer: Shape Layer 3
             // Scale:0.70826,0.70826, Offset:<-364, -349.5>
             // Color bound to theme property value: Color_C4C4C4
@@ -2790,7 +2790,7 @@ namespace AnimatedVisuals
             }
 
             // - - - - - PreComp layer: Comp 1
-            // - - - PreComp layer: Message
+            // - - - PreComp layer: FormattedMessageContent
             // - Shape tree root for layer: Shape Layer 3
             // Scale:0.70826,0.70826, Offset:<-364, -349.5>
             // Color bound to theme property value: Color_F8F8FC
@@ -2961,7 +2961,7 @@ namespace AnimatedVisuals
             }
 
             // - - - - - - - - - PreComp layer: Comp 1
-            // - - - - - - - PreComp layer: Message
+            // - - - - - - - PreComp layer: FormattedMessageContent
             // Shape tree root for layer: Shape Layer 6
             CompositionContainerShape ContainerShape_5()
             {
@@ -2983,7 +2983,7 @@ namespace AnimatedVisuals
             }
 
             // - - - - - - - - - PreComp layer: Comp 1
-            // - - - - - - - PreComp layer: Message
+            // - - - - - - - PreComp layer: FormattedMessageContent
             // Shape tree root for layer: Shape Layer 7
             CompositionContainerShape ContainerShape_6()
             {
@@ -3005,7 +3005,7 @@ namespace AnimatedVisuals
             }
 
             // - - - - - - - - - PreComp layer: Comp 1
-            // - - - - - - - PreComp layer: Message
+            // - - - - - - - PreComp layer: FormattedMessageContent
             // Shape tree root for layer: Shape Layer 8
             CompositionContainerShape ContainerShape_7()
             {
@@ -3027,7 +3027,7 @@ namespace AnimatedVisuals
             }
 
             // - - - - PreComp layer: Comp 1
-            // - - PreComp layer: Message
+            // - - PreComp layer: FormattedMessageContent
             CompositionEffectBrush EffectBrush_0()
             {
                 var compositeEffect = new CompositeEffect();
@@ -3042,7 +3042,7 @@ namespace AnimatedVisuals
             }
 
             // - - - - PreComp layer: Comp 1
-            // - - PreComp layer: Message
+            // - - PreComp layer: FormattedMessageContent
             CompositionEffectBrush EffectBrush_1()
             {
                 var compositeEffect = new CompositeEffect();
@@ -3057,7 +3057,7 @@ namespace AnimatedVisuals
             }
 
             // - - - - PreComp layer: Comp 1
-            // - - PreComp layer: Message
+            // - - PreComp layer: FormattedMessageContent
             CompositionEffectBrush EffectBrush_2()
             {
                 var compositeEffect = new CompositeEffect();
@@ -3102,7 +3102,7 @@ namespace AnimatedVisuals
             }
 
             // - - - - - - - - - - PreComp layer: Comp 1
-            // - - - - - - - - PreComp layer: Message
+            // - - - - - - - - PreComp layer: FormattedMessageContent
             // - Shape tree root for layer: mask
             // Offset:<158, 70>
             CompositionLinearGradientBrush LinearGradientBrush_2()
@@ -3118,7 +3118,7 @@ namespace AnimatedVisuals
             }
 
             // - - - - - - - - - - PreComp layer: Comp 1
-            // - - - - - - - - PreComp layer: Message
+            // - - - - - - - - PreComp layer: FormattedMessageContent
             // - Shape tree root for layer: mask 2
             // Offset:<181.5, 58.25>
             CompositionLinearGradientBrush LinearGradientBrush_3()
@@ -3134,7 +3134,7 @@ namespace AnimatedVisuals
             }
 
             // - - - - - - - - - - PreComp layer: Comp 1
-            // - - - - - - - - PreComp layer: Message
+            // - - - - - - - - PreComp layer: FormattedMessageContent
             // - Shape tree root for layer: mask 3
             // Offset:<203.75, 45>
             CompositionLinearGradientBrush LinearGradientBrush_4()
@@ -3319,7 +3319,7 @@ namespace AnimatedVisuals
             }
 
             // - - - - - PreComp layer: Comp 1
-            // - - - PreComp layer: Message
+            // - - - PreComp layer: FormattedMessageContent
             // - Shape tree root for layer: Shape Layer 3
             // Scale:0.70826,0.70826, Offset:<-364, -349.5>
             // Path 4+Path 5+Path 6+Path 1.PathGeometry
@@ -3329,7 +3329,7 @@ namespace AnimatedVisuals
             }
 
             // - - - - - PreComp layer: Comp 1
-            // - - - PreComp layer: Message
+            // - - - PreComp layer: FormattedMessageContent
             // - Shape tree root for layer: Shape Layer 3
             // Scale:0.70826,0.70826, Offset:<-364, -349.5>
             CompositionPathGeometry PathGeometry_14()
@@ -3338,7 +3338,7 @@ namespace AnimatedVisuals
             }
 
             // - - - - - PreComp layer: Comp 1
-            // - - - PreComp layer: Message
+            // - - - PreComp layer: FormattedMessageContent
             // - Shape tree root for layer: Shape Layer 3
             // Scale:0.70826,0.70826, Offset:<-364, -349.5>
             CompositionPathGeometry PathGeometry_15()
@@ -3347,7 +3347,7 @@ namespace AnimatedVisuals
             }
 
             // - - - - - PreComp layer: Comp 1
-            // - - - PreComp layer: Message
+            // - - - PreComp layer: FormattedMessageContent
             // - Shape tree root for layer: Shape Layer 3
             // Scale:0.70826,0.70826, Offset:<-364, -349.5>
             CompositionPathGeometry PathGeometry_16()
@@ -3788,7 +3788,7 @@ namespace AnimatedVisuals
             }
 
             // - - - - PreComp layer: Comp 1
-            // - - PreComp layer: Message
+            // - - PreComp layer: FormattedMessageContent
             // Shape tree root for layer: Shape Layer 3
             // Path 4+Path 5+Path 6+Path 1
             CompositionSpriteShape SpriteShape_17()
@@ -3800,7 +3800,7 @@ namespace AnimatedVisuals
             }
 
             // - - - - PreComp layer: Comp 1
-            // - - PreComp layer: Message
+            // - - PreComp layer: FormattedMessageContent
             // Shape tree root for layer: Shape Layer 3
             // Path 1
             CompositionSpriteShape SpriteShape_18()
@@ -3812,7 +3812,7 @@ namespace AnimatedVisuals
             }
 
             // - - - - PreComp layer: Comp 1
-            // - - PreComp layer: Message
+            // - - PreComp layer: FormattedMessageContent
             // Shape tree root for layer: Shape Layer 3
             // Path 1
             CompositionSpriteShape SpriteShape_19()
@@ -3824,7 +3824,7 @@ namespace AnimatedVisuals
             }
 
             // - - - - PreComp layer: Comp 1
-            // - - PreComp layer: Message
+            // - - PreComp layer: FormattedMessageContent
             // Shape tree root for layer: Shape Layer 3
             // Path 4
             CompositionSpriteShape SpriteShape_20()
@@ -3836,7 +3836,7 @@ namespace AnimatedVisuals
             }
 
             // - - - - - - - - - - PreComp layer: Comp 1
-            // - - - - - - - - PreComp layer: Message
+            // - - - - - - - - PreComp layer: FormattedMessageContent
             // - Shape tree root for layer: Shape Layer 6
             // Path 1
             CompositionSpriteShape SpriteShape_21()
@@ -3848,7 +3848,7 @@ namespace AnimatedVisuals
             }
 
             // - - - - - - - - - - PreComp layer: Comp 1
-            // - - - - - - - - PreComp layer: Message
+            // - - - - - - - - PreComp layer: FormattedMessageContent
             // - Shape tree root for layer: Shape Layer 6
             // Path 1
             CompositionSpriteShape SpriteShape_22()
@@ -3860,7 +3860,7 @@ namespace AnimatedVisuals
             }
 
             // - - - - - - - - - - PreComp layer: Comp 1
-            // - - - - - - - - PreComp layer: Message
+            // - - - - - - - - PreComp layer: FormattedMessageContent
             // - Shape tree root for layer: Shape Layer 6
             // Path 1
             CompositionSpriteShape SpriteShape_23()
@@ -3872,7 +3872,7 @@ namespace AnimatedVisuals
             }
 
             // - - - - - - - - - PreComp layer: Comp 1
-            // - - - - - - - PreComp layer: Message
+            // - - - - - - - PreComp layer: FormattedMessageContent
             // Shape tree root for layer: mask
             // Path 1
             CompositionSpriteShape SpriteShape_24()
@@ -3884,7 +3884,7 @@ namespace AnimatedVisuals
             }
 
             // - - - - - - - - - - PreComp layer: Comp 1
-            // - - - - - - - - PreComp layer: Message
+            // - - - - - - - - PreComp layer: FormattedMessageContent
             // - Shape tree root for layer: Shape Layer 7
             // Path 1
             CompositionSpriteShape SpriteShape_25()
@@ -3896,7 +3896,7 @@ namespace AnimatedVisuals
             }
 
             // - - - - - - - - - - PreComp layer: Comp 1
-            // - - - - - - - - PreComp layer: Message
+            // - - - - - - - - PreComp layer: FormattedMessageContent
             // - Shape tree root for layer: Shape Layer 7
             // Path 1
             CompositionSpriteShape SpriteShape_26()
@@ -3908,7 +3908,7 @@ namespace AnimatedVisuals
             }
 
             // - - - - - - - - - - PreComp layer: Comp 1
-            // - - - - - - - - PreComp layer: Message
+            // - - - - - - - - PreComp layer: FormattedMessageContent
             // - Shape tree root for layer: Shape Layer 7
             // Path 1
             CompositionSpriteShape SpriteShape_27()
@@ -3920,7 +3920,7 @@ namespace AnimatedVisuals
             }
 
             // - - - - - - - - - PreComp layer: Comp 1
-            // - - - - - - - PreComp layer: Message
+            // - - - - - - - PreComp layer: FormattedMessageContent
             // Shape tree root for layer: mask 2
             // Path 1
             CompositionSpriteShape SpriteShape_28()
@@ -3932,7 +3932,7 @@ namespace AnimatedVisuals
             }
 
             // - - - - - - - - - - PreComp layer: Comp 1
-            // - - - - - - - - PreComp layer: Message
+            // - - - - - - - - PreComp layer: FormattedMessageContent
             // - Shape tree root for layer: Shape Layer 8
             // Path 1
             CompositionSpriteShape SpriteShape_29()
@@ -3944,7 +3944,7 @@ namespace AnimatedVisuals
             }
 
             // - - - - - - - - - - PreComp layer: Comp 1
-            // - - - - - - - - PreComp layer: Message
+            // - - - - - - - - PreComp layer: FormattedMessageContent
             // - Shape tree root for layer: Shape Layer 8
             // Path 1
             CompositionSpriteShape SpriteShape_30()
@@ -3956,7 +3956,7 @@ namespace AnimatedVisuals
             }
 
             // - - - - - - - - - - PreComp layer: Comp 1
-            // - - - - - - - - PreComp layer: Message
+            // - - - - - - - - PreComp layer: FormattedMessageContent
             // - Shape tree root for layer: Shape Layer 8
             // Path 1
             CompositionSpriteShape SpriteShape_31()
@@ -3968,7 +3968,7 @@ namespace AnimatedVisuals
             }
 
             // - - - - - - - - - PreComp layer: Comp 1
-            // - - - - - - - PreComp layer: Message
+            // - - - - - - - PreComp layer: FormattedMessageContent
             // Shape tree root for layer: mask 3
             // Path 1
             CompositionSpriteShape SpriteShape_32()
@@ -4323,49 +4323,49 @@ namespace AnimatedVisuals
             }
 
             // - - - - - PreComp layer: Comp 1
-            // - - - PreComp layer: Message
+            // - - - PreComp layer: FormattedMessageContent
             CompositionSurfaceBrush SurfaceBrush_0()
             {
                 return _c.CreateSurfaceBrush(VisualSurface_0());
             }
 
             // - - - - - PreComp layer: Comp 1
-            // - - - PreComp layer: Message
+            // - - - PreComp layer: FormattedMessageContent
             CompositionSurfaceBrush SurfaceBrush_1()
             {
                 return _c.CreateSurfaceBrush(VisualSurface_1());
             }
 
             // - - - - - PreComp layer: Comp 1
-            // - - - PreComp layer: Message
+            // - - - PreComp layer: FormattedMessageContent
             CompositionSurfaceBrush SurfaceBrush_2()
             {
                 return _c.CreateSurfaceBrush(VisualSurface_2());
             }
 
             // - - - - - PreComp layer: Comp 1
-            // - - - PreComp layer: Message
+            // - - - PreComp layer: FormattedMessageContent
             CompositionSurfaceBrush SurfaceBrush_3()
             {
                 return _c.CreateSurfaceBrush(VisualSurface_3());
             }
 
             // - - - - - PreComp layer: Comp 1
-            // - - - PreComp layer: Message
+            // - - - PreComp layer: FormattedMessageContent
             CompositionSurfaceBrush SurfaceBrush_4()
             {
                 return _c.CreateSurfaceBrush(VisualSurface_4());
             }
 
             // - - - - - PreComp layer: Comp 1
-            // - - - PreComp layer: Message
+            // - - - PreComp layer: FormattedMessageContent
             CompositionSurfaceBrush SurfaceBrush_5()
             {
                 return _c.CreateSurfaceBrush(VisualSurface_5());
             }
 
             // - - - - - - PreComp layer: Comp 1
-            // - - - - PreComp layer: Message
+            // - - - - PreComp layer: FormattedMessageContent
             CompositionVisualSurface VisualSurface_0()
             {
                 var result = _c.CreateVisualSurface();
@@ -4375,7 +4375,7 @@ namespace AnimatedVisuals
             }
 
             // - - - - - - PreComp layer: Comp 1
-            // - - - - PreComp layer: Message
+            // - - - - PreComp layer: FormattedMessageContent
             CompositionVisualSurface VisualSurface_1()
             {
                 var result = _c.CreateVisualSurface();
@@ -4385,7 +4385,7 @@ namespace AnimatedVisuals
             }
 
             // - - - - - - PreComp layer: Comp 1
-            // - - - - PreComp layer: Message
+            // - - - - PreComp layer: FormattedMessageContent
             CompositionVisualSurface VisualSurface_2()
             {
                 var result = _c.CreateVisualSurface();
@@ -4395,7 +4395,7 @@ namespace AnimatedVisuals
             }
 
             // - - - - - - PreComp layer: Comp 1
-            // - - - - PreComp layer: Message
+            // - - - - PreComp layer: FormattedMessageContent
             CompositionVisualSurface VisualSurface_3()
             {
                 var result = _c.CreateVisualSurface();
@@ -4405,7 +4405,7 @@ namespace AnimatedVisuals
             }
 
             // - - - - - - PreComp layer: Comp 1
-            // - - - - PreComp layer: Message
+            // - - - - PreComp layer: FormattedMessageContent
             CompositionVisualSurface VisualSurface_4()
             {
                 var result = _c.CreateVisualSurface();
@@ -4415,7 +4415,7 @@ namespace AnimatedVisuals
             }
 
             // - - - - - - PreComp layer: Comp 1
-            // - - - - PreComp layer: Message
+            // - - - - PreComp layer: FormattedMessageContent
             CompositionVisualSurface VisualSurface_5()
             {
                 var result = _c.CreateVisualSurface();
@@ -4444,7 +4444,7 @@ namespace AnimatedVisuals
                 var children = result.Children;
                 // Layer aggregator
                 children.InsertAtTop(ShapeVisual_1());
-                // PreComp layer: Message
+                // PreComp layer: FormattedMessageContent
                 children.InsertAtTop(ContainerVisual_2());
                 // Shape tree root for layer: Woman
                 children.InsertAtTop(ShapeVisual_9());
@@ -4452,7 +4452,7 @@ namespace AnimatedVisuals
             }
 
             // - PreComp layer: Comp 1
-            // Transforms for Message
+            // Transforms for FormattedMessageContent
             ContainerVisual ContainerVisual_2()
             {
                 var result = _c.CreateContainerVisual();
@@ -4464,7 +4464,7 @@ namespace AnimatedVisuals
             }
 
             // - - PreComp layer: Comp 1
-            // PreComp layer: Message
+            // PreComp layer: FormattedMessageContent
             ContainerVisual ContainerVisual_3()
             {
                 var result = _c.CreateContainerVisual();
@@ -4480,7 +4480,7 @@ namespace AnimatedVisuals
             }
 
             // - - - - - - - PreComp layer: Comp 1
-            // - - - - - PreComp layer: Message
+            // - - - - - PreComp layer: FormattedMessageContent
             ContainerVisual ContainerVisual_4()
             {
                 var result = _c.CreateContainerVisual();
@@ -4491,7 +4491,7 @@ namespace AnimatedVisuals
             }
 
             // - - - - - - - PreComp layer: Comp 1
-            // - - - - - PreComp layer: Message
+            // - - - - - PreComp layer: FormattedMessageContent
             ContainerVisual ContainerVisual_5()
             {
                 var result = _c.CreateContainerVisual();
@@ -4502,7 +4502,7 @@ namespace AnimatedVisuals
             }
 
             // - - - - - - - PreComp layer: Comp 1
-            // - - - - - PreComp layer: Message
+            // - - - - - PreComp layer: FormattedMessageContent
             ContainerVisual ContainerVisual_6()
             {
                 var result = _c.CreateContainerVisual();
@@ -4513,7 +4513,7 @@ namespace AnimatedVisuals
             }
 
             // - - - - - - - PreComp layer: Comp 1
-            // - - - - - PreComp layer: Message
+            // - - - - - PreComp layer: FormattedMessageContent
             ContainerVisual ContainerVisual_7()
             {
                 var result = _c.CreateContainerVisual();
@@ -4524,7 +4524,7 @@ namespace AnimatedVisuals
             }
 
             // - - - - - - - PreComp layer: Comp 1
-            // - - - - - PreComp layer: Message
+            // - - - - - PreComp layer: FormattedMessageContent
             ContainerVisual ContainerVisual_8()
             {
                 var result = _c.CreateContainerVisual();
@@ -4535,7 +4535,7 @@ namespace AnimatedVisuals
             }
 
             // - - - - - - - PreComp layer: Comp 1
-            // - - - - - PreComp layer: Message
+            // - - - - - PreComp layer: FormattedMessageContent
             ContainerVisual ContainerVisual_9()
             {
                 var result = _c.CreateContainerVisual();
@@ -5130,7 +5130,7 @@ namespace AnimatedVisuals
             }
 
             // - - - PreComp layer: Comp 1
-            // - PreComp layer: Message
+            // - PreComp layer: FormattedMessageContent
             // Shape tree root for layer: Shape Layer 3
             ShapeVisual ShapeVisual_2()
             {
@@ -5149,7 +5149,7 @@ namespace AnimatedVisuals
             }
 
             // - - - - - - - - PreComp layer: Comp 1
-            // - - - - - - PreComp layer: Message
+            // - - - - - - PreComp layer: FormattedMessageContent
             // Shape tree root for layer: Shape Layer 6
             ShapeVisual ShapeVisual_3()
             {
@@ -5160,7 +5160,7 @@ namespace AnimatedVisuals
             }
 
             // - - - - - - - - PreComp layer: Comp 1
-            // - - - - - - PreComp layer: Message
+            // - - - - - - PreComp layer: FormattedMessageContent
             // Shape tree root for layer: mask
             ShapeVisual ShapeVisual_4()
             {
@@ -5172,7 +5172,7 @@ namespace AnimatedVisuals
             }
 
             // - - - - - - - - PreComp layer: Comp 1
-            // - - - - - - PreComp layer: Message
+            // - - - - - - PreComp layer: FormattedMessageContent
             // Shape tree root for layer: Shape Layer 7
             ShapeVisual ShapeVisual_5()
             {
@@ -5183,7 +5183,7 @@ namespace AnimatedVisuals
             }
 
             // - - - - - - - - PreComp layer: Comp 1
-            // - - - - - - PreComp layer: Message
+            // - - - - - - PreComp layer: FormattedMessageContent
             // Shape tree root for layer: mask 2
             ShapeVisual ShapeVisual_6()
             {
@@ -5195,7 +5195,7 @@ namespace AnimatedVisuals
             }
 
             // - - - - - - - - PreComp layer: Comp 1
-            // - - - - - - PreComp layer: Message
+            // - - - - - - PreComp layer: FormattedMessageContent
             // Shape tree root for layer: Shape Layer 8
             ShapeVisual ShapeVisual_7()
             {
@@ -5206,7 +5206,7 @@ namespace AnimatedVisuals
             }
 
             // - - - - - - - - PreComp layer: Comp 1
-            // - - - - - - PreComp layer: Message
+            // - - - - - - PreComp layer: FormattedMessageContent
             // Shape tree root for layer: mask 3
             ShapeVisual ShapeVisual_8()
             {
@@ -5282,7 +5282,7 @@ namespace AnimatedVisuals
             }
 
             // - - - PreComp layer: Comp 1
-            // - PreComp layer: Message
+            // - PreComp layer: FormattedMessageContent
             SpriteVisual SpriteVisual_0()
             {
                 var result = _c.CreateSpriteVisual();
@@ -5292,7 +5292,7 @@ namespace AnimatedVisuals
             }
 
             // - - - PreComp layer: Comp 1
-            // - PreComp layer: Message
+            // - PreComp layer: FormattedMessageContent
             SpriteVisual SpriteVisual_1()
             {
                 var result = _c.CreateSpriteVisual();
@@ -5302,7 +5302,7 @@ namespace AnimatedVisuals
             }
 
             // - - - PreComp layer: Comp 1
-            // - PreComp layer: Message
+            // - PreComp layer: FormattedMessageContent
             SpriteVisual SpriteVisual_2()
             {
                 var result = _c.CreateSpriteVisual();
@@ -5372,7 +5372,7 @@ namespace AnimatedVisuals
             }
 
             // - - - - - - - - - - PreComp layer: Comp 1
-            // - - - - - - - - PreComp layer: Message
+            // - - - - - - - - PreComp layer: FormattedMessageContent
             // - Shape tree root for layer: Shape Layer 6
             // Offset
             Vector2KeyFrameAnimation OffsetVector2Animation_2()
@@ -5403,7 +5403,7 @@ namespace AnimatedVisuals
             }
 
             // - - - - - - - - - - PreComp layer: Comp 1
-            // - - - - - - - - PreComp layer: Message
+            // - - - - - - - - PreComp layer: FormattedMessageContent
             // - Shape tree root for layer: Shape Layer 7
             // Offset
             Vector2KeyFrameAnimation OffsetVector2Animation_3()
@@ -5434,7 +5434,7 @@ namespace AnimatedVisuals
             }
 
             // - - - - - - - - - - PreComp layer: Comp 1
-            // - - - - - - - - PreComp layer: Message
+            // - - - - - - - - PreComp layer: FormattedMessageContent
             // - Shape tree root for layer: Shape Layer 8
             // Offset
             Vector2KeyFrameAnimation OffsetVector2Animation_4()
@@ -5625,7 +5625,7 @@ namespace AnimatedVisuals
             }
 
             // - - PreComp layer: Comp 1
-            // PreComp layer: Message
+            // PreComp layer: FormattedMessageContent
             // Offset
             Vector3KeyFrameAnimation OffsetVector3Animation_0()
             {
@@ -6131,7 +6131,7 @@ namespace AnimatedVisuals
             }
 
             // - - - - - - - PreComp layer: Comp 1
-            // - - - - - PreComp layer: Message
+            // - - - - - PreComp layer: FormattedMessageContent
             // - - - Shape tree root for layer: Shape Layer 3
             // - -  Scale:0.70826,0.70826, Offset:<-364, -349.5>
             // - Path 4+Path 5+Path 6+Path 1.PathGeometry
@@ -6145,7 +6145,7 @@ namespace AnimatedVisuals
             }
 
             // - - - - - - - - PreComp layer: Comp 1
-            // - - - - - - PreComp layer: Message
+            // - - - - - - PreComp layer: FormattedMessageContent
             // - - - - Shape tree root for layer: Shape Layer 3
             // - - -  Scale:0.70826,0.70826, Offset:<-364, -349.5>
             // - - Path 4+Path 5+Path 6+Path 1.PathGeometry
@@ -6173,7 +6173,7 @@ namespace AnimatedVisuals
             }
 
             // - - - - - - - - PreComp layer: Comp 1
-            // - - - - - - PreComp layer: Message
+            // - - - - - - PreComp layer: FormattedMessageContent
             // - - - - Shape tree root for layer: Shape Layer 3
             // - - -  Scale:0.70826,0.70826, Offset:<-364, -349.5>
             // - - Path 4+Path 5+Path 6+Path 1.PathGeometry
@@ -6195,7 +6195,7 @@ namespace AnimatedVisuals
             }
 
             // - - - - - - - - PreComp layer: Comp 1
-            // - - - - - - PreComp layer: Message
+            // - - - - - - PreComp layer: FormattedMessageContent
             // - - - - Shape tree root for layer: Shape Layer 3
             // - - -  Scale:0.70826,0.70826, Offset:<-364, -349.5>
             // - - Path 4+Path 5+Path 6+Path 1.PathGeometry
@@ -6217,7 +6217,7 @@ namespace AnimatedVisuals
             }
 
             // - - - - - - - - PreComp layer: Comp 1
-            // - - - - - - PreComp layer: Message
+            // - - - - - - PreComp layer: FormattedMessageContent
             // - - - - Shape tree root for layer: Shape Layer 3
             // - - -  Scale:0.70826,0.70826, Offset:<-364, -349.5>
             // - - Path 4+Path 5+Path 6+Path 1.PathGeometry
@@ -6239,7 +6239,7 @@ namespace AnimatedVisuals
             }
 
             // - - - - - - - PreComp layer: Comp 1
-            // - - - - - PreComp layer: Message
+            // - - - - - PreComp layer: FormattedMessageContent
             // - - - Shape tree root for layer: Shape Layer 3
             // - -  Scale:0.70826,0.70826, Offset:<-364, -349.5>
             CanvasGeometry Geometry_18()
@@ -6263,7 +6263,7 @@ namespace AnimatedVisuals
             }
 
             // - - - - - - - PreComp layer: Comp 1
-            // - - - - - PreComp layer: Message
+            // - - - - - PreComp layer: FormattedMessageContent
             // - - - Shape tree root for layer: Shape Layer 3
             // - -  Scale:0.70826,0.70826, Offset:<-364, -349.5>
             CanvasGeometry Geometry_19()
@@ -6288,7 +6288,7 @@ namespace AnimatedVisuals
             }
 
             // - - - - - - - PreComp layer: Comp 1
-            // - - - - - PreComp layer: Message
+            // - - - - - PreComp layer: FormattedMessageContent
             // - - - Shape tree root for layer: Shape Layer 3
             // - -  Scale:0.70826,0.70826, Offset:<-364, -349.5>
             CanvasGeometry Geometry_20()
@@ -7148,7 +7148,7 @@ namespace AnimatedVisuals
             }
 
             // - - - - - PreComp layer: Comp 1
-            // - - - PreComp layer: Message
+            // - - - PreComp layer: FormattedMessageContent
             // - Shape tree root for layer: Shape Layer 3
             // Scale:0.70826,0.70826, Offset:<-364, -349.5>
             // Color bound to theme property value: Color_C4C4C4
@@ -7272,7 +7272,7 @@ namespace AnimatedVisuals
             }
 
             // - - - - - PreComp layer: Comp 1
-            // - - - PreComp layer: Message
+            // - - - PreComp layer: FormattedMessageContent
             // - Shape tree root for layer: Shape Layer 3
             // Scale:0.70826,0.70826, Offset:<-364, -349.5>
             // Color bound to theme property value: Color_F8F8FC
@@ -7443,7 +7443,7 @@ namespace AnimatedVisuals
             }
 
             // - - - - - - - - - PreComp layer: Comp 1
-            // - - - - - - - PreComp layer: Message
+            // - - - - - - - PreComp layer: FormattedMessageContent
             // Shape tree root for layer: Shape Layer 6
             CompositionContainerShape ContainerShape_5()
             {
@@ -7465,7 +7465,7 @@ namespace AnimatedVisuals
             }
 
             // - - - - - - - - - PreComp layer: Comp 1
-            // - - - - - - - PreComp layer: Message
+            // - - - - - - - PreComp layer: FormattedMessageContent
             // Shape tree root for layer: Shape Layer 7
             CompositionContainerShape ContainerShape_6()
             {
@@ -7487,7 +7487,7 @@ namespace AnimatedVisuals
             }
 
             // - - - - - - - - - PreComp layer: Comp 1
-            // - - - - - - - PreComp layer: Message
+            // - - - - - - - PreComp layer: FormattedMessageContent
             // Shape tree root for layer: Shape Layer 8
             CompositionContainerShape ContainerShape_7()
             {
@@ -7509,7 +7509,7 @@ namespace AnimatedVisuals
             }
 
             // - - - - PreComp layer: Comp 1
-            // - - PreComp layer: Message
+            // - - PreComp layer: FormattedMessageContent
             CompositionEffectBrush EffectBrush_0()
             {
                 var compositeEffect = new CompositeEffect();
@@ -7524,7 +7524,7 @@ namespace AnimatedVisuals
             }
 
             // - - - - PreComp layer: Comp 1
-            // - - PreComp layer: Message
+            // - - PreComp layer: FormattedMessageContent
             CompositionEffectBrush EffectBrush_1()
             {
                 var compositeEffect = new CompositeEffect();
@@ -7539,7 +7539,7 @@ namespace AnimatedVisuals
             }
 
             // - - - - PreComp layer: Comp 1
-            // - - PreComp layer: Message
+            // - - PreComp layer: FormattedMessageContent
             CompositionEffectBrush EffectBrush_2()
             {
                 var compositeEffect = new CompositeEffect();
@@ -7584,7 +7584,7 @@ namespace AnimatedVisuals
             }
 
             // - - - - - - - - - - PreComp layer: Comp 1
-            // - - - - - - - - PreComp layer: Message
+            // - - - - - - - - PreComp layer: FormattedMessageContent
             // - Shape tree root for layer: mask
             // Offset:<158, 70>
             CompositionLinearGradientBrush LinearGradientBrush_2()
@@ -7600,7 +7600,7 @@ namespace AnimatedVisuals
             }
 
             // - - - - - - - - - - PreComp layer: Comp 1
-            // - - - - - - - - PreComp layer: Message
+            // - - - - - - - - PreComp layer: FormattedMessageContent
             // - Shape tree root for layer: mask 2
             // Offset:<181.5, 58.25>
             CompositionLinearGradientBrush LinearGradientBrush_3()
@@ -7616,7 +7616,7 @@ namespace AnimatedVisuals
             }
 
             // - - - - - - - - - - PreComp layer: Comp 1
-            // - - - - - - - - PreComp layer: Message
+            // - - - - - - - - PreComp layer: FormattedMessageContent
             // - Shape tree root for layer: mask 3
             // Offset:<203.75, 45>
             CompositionLinearGradientBrush LinearGradientBrush_4()
@@ -7723,7 +7723,7 @@ namespace AnimatedVisuals
             }
 
             // - - - - - PreComp layer: Comp 1
-            // - - - PreComp layer: Message
+            // - - - PreComp layer: FormattedMessageContent
             // - Shape tree root for layer: Shape Layer 3
             // Scale:0.70826,0.70826, Offset:<-364, -349.5>
             // Path 4+Path 5+Path 6+Path 1.PathGeometry
@@ -7733,7 +7733,7 @@ namespace AnimatedVisuals
             }
 
             // - - - - - PreComp layer: Comp 1
-            // - - - PreComp layer: Message
+            // - - - PreComp layer: FormattedMessageContent
             // - Shape tree root for layer: Shape Layer 3
             // Scale:0.70826,0.70826, Offset:<-364, -349.5>
             CompositionPathGeometry PathGeometry_14()
@@ -7742,7 +7742,7 @@ namespace AnimatedVisuals
             }
 
             // - - - - - PreComp layer: Comp 1
-            // - - - PreComp layer: Message
+            // - - - PreComp layer: FormattedMessageContent
             // - Shape tree root for layer: Shape Layer 3
             // Scale:0.70826,0.70826, Offset:<-364, -349.5>
             CompositionPathGeometry PathGeometry_15()
@@ -7751,7 +7751,7 @@ namespace AnimatedVisuals
             }
 
             // - - - - - PreComp layer: Comp 1
-            // - - - PreComp layer: Message
+            // - - - PreComp layer: FormattedMessageContent
             // - Shape tree root for layer: Shape Layer 3
             // Scale:0.70826,0.70826, Offset:<-364, -349.5>
             CompositionPathGeometry PathGeometry_16()
@@ -8182,7 +8182,7 @@ namespace AnimatedVisuals
             }
 
             // - - - - PreComp layer: Comp 1
-            // - - PreComp layer: Message
+            // - - PreComp layer: FormattedMessageContent
             // Shape tree root for layer: Shape Layer 3
             // Path 4+Path 5+Path 6+Path 1
             CompositionSpriteShape SpriteShape_17()
@@ -8194,7 +8194,7 @@ namespace AnimatedVisuals
             }
 
             // - - - - PreComp layer: Comp 1
-            // - - PreComp layer: Message
+            // - - PreComp layer: FormattedMessageContent
             // Shape tree root for layer: Shape Layer 3
             // Path 1
             CompositionSpriteShape SpriteShape_18()
@@ -8206,7 +8206,7 @@ namespace AnimatedVisuals
             }
 
             // - - - - PreComp layer: Comp 1
-            // - - PreComp layer: Message
+            // - - PreComp layer: FormattedMessageContent
             // Shape tree root for layer: Shape Layer 3
             // Path 1
             CompositionSpriteShape SpriteShape_19()
@@ -8218,7 +8218,7 @@ namespace AnimatedVisuals
             }
 
             // - - - - PreComp layer: Comp 1
-            // - - PreComp layer: Message
+            // - - PreComp layer: FormattedMessageContent
             // Shape tree root for layer: Shape Layer 3
             // Path 4
             CompositionSpriteShape SpriteShape_20()
@@ -8230,7 +8230,7 @@ namespace AnimatedVisuals
             }
 
             // - - - - - - - - - - PreComp layer: Comp 1
-            // - - - - - - - - PreComp layer: Message
+            // - - - - - - - - PreComp layer: FormattedMessageContent
             // - Shape tree root for layer: Shape Layer 6
             // Path 1
             CompositionSpriteShape SpriteShape_21()
@@ -8242,7 +8242,7 @@ namespace AnimatedVisuals
             }
 
             // - - - - - - - - - - PreComp layer: Comp 1
-            // - - - - - - - - PreComp layer: Message
+            // - - - - - - - - PreComp layer: FormattedMessageContent
             // - Shape tree root for layer: Shape Layer 6
             // Path 1
             CompositionSpriteShape SpriteShape_22()
@@ -8254,7 +8254,7 @@ namespace AnimatedVisuals
             }
 
             // - - - - - - - - - - PreComp layer: Comp 1
-            // - - - - - - - - PreComp layer: Message
+            // - - - - - - - - PreComp layer: FormattedMessageContent
             // - Shape tree root for layer: Shape Layer 6
             // Path 1
             CompositionSpriteShape SpriteShape_23()
@@ -8266,7 +8266,7 @@ namespace AnimatedVisuals
             }
 
             // - - - - - - - - - PreComp layer: Comp 1
-            // - - - - - - - PreComp layer: Message
+            // - - - - - - - PreComp layer: FormattedMessageContent
             // Shape tree root for layer: mask
             // Path 1
             CompositionSpriteShape SpriteShape_24()
@@ -8278,7 +8278,7 @@ namespace AnimatedVisuals
             }
 
             // - - - - - - - - - - PreComp layer: Comp 1
-            // - - - - - - - - PreComp layer: Message
+            // - - - - - - - - PreComp layer: FormattedMessageContent
             // - Shape tree root for layer: Shape Layer 7
             // Path 1
             CompositionSpriteShape SpriteShape_25()
@@ -8290,7 +8290,7 @@ namespace AnimatedVisuals
             }
 
             // - - - - - - - - - - PreComp layer: Comp 1
-            // - - - - - - - - PreComp layer: Message
+            // - - - - - - - - PreComp layer: FormattedMessageContent
             // - Shape tree root for layer: Shape Layer 7
             // Path 1
             CompositionSpriteShape SpriteShape_26()
@@ -8302,7 +8302,7 @@ namespace AnimatedVisuals
             }
 
             // - - - - - - - - - - PreComp layer: Comp 1
-            // - - - - - - - - PreComp layer: Message
+            // - - - - - - - - PreComp layer: FormattedMessageContent
             // - Shape tree root for layer: Shape Layer 7
             // Path 1
             CompositionSpriteShape SpriteShape_27()
@@ -8314,7 +8314,7 @@ namespace AnimatedVisuals
             }
 
             // - - - - - - - - - PreComp layer: Comp 1
-            // - - - - - - - PreComp layer: Message
+            // - - - - - - - PreComp layer: FormattedMessageContent
             // Shape tree root for layer: mask 2
             // Path 1
             CompositionSpriteShape SpriteShape_28()
@@ -8326,7 +8326,7 @@ namespace AnimatedVisuals
             }
 
             // - - - - - - - - - - PreComp layer: Comp 1
-            // - - - - - - - - PreComp layer: Message
+            // - - - - - - - - PreComp layer: FormattedMessageContent
             // - Shape tree root for layer: Shape Layer 8
             // Path 1
             CompositionSpriteShape SpriteShape_29()
@@ -8338,7 +8338,7 @@ namespace AnimatedVisuals
             }
 
             // - - - - - - - - - - PreComp layer: Comp 1
-            // - - - - - - - - PreComp layer: Message
+            // - - - - - - - - PreComp layer: FormattedMessageContent
             // - Shape tree root for layer: Shape Layer 8
             // Path 1
             CompositionSpriteShape SpriteShape_30()
@@ -8350,7 +8350,7 @@ namespace AnimatedVisuals
             }
 
             // - - - - - - - - - - PreComp layer: Comp 1
-            // - - - - - - - - PreComp layer: Message
+            // - - - - - - - - PreComp layer: FormattedMessageContent
             // - Shape tree root for layer: Shape Layer 8
             // Path 1
             CompositionSpriteShape SpriteShape_31()
@@ -8362,7 +8362,7 @@ namespace AnimatedVisuals
             }
 
             // - - - - - - - - - PreComp layer: Comp 1
-            // - - - - - - - PreComp layer: Message
+            // - - - - - - - PreComp layer: FormattedMessageContent
             // Shape tree root for layer: mask 3
             // Path 1
             CompositionSpriteShape SpriteShape_32()
@@ -8717,49 +8717,49 @@ namespace AnimatedVisuals
             }
 
             // - - - - - PreComp layer: Comp 1
-            // - - - PreComp layer: Message
+            // - - - PreComp layer: FormattedMessageContent
             CompositionSurfaceBrush SurfaceBrush_0()
             {
                 return _c.CreateSurfaceBrush(VisualSurface_0());
             }
 
             // - - - - - PreComp layer: Comp 1
-            // - - - PreComp layer: Message
+            // - - - PreComp layer: FormattedMessageContent
             CompositionSurfaceBrush SurfaceBrush_1()
             {
                 return _c.CreateSurfaceBrush(VisualSurface_1());
             }
 
             // - - - - - PreComp layer: Comp 1
-            // - - - PreComp layer: Message
+            // - - - PreComp layer: FormattedMessageContent
             CompositionSurfaceBrush SurfaceBrush_2()
             {
                 return _c.CreateSurfaceBrush(VisualSurface_2());
             }
 
             // - - - - - PreComp layer: Comp 1
-            // - - - PreComp layer: Message
+            // - - - PreComp layer: FormattedMessageContent
             CompositionSurfaceBrush SurfaceBrush_3()
             {
                 return _c.CreateSurfaceBrush(VisualSurface_3());
             }
 
             // - - - - - PreComp layer: Comp 1
-            // - - - PreComp layer: Message
+            // - - - PreComp layer: FormattedMessageContent
             CompositionSurfaceBrush SurfaceBrush_4()
             {
                 return _c.CreateSurfaceBrush(VisualSurface_4());
             }
 
             // - - - - - PreComp layer: Comp 1
-            // - - - PreComp layer: Message
+            // - - - PreComp layer: FormattedMessageContent
             CompositionSurfaceBrush SurfaceBrush_5()
             {
                 return _c.CreateSurfaceBrush(VisualSurface_5());
             }
 
             // - - - - - - PreComp layer: Comp 1
-            // - - - - PreComp layer: Message
+            // - - - - PreComp layer: FormattedMessageContent
             CompositionVisualSurface VisualSurface_0()
             {
                 var result = _c.CreateVisualSurface();
@@ -8769,7 +8769,7 @@ namespace AnimatedVisuals
             }
 
             // - - - - - - PreComp layer: Comp 1
-            // - - - - PreComp layer: Message
+            // - - - - PreComp layer: FormattedMessageContent
             CompositionVisualSurface VisualSurface_1()
             {
                 var result = _c.CreateVisualSurface();
@@ -8779,7 +8779,7 @@ namespace AnimatedVisuals
             }
 
             // - - - - - - PreComp layer: Comp 1
-            // - - - - PreComp layer: Message
+            // - - - - PreComp layer: FormattedMessageContent
             CompositionVisualSurface VisualSurface_2()
             {
                 var result = _c.CreateVisualSurface();
@@ -8789,7 +8789,7 @@ namespace AnimatedVisuals
             }
 
             // - - - - - - PreComp layer: Comp 1
-            // - - - - PreComp layer: Message
+            // - - - - PreComp layer: FormattedMessageContent
             CompositionVisualSurface VisualSurface_3()
             {
                 var result = _c.CreateVisualSurface();
@@ -8799,7 +8799,7 @@ namespace AnimatedVisuals
             }
 
             // - - - - - - PreComp layer: Comp 1
-            // - - - - PreComp layer: Message
+            // - - - - PreComp layer: FormattedMessageContent
             CompositionVisualSurface VisualSurface_4()
             {
                 var result = _c.CreateVisualSurface();
@@ -8809,7 +8809,7 @@ namespace AnimatedVisuals
             }
 
             // - - - - - - PreComp layer: Comp 1
-            // - - - - PreComp layer: Message
+            // - - - - PreComp layer: FormattedMessageContent
             CompositionVisualSurface VisualSurface_5()
             {
                 var result = _c.CreateVisualSurface();
@@ -8838,7 +8838,7 @@ namespace AnimatedVisuals
                 var children = result.Children;
                 // Layer aggregator
                 children.InsertAtTop(ShapeVisual_1());
-                // PreComp layer: Message
+                // PreComp layer: FormattedMessageContent
                 children.InsertAtTop(ContainerVisual_2());
                 // Shape tree root for layer: Woman
                 children.InsertAtTop(ShapeVisual_9());
@@ -8846,7 +8846,7 @@ namespace AnimatedVisuals
             }
 
             // - PreComp layer: Comp 1
-            // Transforms for Message
+            // Transforms for FormattedMessageContent
             ContainerVisual ContainerVisual_2()
             {
                 var result = _c.CreateContainerVisual();
@@ -8858,7 +8858,7 @@ namespace AnimatedVisuals
             }
 
             // - - PreComp layer: Comp 1
-            // PreComp layer: Message
+            // PreComp layer: FormattedMessageContent
             ContainerVisual ContainerVisual_3()
             {
                 var result = _c.CreateContainerVisual();
@@ -8874,7 +8874,7 @@ namespace AnimatedVisuals
             }
 
             // - - - - - - - PreComp layer: Comp 1
-            // - - - - - PreComp layer: Message
+            // - - - - - PreComp layer: FormattedMessageContent
             ContainerVisual ContainerVisual_4()
             {
                 var result = _c.CreateContainerVisual();
@@ -8885,7 +8885,7 @@ namespace AnimatedVisuals
             }
 
             // - - - - - - - PreComp layer: Comp 1
-            // - - - - - PreComp layer: Message
+            // - - - - - PreComp layer: FormattedMessageContent
             ContainerVisual ContainerVisual_5()
             {
                 var result = _c.CreateContainerVisual();
@@ -8896,7 +8896,7 @@ namespace AnimatedVisuals
             }
 
             // - - - - - - - PreComp layer: Comp 1
-            // - - - - - PreComp layer: Message
+            // - - - - - PreComp layer: FormattedMessageContent
             ContainerVisual ContainerVisual_6()
             {
                 var result = _c.CreateContainerVisual();
@@ -8907,7 +8907,7 @@ namespace AnimatedVisuals
             }
 
             // - - - - - - - PreComp layer: Comp 1
-            // - - - - - PreComp layer: Message
+            // - - - - - PreComp layer: FormattedMessageContent
             ContainerVisual ContainerVisual_7()
             {
                 var result = _c.CreateContainerVisual();
@@ -8918,7 +8918,7 @@ namespace AnimatedVisuals
             }
 
             // - - - - - - - PreComp layer: Comp 1
-            // - - - - - PreComp layer: Message
+            // - - - - - PreComp layer: FormattedMessageContent
             ContainerVisual ContainerVisual_8()
             {
                 var result = _c.CreateContainerVisual();
@@ -8929,7 +8929,7 @@ namespace AnimatedVisuals
             }
 
             // - - - - - - - PreComp layer: Comp 1
-            // - - - - - PreComp layer: Message
+            // - - - - - PreComp layer: FormattedMessageContent
             ContainerVisual ContainerVisual_9()
             {
                 var result = _c.CreateContainerVisual();
@@ -9409,7 +9409,7 @@ namespace AnimatedVisuals
             }
 
             // - - - PreComp layer: Comp 1
-            // - PreComp layer: Message
+            // - PreComp layer: FormattedMessageContent
             // Shape tree root for layer: Shape Layer 3
             ShapeVisual ShapeVisual_2()
             {
@@ -9428,7 +9428,7 @@ namespace AnimatedVisuals
             }
 
             // - - - - - - - - PreComp layer: Comp 1
-            // - - - - - - PreComp layer: Message
+            // - - - - - - PreComp layer: FormattedMessageContent
             // Shape tree root for layer: Shape Layer 6
             ShapeVisual ShapeVisual_3()
             {
@@ -9439,7 +9439,7 @@ namespace AnimatedVisuals
             }
 
             // - - - - - - - - PreComp layer: Comp 1
-            // - - - - - - PreComp layer: Message
+            // - - - - - - PreComp layer: FormattedMessageContent
             // Shape tree root for layer: mask
             ShapeVisual ShapeVisual_4()
             {
@@ -9451,7 +9451,7 @@ namespace AnimatedVisuals
             }
 
             // - - - - - - - - PreComp layer: Comp 1
-            // - - - - - - PreComp layer: Message
+            // - - - - - - PreComp layer: FormattedMessageContent
             // Shape tree root for layer: Shape Layer 7
             ShapeVisual ShapeVisual_5()
             {
@@ -9462,7 +9462,7 @@ namespace AnimatedVisuals
             }
 
             // - - - - - - - - PreComp layer: Comp 1
-            // - - - - - - PreComp layer: Message
+            // - - - - - - PreComp layer: FormattedMessageContent
             // Shape tree root for layer: mask 2
             ShapeVisual ShapeVisual_6()
             {
@@ -9474,7 +9474,7 @@ namespace AnimatedVisuals
             }
 
             // - - - - - - - - PreComp layer: Comp 1
-            // - - - - - - PreComp layer: Message
+            // - - - - - - PreComp layer: FormattedMessageContent
             // Shape tree root for layer: Shape Layer 8
             ShapeVisual ShapeVisual_7()
             {
@@ -9485,7 +9485,7 @@ namespace AnimatedVisuals
             }
 
             // - - - - - - - - PreComp layer: Comp 1
-            // - - - - - - PreComp layer: Message
+            // - - - - - - PreComp layer: FormattedMessageContent
             // Shape tree root for layer: mask 3
             ShapeVisual ShapeVisual_8()
             {
@@ -9561,7 +9561,7 @@ namespace AnimatedVisuals
             }
 
             // - - - PreComp layer: Comp 1
-            // - PreComp layer: Message
+            // - PreComp layer: FormattedMessageContent
             SpriteVisual SpriteVisual_0()
             {
                 var result = _c.CreateSpriteVisual();
@@ -9571,7 +9571,7 @@ namespace AnimatedVisuals
             }
 
             // - - - PreComp layer: Comp 1
-            // - PreComp layer: Message
+            // - PreComp layer: FormattedMessageContent
             SpriteVisual SpriteVisual_1()
             {
                 var result = _c.CreateSpriteVisual();
@@ -9581,7 +9581,7 @@ namespace AnimatedVisuals
             }
 
             // - - - PreComp layer: Comp 1
-            // - PreComp layer: Message
+            // - PreComp layer: FormattedMessageContent
             SpriteVisual SpriteVisual_2()
             {
                 var result = _c.CreateSpriteVisual();
@@ -9651,7 +9651,7 @@ namespace AnimatedVisuals
             }
 
             // - - - - - - - - - - PreComp layer: Comp 1
-            // - - - - - - - - PreComp layer: Message
+            // - - - - - - - - PreComp layer: FormattedMessageContent
             // - Shape tree root for layer: Shape Layer 6
             // Offset
             Vector2KeyFrameAnimation OffsetVector2Animation_2()
@@ -9682,7 +9682,7 @@ namespace AnimatedVisuals
             }
 
             // - - - - - - - - - - PreComp layer: Comp 1
-            // - - - - - - - - PreComp layer: Message
+            // - - - - - - - - PreComp layer: FormattedMessageContent
             // - Shape tree root for layer: Shape Layer 7
             // Offset
             Vector2KeyFrameAnimation OffsetVector2Animation_3()
@@ -9713,7 +9713,7 @@ namespace AnimatedVisuals
             }
 
             // - - - - - - - - - - PreComp layer: Comp 1
-            // - - - - - - - - PreComp layer: Message
+            // - - - - - - - - PreComp layer: FormattedMessageContent
             // - Shape tree root for layer: Shape Layer 8
             // Offset
             Vector2KeyFrameAnimation OffsetVector2Animation_4()
@@ -9904,7 +9904,7 @@ namespace AnimatedVisuals
             }
 
             // - - PreComp layer: Comp 1
-            // PreComp layer: Message
+            // PreComp layer: FormattedMessageContent
             // Offset
             Vector3KeyFrameAnimation OffsetVector3Animation_0()
             {
@@ -10407,7 +10407,7 @@ namespace AnimatedVisuals
             }
 
             // - - - - - - - PreComp layer: Comp 1
-            // - - - - - PreComp layer: Message
+            // - - - - - PreComp layer: FormattedMessageContent
             // - - - Shape tree root for layer: Shape Layer 3
             // - -  Scale:0.70826,0.70826, Offset:<-364, -349.5>
             // - Path 4+Path 5+Path 6+Path 1.PathGeometry
@@ -10421,7 +10421,7 @@ namespace AnimatedVisuals
             }
 
             // - - - - - - - - PreComp layer: Comp 1
-            // - - - - - - PreComp layer: Message
+            // - - - - - - PreComp layer: FormattedMessageContent
             // - - - - Shape tree root for layer: Shape Layer 3
             // - - -  Scale:0.70826,0.70826, Offset:<-364, -349.5>
             // - - Path 4+Path 5+Path 6+Path 1.PathGeometry
@@ -10449,7 +10449,7 @@ namespace AnimatedVisuals
             }
 
             // - - - - - - - - PreComp layer: Comp 1
-            // - - - - - - PreComp layer: Message
+            // - - - - - - PreComp layer: FormattedMessageContent
             // - - - - Shape tree root for layer: Shape Layer 3
             // - - -  Scale:0.70826,0.70826, Offset:<-364, -349.5>
             // - - Path 4+Path 5+Path 6+Path 1.PathGeometry
@@ -10471,7 +10471,7 @@ namespace AnimatedVisuals
             }
 
             // - - - - - - - - PreComp layer: Comp 1
-            // - - - - - - PreComp layer: Message
+            // - - - - - - PreComp layer: FormattedMessageContent
             // - - - - Shape tree root for layer: Shape Layer 3
             // - - -  Scale:0.70826,0.70826, Offset:<-364, -349.5>
             // - - Path 4+Path 5+Path 6+Path 1.PathGeometry
@@ -10493,7 +10493,7 @@ namespace AnimatedVisuals
             }
 
             // - - - - - - - - PreComp layer: Comp 1
-            // - - - - - - PreComp layer: Message
+            // - - - - - - PreComp layer: FormattedMessageContent
             // - - - - Shape tree root for layer: Shape Layer 3
             // - - -  Scale:0.70826,0.70826, Offset:<-364, -349.5>
             // - - Path 4+Path 5+Path 6+Path 1.PathGeometry
@@ -10515,7 +10515,7 @@ namespace AnimatedVisuals
             }
 
             // - - - - - - - PreComp layer: Comp 1
-            // - - - - - PreComp layer: Message
+            // - - - - - PreComp layer: FormattedMessageContent
             // - - - Shape tree root for layer: Shape Layer 3
             // - -  Scale:0.70826,0.70826, Offset:<-364, -349.5>
             CanvasGeometry Geometry_18()
@@ -10539,7 +10539,7 @@ namespace AnimatedVisuals
             }
 
             // - - - - - - - PreComp layer: Comp 1
-            // - - - - - PreComp layer: Message
+            // - - - - - PreComp layer: FormattedMessageContent
             // - - - Shape tree root for layer: Shape Layer 3
             // - -  Scale:0.70826,0.70826, Offset:<-364, -349.5>
             CanvasGeometry Geometry_19()
@@ -10564,7 +10564,7 @@ namespace AnimatedVisuals
             }
 
             // - - - - - - - PreComp layer: Comp 1
-            // - - - - - PreComp layer: Message
+            // - - - - - PreComp layer: FormattedMessageContent
             // - - - Shape tree root for layer: Shape Layer 3
             // - -  Scale:0.70826,0.70826, Offset:<-364, -349.5>
             CanvasGeometry Geometry_20()
@@ -11406,7 +11406,7 @@ namespace AnimatedVisuals
             }
 
             // - - - - - PreComp layer: Comp 1
-            // - - - PreComp layer: Message
+            // - - - PreComp layer: FormattedMessageContent
             // - Shape tree root for layer: Shape Layer 3
             // Scale:0.70826,0.70826, Offset:<-364, -349.5>
             // Color bound to theme property value: Color_C4C4C4
@@ -11530,7 +11530,7 @@ namespace AnimatedVisuals
             }
 
             // - - - - - PreComp layer: Comp 1
-            // - - - PreComp layer: Message
+            // - - - PreComp layer: FormattedMessageContent
             // - Shape tree root for layer: Shape Layer 3
             // Scale:0.70826,0.70826, Offset:<-364, -349.5>
             // Color bound to theme property value: Color_F8F8FC
@@ -11707,7 +11707,7 @@ namespace AnimatedVisuals
             }
 
             // - - - - PreComp layer: Comp 1
-            // - - PreComp layer: Message
+            // - - PreComp layer: FormattedMessageContent
             // Shape tree root for layer: Shape Layer 6
             CompositionContainerShape ContainerShape_5()
             {
@@ -11729,7 +11729,7 @@ namespace AnimatedVisuals
             }
 
             // - - - - PreComp layer: Comp 1
-            // - - PreComp layer: Message
+            // - - PreComp layer: FormattedMessageContent
             // Shape tree root for layer: Shape Layer 7
             CompositionContainerShape ContainerShape_6()
             {
@@ -11751,7 +11751,7 @@ namespace AnimatedVisuals
             }
 
             // - - - - PreComp layer: Comp 1
-            // - - PreComp layer: Message
+            // - - PreComp layer: FormattedMessageContent
             // Shape tree root for layer: Shape Layer 8
             CompositionContainerShape ContainerShape_7()
             {
@@ -11894,7 +11894,7 @@ namespace AnimatedVisuals
             }
 
             // - - - - - PreComp layer: Comp 1
-            // - - - PreComp layer: Message
+            // - - - PreComp layer: FormattedMessageContent
             // - Shape tree root for layer: Shape Layer 3
             // Scale:0.70826,0.70826, Offset:<-364, -349.5>
             // Path 4+Path 5+Path 6+Path 1.PathGeometry
@@ -11904,7 +11904,7 @@ namespace AnimatedVisuals
             }
 
             // - - - - - PreComp layer: Comp 1
-            // - - - PreComp layer: Message
+            // - - - PreComp layer: FormattedMessageContent
             // - Shape tree root for layer: Shape Layer 3
             // Scale:0.70826,0.70826, Offset:<-364, -349.5>
             CompositionPathGeometry PathGeometry_14()
@@ -11913,7 +11913,7 @@ namespace AnimatedVisuals
             }
 
             // - - - - - PreComp layer: Comp 1
-            // - - - PreComp layer: Message
+            // - - - PreComp layer: FormattedMessageContent
             // - Shape tree root for layer: Shape Layer 3
             // Scale:0.70826,0.70826, Offset:<-364, -349.5>
             CompositionPathGeometry PathGeometry_15()
@@ -11922,7 +11922,7 @@ namespace AnimatedVisuals
             }
 
             // - - - - - PreComp layer: Comp 1
-            // - - - PreComp layer: Message
+            // - - - PreComp layer: FormattedMessageContent
             // - Shape tree root for layer: Shape Layer 3
             // Scale:0.70826,0.70826, Offset:<-364, -349.5>
             CompositionPathGeometry PathGeometry_16()
@@ -12348,7 +12348,7 @@ namespace AnimatedVisuals
             }
 
             // - - - - PreComp layer: Comp 1
-            // - - PreComp layer: Message
+            // - - PreComp layer: FormattedMessageContent
             // Shape tree root for layer: Shape Layer 3
             // Path 4+Path 5+Path 6+Path 1
             CompositionSpriteShape SpriteShape_17()
@@ -12360,7 +12360,7 @@ namespace AnimatedVisuals
             }
 
             // - - - - PreComp layer: Comp 1
-            // - - PreComp layer: Message
+            // - - PreComp layer: FormattedMessageContent
             // Shape tree root for layer: Shape Layer 3
             // Path 1
             CompositionSpriteShape SpriteShape_18()
@@ -12372,7 +12372,7 @@ namespace AnimatedVisuals
             }
 
             // - - - - PreComp layer: Comp 1
-            // - - PreComp layer: Message
+            // - - PreComp layer: FormattedMessageContent
             // Shape tree root for layer: Shape Layer 3
             // Path 1
             CompositionSpriteShape SpriteShape_19()
@@ -12384,7 +12384,7 @@ namespace AnimatedVisuals
             }
 
             // - - - - PreComp layer: Comp 1
-            // - - PreComp layer: Message
+            // - - PreComp layer: FormattedMessageContent
             // Shape tree root for layer: Shape Layer 3
             // Path 4
             CompositionSpriteShape SpriteShape_20()
@@ -12396,7 +12396,7 @@ namespace AnimatedVisuals
             }
 
             // - - - - - PreComp layer: Comp 1
-            // - - - PreComp layer: Message
+            // - - - PreComp layer: FormattedMessageContent
             // - Shape tree root for layer: Shape Layer 6
             // Path 1
             CompositionSpriteShape SpriteShape_21()
@@ -12408,7 +12408,7 @@ namespace AnimatedVisuals
             }
 
             // - - - - - PreComp layer: Comp 1
-            // - - - PreComp layer: Message
+            // - - - PreComp layer: FormattedMessageContent
             // - Shape tree root for layer: Shape Layer 6
             // Path 1
             CompositionSpriteShape SpriteShape_22()
@@ -12420,7 +12420,7 @@ namespace AnimatedVisuals
             }
 
             // - - - - - PreComp layer: Comp 1
-            // - - - PreComp layer: Message
+            // - - - PreComp layer: FormattedMessageContent
             // - Shape tree root for layer: Shape Layer 6
             // Path 1
             CompositionSpriteShape SpriteShape_23()
@@ -12432,7 +12432,7 @@ namespace AnimatedVisuals
             }
 
             // - - - - - PreComp layer: Comp 1
-            // - - - PreComp layer: Message
+            // - - - PreComp layer: FormattedMessageContent
             // - Shape tree root for layer: Shape Layer 7
             // Path 1
             CompositionSpriteShape SpriteShape_24()
@@ -12444,7 +12444,7 @@ namespace AnimatedVisuals
             }
 
             // - - - - - PreComp layer: Comp 1
-            // - - - PreComp layer: Message
+            // - - - PreComp layer: FormattedMessageContent
             // - Shape tree root for layer: Shape Layer 7
             // Path 1
             CompositionSpriteShape SpriteShape_25()
@@ -12456,7 +12456,7 @@ namespace AnimatedVisuals
             }
 
             // - - - - - PreComp layer: Comp 1
-            // - - - PreComp layer: Message
+            // - - - PreComp layer: FormattedMessageContent
             // - Shape tree root for layer: Shape Layer 7
             // Path 1
             CompositionSpriteShape SpriteShape_26()
@@ -12468,7 +12468,7 @@ namespace AnimatedVisuals
             }
 
             // - - - - - PreComp layer: Comp 1
-            // - - - PreComp layer: Message
+            // - - - PreComp layer: FormattedMessageContent
             // - Shape tree root for layer: Shape Layer 8
             // Path 1
             CompositionSpriteShape SpriteShape_27()
@@ -12480,7 +12480,7 @@ namespace AnimatedVisuals
             }
 
             // - - - - - PreComp layer: Comp 1
-            // - - - PreComp layer: Message
+            // - - - PreComp layer: FormattedMessageContent
             // - Shape tree root for layer: Shape Layer 8
             // Path 1
             CompositionSpriteShape SpriteShape_28()
@@ -12492,7 +12492,7 @@ namespace AnimatedVisuals
             }
 
             // - - - - - PreComp layer: Comp 1
-            // - - - PreComp layer: Message
+            // - - - PreComp layer: FormattedMessageContent
             // - Shape tree root for layer: Shape Layer 8
             // Path 1
             CompositionSpriteShape SpriteShape_29()
@@ -12866,7 +12866,7 @@ namespace AnimatedVisuals
                 var children = result.Children;
                 // Layer aggregator
                 children.InsertAtTop(ShapeVisual_1());
-                // PreComp layer: Message
+                // PreComp layer: FormattedMessageContent
                 children.InsertAtTop(ContainerVisual_2());
                 // Shape tree root for layer: Woman
                 children.InsertAtTop(ShapeVisual_6());
@@ -12874,7 +12874,7 @@ namespace AnimatedVisuals
             }
 
             // - PreComp layer: Comp 1
-            // Transforms for Message
+            // Transforms for FormattedMessageContent
             ContainerVisual ContainerVisual_2()
             {
                 var result = _c.CreateContainerVisual();
@@ -12886,7 +12886,7 @@ namespace AnimatedVisuals
             }
 
             // - - PreComp layer: Comp 1
-            // PreComp layer: Message
+            // PreComp layer: FormattedMessageContent
             ContainerVisual ContainerVisual_3()
             {
                 var result = _c.CreateContainerVisual();
@@ -13374,7 +13374,7 @@ namespace AnimatedVisuals
             }
 
             // - - - PreComp layer: Comp 1
-            // - PreComp layer: Message
+            // - PreComp layer: FormattedMessageContent
             // Shape tree root for layer: Shape Layer 3
             ShapeVisual ShapeVisual_2()
             {
@@ -13393,7 +13393,7 @@ namespace AnimatedVisuals
             }
 
             // - - - PreComp layer: Comp 1
-            // - PreComp layer: Message
+            // - PreComp layer: FormattedMessageContent
             // Shape tree root for layer: Shape Layer 6
             ShapeVisual ShapeVisual_3()
             {
@@ -13404,7 +13404,7 @@ namespace AnimatedVisuals
             }
 
             // - - - PreComp layer: Comp 1
-            // - PreComp layer: Message
+            // - PreComp layer: FormattedMessageContent
             // Shape tree root for layer: Shape Layer 7
             ShapeVisual ShapeVisual_4()
             {
@@ -13415,7 +13415,7 @@ namespace AnimatedVisuals
             }
 
             // - - - PreComp layer: Comp 1
-            // - PreComp layer: Message
+            // - PreComp layer: FormattedMessageContent
             // Shape tree root for layer: Shape Layer 8
             ShapeVisual ShapeVisual_5()
             {
@@ -13550,7 +13550,7 @@ namespace AnimatedVisuals
             }
 
             // - - - - - PreComp layer: Comp 1
-            // - - - PreComp layer: Message
+            // - - - PreComp layer: FormattedMessageContent
             // - Shape tree root for layer: Shape Layer 6
             // Offset
             Vector2KeyFrameAnimation OffsetVector2Animation_2()
@@ -13581,7 +13581,7 @@ namespace AnimatedVisuals
             }
 
             // - - - - - PreComp layer: Comp 1
-            // - - - PreComp layer: Message
+            // - - - PreComp layer: FormattedMessageContent
             // - Shape tree root for layer: Shape Layer 7
             // Offset
             Vector2KeyFrameAnimation OffsetVector2Animation_3()
@@ -13612,7 +13612,7 @@ namespace AnimatedVisuals
             }
 
             // - - - - - PreComp layer: Comp 1
-            // - - - PreComp layer: Message
+            // - - - PreComp layer: FormattedMessageContent
             // - Shape tree root for layer: Shape Layer 8
             // Offset
             Vector2KeyFrameAnimation OffsetVector2Animation_4()
@@ -13803,7 +13803,7 @@ namespace AnimatedVisuals
             }
 
             // - - PreComp layer: Comp 1
-            // PreComp layer: Message
+            // PreComp layer: FormattedMessageContent
             // Offset
             Vector3KeyFrameAnimation OffsetVector3Animation_0()
             {

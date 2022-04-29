@@ -31,7 +31,9 @@ namespace EduMessage.ViewModels
 
                 Specialities = response;
             }
+#pragma warning disable CS0168 // Переменная "e" объявлена, но ни разу не использована.
             catch (Exception e)
+#pragma warning restore CS0168 // Переменная "e" объявлена, но ни разу не использована.
             {
 
                 

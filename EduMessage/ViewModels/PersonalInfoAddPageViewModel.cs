@@ -41,7 +41,9 @@ namespace EduMessage.ViewModels
 
                 Cities = result;
             }
+#pragma warning disable CS0168 // Переменная "e" объявлена, но ни разу не использована.
             catch (Exception e)
+#pragma warning restore CS0168 // Переменная "e" объявлена, но ни разу не использована.
             {
 
             }
@@ -66,7 +68,9 @@ namespace EduMessage.ViewModels
                 var result = _personValidator.Validate(PersonName);
                 if (!result)
                 {
+#pragma warning disable CS8509 // Выражение switch не обрабатывает все возможные типы входных значений (не является исчерпывающим). Например, шаблон "EduMessage.Services.ValidateStatusType.Ok" не охвачен.
                     ErrorText = result.Status switch
+#pragma warning restore CS8509 // Выражение switch не обрабатывает все возможные типы входных значений (не является исчерпывающим). Например, шаблон "EduMessage.Services.ValidateStatusType.Ok" не охвачен.
                     {
                         ValidateStatusType.Length => "Неверная длина поля ФИО",
                         ValidateStatusType.Format => "Неверный формат ФИО",

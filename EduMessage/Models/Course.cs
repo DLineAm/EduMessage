@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Text.Json.Serialization;
 
 #nullable disable
 
@@ -17,8 +18,6 @@ namespace SignalIRServerTest
         public int? IdSpeciality { get; set; }
 
         public virtual Speciality IdSpecialityNavigation { get; set; }
-        public virtual ICollection<CourseAttachment> CourseAttachments { get; set; }
-
 
         public event PropertyChangedEventHandler PropertyChanged;
         private void OnPropertyChanged([CallerMemberName] string s = null)

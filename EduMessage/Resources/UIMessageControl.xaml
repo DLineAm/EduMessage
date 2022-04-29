@@ -1,0 +1,117 @@
+﻿<UserControl
+    x:Class="EduMessage.Resources.UIMessageControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:EduMessage.Resources"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:models="using:SignalIRServerTest.Models"
+    xmlns:ui="using:Microsoft.Toolkit.Uwp.UI"
+    xmlns:interactivity="using:Microsoft.Xaml.Interactivity"
+    xmlns:core="using:Microsoft.Xaml.Interactions.Core"
+    mc:Ignorable="d"
+    d:DesignHeight="300"
+    d:DesignWidth="400"
+    d:DataContext="{d:DesignInstance Type=local:UIMessageControl}"
+    x:Name="MessageUserControl"
+    Loaded="UIMessageControl_OnLoaded">
+
+    <UserControl.Resources>
+        <AcrylicBrush x:Key="AttachmentsAcrylicBrush"
+                      BackgroundSource="Backdrop"
+                      TintLuminosityOpacity="0.15"
+                      TintOpacity="0.0"></AcrylicBrush>
+    </UserControl.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition></RowDefinition>
+            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition Height="Auto"></RowDefinition>
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="1"
+                   DataContext="{Binding FormattedMessageContent}"
+                   Text="{Binding Message.MessageContent}"
+                   FontSize="20"
+                   Foreground="{StaticResource PrimaryMessageForeground}"
+                   TextAlignment="Left"
+                   HorizontalAlignment="Left"
+                   Padding="10,10,5,0"
+                   Tag="Message"
+                   x:Name="MessageBox"
+                   DataContextChanged="MessageBox_OnDataContextChanged"></TextBlock>
+        <Border Grid.Row="2"
+        Style="{StaticResource CardBorder}"
+        Visibility="{Binding AttachmentsListVisibility}"
+        Background="{StaticResource AttachmentsAcrylicBrush}"
+        BorderThickness="0"
+        Margin="12,12,12,0">
+            <ListView ItemsSource="{Binding FormattedMessageContent.Attachments}"
+              SelectionMode="None">
+                <ListView.ItemTemplate>
+                    <DataTemplate x:DataType="models:Attachment">
+                        <StackPanel Orientation="Horizontal"
+                            ui:FrameworkElementExtensions.Cursor="Hand">
+                            <interactivity:Interaction.Behaviors >
+                                <core:EventTriggerBehavior EventName="Tapped">
+                                    <core:InvokeCommandAction Command="{Binding OpenFileCommand, ElementName=MessageUserControl}"
+                                                      CommandParameter="{Binding }">
+
+                                    </core:InvokeCommandAction>
+                                </core:EventTriggerBehavior>
+                            </interactivity:Interaction.Behaviors>
+                            <Image Height="24"
+                           HorizontalAlignment="Center"
+                           Width="24"
+                           Source="{Binding ImagePath}">
+                            </Image>
+                            <TextBlock Text="{Binding Title}"
+                               HorizontalAlignment="Center"
+                               VerticalAlignment="Center"
+                               Foreground="{StaticResource PrimaryMessageForeground}"
+                               Margin="5,0,0,0"
+                               TextTrimming="CharacterEllipsis"></TextBlock>
+                        </StackPanel>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+        </Border>
+
+        <!--<Border Style="{StaticResource CardBorder}"
+                Background="{StaticResource AttachmentsAcrylicBrush}"
+                Padding="12"
+                Grid.Row="1"
+                Margin="12"
+                ui:FrameworkElementExtensions.Cursor="Hand"
+                BorderThickness="0"
+                x:Name="LinkBorder"
+                Visibility="Collapsed"
+                Tag="{Binding MessageId}">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"></ColumnDefinition>
+                    <ColumnDefinition></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+
+                <Image Width="48"
+                       x:Name="SiteImage"
+                ></Image>
+
+                <TextBlock Grid.Column="1"
+                           Margin="12,0,0,0"
+                           TextTrimming="CharacterEllipsis"
+                           VerticalAlignment="Center"
+                           x:Name="TitleBox"></TextBlock>
+            </Grid>
+        </Border>-->
+
+        <Grid Grid.Row="3"
+             x:Name="LinkGrid"
+             Visibility="Visible">
+
+        </Grid>
+
+    </Grid>
+</UserControl>

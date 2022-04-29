@@ -1,22 +1,16 @@
 ﻿using System;
 using Windows.UI.Xaml.Data;
+using EduMessage.Resources;
+using EduMessage.ViewModels;
 
 namespace EduMessage.Utils
 {
-    public class MessageDateConverter : IValueConverter
+    public class FormattedMessageToUiElementConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, string language)
         {
-            var date = (DateTime)value;
-
-            //var difference = DateTime.Now - date;
-
-            //if (difference.Days > 0)
-            //{
-            //    return date.ToString("g");
-            //}
-
-            return date.ToString("t");
+            var message = (FormattedMessage) value;
+            return new UIMessageControl(message);
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, string language)

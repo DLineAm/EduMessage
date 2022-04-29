@@ -75,7 +75,9 @@ namespace EduMessage.Pages
             {
                 await CourseAddDialog.ShowAsync();
             }
+#pragma warning disable CS0168 // Переменная "e" объявлена, но ни разу не использована.
             catch (Exception e)
+#pragma warning restore CS0168 // Переменная "e" объявлена, но ни разу не использована.
             {
 
             }

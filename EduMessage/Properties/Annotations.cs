@@ -1561,8 +1561,8 @@ namespace EduMessage.Annotations
     public string SearchTemplate { get; }
 
     /// <summary>
-    /// Message to show when the search pattern was found.
-    /// You can also prepend the message text with "Error:", "Warning:", "Suggestion:" or "Hint:" prefix to specify the pattern severity.
+    /// FormattedMessageContent to show when the search pattern was found.
+    /// You can also prepend the message Text with "Error:", "Warning:", "Suggestion:" or "Hint:" prefix to specify the pattern severity.
     /// Code patterns with replace template produce suggestions by default.
     /// However, if replace template is not provided, then warning severity will be used.
     /// </summary>

@@ -5,17 +5,25 @@
     xmlns:local="using:EduMessage.Pages"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:controls="using:Microsoft.UI.Xaml.Controls" xmlns:interactivity="using:Microsoft.Xaml.Interactivity" xmlns:core="using:Microsoft.Xaml.Interactions.Core" xmlns:services="using:EduMessage.Services"
-    mc:Ignorable="d">
+    xmlns:viewModels="using:EduMessage.ViewModels"
+    mc:Ignorable="d"
+    d:DataContext="{d:DesignInstance Type=viewModels:AccountInfoViewModel}">
 
     <Grid Margin="48,12">
         <Grid.RowDefinitions>
             <RowDefinition Height="auto"/>
             <RowDefinition/>
         </Grid.RowDefinitions>
+        <StackPanel Orientation="Horizontal"
+                    Margin="0,12">
+            <Button Style="{StaticResource NavigationBackButtonNormalStyle}"
+                    Margin="0,0,12,0"
+                    Visibility="{Binding BackButtonVisibility}"
+                    Command="{Binding BackCommand}"></Button>
+            <TextBlock Style="{StaticResource 26TitleTextBlock}"
+                       Text="Аккаунт"/>
+        </StackPanel>
         
-        <TextBlock Style="{StaticResource 26TitleTextBlock}"
-                       Text="Аккаунт"
-                       Margin="0,12"/>
         <ScrollViewer Grid.Row="1">
             <Grid>
                 <Grid.RowDefinitions>
@@ -39,7 +47,8 @@
                         <HyperlinkButton Content="Выбрать фото"
                                  Grid.Row="1"
                                  Margin="0,12,0,0"
-                                 Command="{Binding PickImageCommand}"/>
+                                 Command="{Binding PickImageCommand}"
+                                 Visibility="{Binding OtherUserInputVisibility}"/>
                         <StackPanel Grid.Column="1"
                         VerticalAlignment="Top"
                         Margin="12,-10,0,0">
@@ -83,8 +92,7 @@
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock Width="100"
                                        Text="Логин"
-                                       VerticalAlignment="Center"
-                                       Foreground="Gray"/>
+                                       VerticalAlignment="Center"/>
                                     <TextBlock Text="{Binding User.Login}"
                                        Foreground="Gray"/>
                                     <!--<TextBox MaxWidth="350"
@@ -94,19 +102,18 @@
                                     Margin="0,12,0,0">
                                     <TextBlock Width="100"
                                        Text="Email"
-                                       VerticalAlignment="Center"
-                                       Foreground="Gray"/>
+                                       VerticalAlignment="Center"/>
                                     <TextBlock Text="{Binding User.Email}"
                                        Foreground="Gray"/>
                                     <!--<TextBox MaxWidth="350"
                                      MinWidth="250"/>-->
                                 </StackPanel>
                                 <StackPanel Orientation="Horizontal"
-                                    Margin="0,12,0,0">
+                                    Margin="0,12,0,0"
+                                    Visibility="{Binding OtherUserInputVisibility}">
                                     <TextBlock Width="100"
                                        Text="Пароль"
-                                       VerticalAlignment="Center"
-                                       Foreground="Gray"/>
+                                       VerticalAlignment="Center"/>
                                     <Button Content="Изменить пароль"/>
                                     <!--<TextBox MaxWidth="350"
                                      MinWidth="250"/>-->
@@ -140,8 +147,7 @@
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock Width="150"
                                        Text="Номер телефона"
-                                       VerticalAlignment="Center"
-                                       Foreground="Gray"/>
+                                       VerticalAlignment="Center"/>
                                     <TextBlock Text="{Binding User.Phone}"
                                        Foreground="Gray"/>
                                     <!--<TextBox MaxWidth="350"
@@ -151,8 +157,7 @@
                                     Margin="0,12,0,0">
                                     <TextBlock Width="150"
                                        Text="Город"
-                                       VerticalAlignment="Center"
-                                       Foreground="Gray"/>
+                                       VerticalAlignment="Center"/>
                                     <TextBlock Text="{Binding User.IdCityNavigation.Name}"
                                        Foreground="Gray"/>
                                     <!--<TextBox MaxWidth="350"
@@ -162,8 +167,7 @@
                                     Margin="0,12,0,0">
                                     <TextBlock Width="150"
                                        Text="Адрес"
-                                       VerticalAlignment="Center"
-                                       Foreground="Gray"/>
+                                       VerticalAlignment="Center"/>
                                     <TextBlock Text="{Binding User.Address}"
                                        Foreground="Gray"/>
                                     <!--<TextBox MaxWidth="350"
@@ -191,8 +195,7 @@
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock Width="150"
                                        Text="Учебное заведение"
-                                       VerticalAlignment="Center"
-                                       Foreground="Gray"/>
+                                       VerticalAlignment="Center"/>
                                     <TextBlock Text="{Binding User.IdSchoolNavigation.Name}"
                                        Foreground="Gray"/>
                                     <!--<TextBox MaxWidth="350"
@@ -244,7 +247,8 @@
 
                 <StackPanel Grid.Row="2"
                     Orientation="Horizontal"
-                            Margin="0,12,0,0">
+                            Margin="0,12,0,0"
+                    Visibility="{Binding OtherUserInputVisibility}">
                     <TextBlock Text="Вы можете удалить свой аккаунт"
                        VerticalAlignment="Center"/>
                     <HyperlinkButton Content="Удалить"

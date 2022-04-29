@@ -101,7 +101,9 @@ namespace EduMessage.ViewModels
 
             if (!emailResponse)
             {
+#pragma warning disable CS8509 // Выражение switch не обрабатывает все возможные типы входных значений (не является исчерпывающим). Например, шаблон "EduMessage.Services.ValidateStatusType.Ok" не охвачен.
                 ErrorText = emailResponse.Status switch
+#pragma warning restore CS8509 // Выражение switch не обрабатывает все возможные типы входных значений (не является исчерпывающим). Например, шаблон "EduMessage.Services.ValidateStatusType.Ok" не охвачен.
                 {
                     ValidateStatusType.Format => "Неверный формат почты",
                     ValidateStatusType.Exists => "Почта уже существует в базе данных",
@@ -136,7 +138,9 @@ namespace EduMessage.ViewModels
                     , new SlideNavigationTransitionInfo {Effect = SlideNavigationTransitionEffect.FromLeft}
                     , FrameType.LoginFrame);
             }
+#pragma warning disable CS0168 // Переменная "e" объявлена, но ни разу не использована.
             catch (FormatException e)
+#pragma warning restore CS0168 // Переменная "e" объявлена, но ни разу не использована.
             {
                 ErrorText = "Неверный формат почты";
             }

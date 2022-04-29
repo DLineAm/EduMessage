@@ -1,4 +1,5 @@
-﻿using EduMessage.Pages;
+﻿using EduMessage.Annotations;
+using EduMessage.Pages;
 using EduMessage.Services;
 
 using Microsoft.Toolkit.Uwp.Helpers;
@@ -7,18 +8,22 @@ using MvvmGen;
 using MvvmGen.Events;
 
 using SignalIRServerTest;
+using SignalIRServerTest.Models;
 
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
 
+using Windows.ApplicationModel.Core;
 using Windows.Storage;
 using Windows.System;
+using Windows.UI.Core;
 using Windows.UI.Xaml;
-using SignalIRServerTest.Models;
 
 namespace EduMessage.ViewModels
 {
@@ -26,8 +31,8 @@ namespace EduMessage.ViewModels
     [Inject(typeof(IEventAggregator))]
     public partial class EducationListPageViewModel : IEventSubscriber<DropCompletedEvent>
     {
-        [Property] private ObservableCollection<CourseFiles> _courses = new();
-        [Property] private ObservableCollection<EducationFile> _files = new();
+        [Property] private ObservableCollection<FormattedCourse> _courses = new();
+        [Property] private ObservableCollection<Attachment> _files = new();
         [Property] private bool _isClearButtonEnabled;
         [Property] private string _courseTitle;
         [Property] private string _courseDescription;
@@ -36,7 +41,7 @@ namespace EduMessage.ViewModels
         [Property] private GridLength _gridWidth;
 
         private bool _isCourseAddMode;
-        private CourseFiles _selectedCourse;
+        private FormattedCourse _selectedCourse;
         private Speciality _speciality;
 
         public async Task Initialize(Speciality speciality)
@@ -51,7 +56,7 @@ namespace EduMessage.ViewModels
                     .SendRequestAsync("", HttpRequestType.Get, App.Account.Jwt))
                     .DeserializeJson<List<CourseAttachment>>();
 
-                Courses = new ObservableCollection<CourseFiles>(await ConvertToCourseFiles(response));
+                Courses = new ObservableCollection<FormattedCourse>(await ConvertToFormattedCourse(response));
 
                 if (Courses.Count == 0)
                 {
@@ -59,75 +64,50 @@ namespace EduMessage.ViewModels
                 }
 
             }
+#pragma warning disable CS0168 // Переменная "e" объявлена, но ни разу не использована.
             catch (Exception e)
+#pragma warning restore CS0168 // Переменная "e" объявлена, но ни разу не использована.
             {
-
             }
         }
 
-        private async Task<List<CourseFiles>> ConvertToCourseFiles(List<CourseAttachment> courseAttachments)
+        private async Task<List<FormattedCourse>> ConvertToFormattedCourse(List<CourseAttachment> response)
         {
-            var savedCourseId = -1;
-            List<CourseFiles> result = new();
-
-            foreach (var courseAttachmanent in courseAttachments)
+            var formattedCourses = new List<FormattedCourse>();
+            foreach (var courseAttachment in response)
             {
-                var course = courseAttachmanent.IdCourseNavigation;
-                if (savedCourseId != -1
-                    && savedCourseId == course.Id)
+                var course = courseAttachment.IdCourseNavigation;
+                if (formattedCourses.Any(c => c.Course.Id == course.Id))
                 {
                     continue;
                 }
 
-                var sortedList = courseAttachments.Where(c => c.IdCourse == course.Id).ToList();
-                List<EducationFile> convertedAttachments = await CreateEducationFileList(sortedList);
+                var attachments = response.Where(c => c.IdCourse == course.Id && c.IdAttachmanentNavigation != null)
+                    .Select(c => c.IdAttachmanentNavigation).ToList();
 
-                var filesPair = convertedAttachments.Select(f => new KeyValuePair<EducationFile, int>(f, f.Id));
+                attachments.ForEach(async a => await a.SplitAndGetImage());
 
-                var convertedCourse = new CourseFiles
+                var formattedCourse = new FormattedCourse
                 {
-                    CoursesId = sortedList.Select(c => c.Id).ToList(),
+                    Id = courseAttachment.Id,
                     Course = course,
-                    Files = convertedAttachments,
-                    TestFiles = filesPair
+                    Attachments = attachments.ToList()
                 };
 
-                result.Add(convertedCourse);
-
-                savedCourseId = course.Id;
-            }
-
-            return result;
-        }
-
-        private async Task<List<EducationFile>> CreateEducationFileList(List<CourseAttachment> sortedList)
-        {
-            var convertedAttachments = new List<EducationFile>();
-
-            var attachments = sortedList.Select(f => f.IdAttachmanentNavigation).ToList();
-            foreach (var attachment in attachments)
-            {
-
-                if (attachment == null)
+                if (!attachments.Any())
                 {
-                    continue;
+                    formattedCourse.Attachments = null;
                 }
 
-                var courseId = sortedList.FirstOrDefault(a => a.IdAttachmanentNavigation.Id == attachment.Id);
+                formattedCourses.Add(formattedCourse);
 
-                convertedAttachments.Add(new EducationFile
-                {
-                    Id = courseId.Id,
-                    AttachmentId = attachment.Id,
-                    Name = attachment.Title,
-                    Type = "." + attachment.Title.Split('.').Last(),
-                    Data = attachment.Data,
-                    ImagePath = await GetImage("." + attachment.Title.Split('.').Last(), attachment.Data)
-                });
+                
             }
 
-            return convertedAttachments;
+            return formattedCourses;
         }
+
+       
 
         private void UpdateTeacherInputVisibility(Visibility visibility)
         {
@@ -152,22 +132,21 @@ namespace EduMessage.ViewModels
         [Command]
         private void InitializeChangeCourseDialog(object courseObj)
         {
-            if (courseObj is CourseFiles course)
-            {
-                _isCourseAddMode = false;
+            if (courseObj is not FormattedCourse course) return;
 
-                var educationCourse = course.Course;
+            _isCourseAddMode = false;
 
-                _selectedCourse = course;
+            var educationCourse = course.Course;
 
-                Files.Clear();
-                course.Files.ForEach(Files.Add);
+            _selectedCourse = course;
 
-                CourseTitle = educationCourse.Title;
-                CourseDescription = educationCourse.Description;
+            Files.Clear();
+            course.Attachments?.ForEach(Files.Add);
 
-                EventAggregator.Publish(new CourseDialogStartShowing(_isCourseAddMode));
-            }
+            CourseTitle = educationCourse.Title;
+            CourseDescription = educationCourse.Description;
+
+            EventAggregator.Publish(new CourseDialogStartShowing(_isCourseAddMode));
         }
 
         [Command]
@@ -182,77 +161,87 @@ namespace EduMessage.ViewModels
 
             EventAggregator.Publish(new LoaderVisibilityChanged(Visibility.Visible, "Сохранение курса"));
 
-            var course = new Course
-            {
-                Id = _selectedCourse?.Course?.Id ?? 0,
-                Title = CourseTitle,
-                Description = CourseDescription,
-                IdSpeciality = _speciality.Id,
-                IdSpecialityNavigation = _speciality
-            };
-
-            List<CourseAttachment> coursesList = Files.Select(s => new CourseAttachment
-            {
-                IdAttachmanentNavigation = new Attachment
+            Course course = _isCourseAddMode 
+                ?  new Course
                 {
-                    IdType = ConvertFileType(s.Type),
-                    Data = s.Data,
-                    Title = s.Name
-                },
-
-                Id = s.Id,
-                IdAttachmanent = s.AttachmentId,
-                IdCourseNavigation = course,
-                IdCourse = course.Id
-            }).ToList();
-
-            List<Attachment> attachments = coursesList.Select(c => c.IdAttachmanentNavigation).ToList();
-
-            if (coursesList.Count == 0)
-            {
-                if (_selectedCourse != null)
-                {
-                    coursesList.Add(new CourseAttachment
-                    {
-                        Id = _selectedCourse.CoursesId.FirstOrDefault(),
-                        IdCourse = course.Id,
-                        IdCourseNavigation = course
-                    });
+                    Id = 0,
+                    Title = CourseTitle,
+                    Description = CourseDescription,
+                    IdSpeciality = _speciality.Id
                 }
-                else
+                : _selectedCourse.Course;
+
+            List<Attachment> attachments = Files.ToList();
+
+            var courses = new List<CourseAttachment>();
+
+            bool isZeroAttachments = attachments.Count == 0;
+
+            foreach (var attachment in attachments)
+            {
+                var courseToAdd = new CourseAttachment
                 {
-                    coursesList.Add(new CourseAttachment
-                    {
-                        IdCourseNavigation = course
-                    });
-                }            
+                    Id = _selectedCourse.Id,
+                    IdCourse = course.Id == 0 ? null : course.Id,
+                    IdCourseNavigation = course,
+                    IdAttachmanentNavigation = attachment
+                };
+                if (attachment != null && attachment.Id != 0)
+                {
+                    courseToAdd.IdAttachmanent = attachment.Id;
+                }
+
+                courses.Add(courseToAdd);
+            }
+
+            if (isZeroAttachments)
+            {
+                var courseToAdd = new CourseAttachment
+                {
+                    Id = _selectedCourse.Id,
+                    IdCourseNavigation = course
+                };
+                if (course.Id != 0)
+                {
+                    courseToAdd.IdCourse = course.Id;
+                }
+                courses.Add(courseToAdd);
             }
 
             try
             {
-                var response = new KeyValuePair<int, List<int>>();
-                if (_selectedCourse != null)
+                if (!_isCourseAddMode)
                 {
-                    await SendCoursePutRequest(coursesList);
-
-                    EventAggregator.Publish(new LoaderVisibilityChanged(Visibility.Collapsed, ""));
-
-                    _selectedCourse = null;
-
+                    await SendCoursePutRequest(courses);
+                    EventAggregator.Publish(new CourseAddedOrChangedEvent(true));
+                    EventAggregator.Publish(new LoaderVisibilityChanged(Visibility.Collapsed, string.Empty));
+                    UpdateNoResultsFoundVisibility(Visibility.Collapsed);
                     return;
                 }
 
-                response = (await (App.Address + "Education/Courses.FromList")
-                        .SendRequestAsync(coursesList, HttpRequestType.Post, App.Account.Jwt))
+                var response = (await (App.Address + "Education/Courses.FromList")
+                        .SendRequestAsync(courses, HttpRequestType.Post, App.Account.Jwt))
                     .DeserializeJson<KeyValuePair<int, List<int>>>();
 
                 if (response.Key != -1)
                 {
-                    await ConvertResponse(course, coursesList, attachments, response);
-                }
-                else
-                {
-                    EventAggregator.Publish(new CourseAddedOrChangedEvent(false));
+                    List<int> attachmentIds = response.Value;
+                    course.Id = response.Key;
+                    for (int i = 0; i < attachmentIds.Count; i++)
+                    {
+                        int id = attachmentIds[i];
+                        CourseAttachment courseAttachment = courses[i];
+
+                        if (courseAttachment.IdAttachmanentNavigation == null)
+                        {
+                            continue;
+                        }
+                        courseAttachment.IdAttachmanentNavigation.Id = id;
+                        courseAttachment.IdAttachmanent = id;
+                    }
+
+                    List<FormattedCourse> formattedCourses = await ConvertToFormattedCourse(courses);
+                    formattedCourses.ForEach(Courses.Add);
                 }
 
                 EventAggregator.Publish(new CourseAddedOrChangedEvent(true));
@@ -268,86 +257,31 @@ namespace EduMessage.ViewModels
 
         private async Task SendCoursePutRequest(List<CourseAttachment> content)
         {
-            var putResponse = (await (App.Address + "Education/Courses")
+            var putResponse = ( await (App.Address + "Education/Courses")
                                     .SendRequestAsync(content, HttpRequestType.Put, App.Account.Jwt))
                                     .DeserializeJson<bool>();
 
             if (putResponse)
             {
-                _selectedCourse.Course.Title = CourseTitle;
-                _selectedCourse.Course.Description = CourseDescription;
-                _selectedCourse.Files = Files.ToList();
+                await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.High,
+                    () =>
+                    {
+                        _selectedCourse.Course.Title = CourseTitle;
+                        _selectedCourse.Course.Description = CourseDescription;
+                        _selectedCourse.Attachments = Files.ToList();
+                    });
             }
-        }
-
-        private async Task ConvertResponse(Course course, List<CourseAttachment> coursesList, List<Attachment> attachments, KeyValuePair<int, List<int>> response)
-        {
-            var responseKey = response.Key;
-            var convertedAttachments = new List<EducationFile>();
-            course.Id = responseKey;
-            coursesList.ForEach(c => c.IdCourseNavigation.Id = responseKey);
-            foreach (var attachment in attachments)
-            {
-                if (attachment == null)
-                {
-                    continue;
-                }
-
-                var typeString = "." + attachment.Title.Split('.').Last();
-
-                var attachmentIndex = attachments.IndexOf(attachment);
-
-                var findedId = response.Value[attachmentIndex];
-
-                convertedAttachments.Add(new EducationFile
-                {
-                    Id = findedId,
-                    Name = attachment.Title,
-                    Type = typeString,
-                    Data = attachment.Data,
-                    ImagePath = await GetImage(typeString, attachment.Data)
-                });
-            }
-            var convertedCourse = new CourseFiles
-            {
-                CoursesId = response.Value,
-                Course = course,
-                Files = convertedAttachments
-            };
-            Courses.Add(convertedCourse);
-            Cancel();
         }
 
         [Command]
         private async void OpenFile(object fileObj)
         {
-            if (fileObj is EducationFile file)
-            {
-                StorageFolder storageFolder = ApplicationData.Current.LocalFolder;
-                StorageFile storageFile;
-                if (await storageFolder.FileExistsAsync(file.Name))
-                {
-                    storageFile = await storageFolder.GetFileAsync(file.Name);
-                    await FileIO.WriteTextAsync(storageFile, "");
-                }
-                else
-                {
-                    storageFile = await storageFolder.CreateFileAsync(file.Name);
-                }
+            if (fileObj is not Attachment file) return;
 
-                await FileIO.WriteBytesAsync(storageFile, file.Data);
-                await Launcher.LaunchFileAsync(storageFile);
-            }
+            await file.OpenFile();
         }
 
-        private int ConvertFileType(string type) => type switch
-        {
-            ".pdf" => 1,
-            ".txt" => 2,
-            ".png" or ".jpg" or ".jpeg" => 3,
-            ".docx" or ".doc" => 4,
-            _ => 5
-        };
+        
 
         [Command]
         private void Cancel()
@@ -360,7 +294,7 @@ namespace EduMessage.ViewModels
         [Command]
         private void DeleteFile(object file)
         {
-            var convertedFile = file as EducationFile;
+            var convertedFile = file as Attachment;
             Files.Remove(convertedFile);
             UpdateAccessibility();
         }
@@ -371,9 +305,10 @@ namespace EduMessage.ViewModels
         }
 
 
-        private async Task<List<EducationFile>> ReadFiles(IReadOnlyList<Windows.Storage.IStorageItem> items)
+        private async Task<List<Attachment>> ReadFiles(IReadOnlyList<Windows.Storage.IStorageItem> items)
         {
-            var result = new List<EducationFile>();
+            var result = new List<Attachment>();
+            var tasks = new List<Task>();
             foreach (var item in items)
             {
                 if (item is StorageFolder folder)
@@ -396,17 +331,21 @@ namespace EduMessage.ViewModels
                     var data = buffer.ToArray();
                     await Task.Delay(TimeSpan.FromMilliseconds(1));
 
-                    result.Add(new EducationFile
+                    var attachment = new Attachment
                     {
-                        Name = file.Name,
-                        Type = file.FileType,
-                        Data = data,
-                        ImagePath = await GetImage(file.FileType, data)
-                    });
+                        Title = file.Name,
+                        Data = data
+                    };
+
+                    attachment.IdType = attachment.ConvertFileType(file.FileType);
+
+                    result.Add(attachment);
 
                     await Task.Delay(TimeSpan.FromMilliseconds(10));
                 }
             }
+
+            await result.WriteAttachmentImagePath();
 
             return result;
         }
@@ -430,36 +369,34 @@ namespace EduMessage.ViewModels
             CourseTitle = string.Empty;
             CourseDescription = string.Empty;
 
-            //Courses.Add(new CourseFiles{IsAddMode = true, Course = new Course()});
-
             EventAggregator.Publish(new CourseDialogStartShowing(_isCourseAddMode));
         }
 
         [Command]
         private async void DeleteCourse(object courseObj)
         {
-            if (courseObj is CourseFiles course)
+            if (courseObj is not FormattedCourse course) return;
+
+            try
             {
-                try
+                var response = (await (App.Address + $"Education/Courses.id={course.Course.Id}")
+                        .SendRequestAsync("", HttpRequestType.Delete, App.Account.Jwt))
+                    .DeserializeJson<bool>();
+
+                if (response)
                 {
-                    var response = (await (App.Address + $"Education/Courses.id={course.Course.Id}")
-                            .SendRequestAsync("", HttpRequestType.Delete, App.Account.Jwt))
-                        .DeserializeJson<bool>();
-
-                    if (response)
-                    {
-                        Courses.Remove(course);
-                    }
-
-                    if (Courses.Count == 0)
-                    {
-                        UpdateNoResultsFoundVisibility(Visibility.Visible);
-                    }
+                    Courses.Remove(course);
                 }
-                catch (Exception e)
+
+                if (Courses.Count == 0)
                 {
-
+                    UpdateNoResultsFoundVisibility(Visibility.Visible);
                 }
+            }
+#pragma warning disable CS0168 // Переменная "e" объявлена, но ни разу не использована.
+            catch (Exception e)
+#pragma warning restore CS0168 // Переменная "e" объявлена, но ни разу не использована.
+            {
 
             }
         }
@@ -479,10 +416,50 @@ namespace EduMessage.ViewModels
 
                 UpdateAccessibility();
             }
+#pragma warning disable CS0168 // Переменная "e" объявлена, но ни разу не использована.
             catch (Exception e)
+#pragma warning restore CS0168 // Переменная "e" объявлена, но ни разу не использована.
             {
 
             }
+        }
+    }
+
+    public class FormattedCourse : INotifyPropertyChanged
+    {
+        public int Id { get; set; }
+        public Course Course { get; set; }
+
+        public List<Attachment> Attachments
+        {
+            get => _attachments;
+            set
+            {
+                _attachments = value;
+                OnPropertyChanged();
+                ChangeFileInfoVisibility();
+            }
+        }
+
+        private Visibility _filesInfoVisibility;
+        private List<Attachment> _attachments;
+
+        private void ChangeFileInfoVisibility()
+        {
+            FilesInfoVisibility = Attachments == null
+                                  || Attachments.Count == 0
+                                  || Attachments.Count == 1 && Attachments.First() == null
+                ? Visibility.Collapsed
+                : Visibility.Visible;
+        }
+
+        public Visibility FilesInfoVisibility { get => _filesInfoVisibility; set { _filesInfoVisibility = value; OnPropertyChanged(); } }
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        [NotifyPropertyChangedInvocator]
+        private void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 

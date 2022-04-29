@@ -55,7 +55,9 @@ namespace EduMessage.ViewModels
                 Crumbs.Add(new Crumb(convertedTitle, null));
                 new Navigator().Navigate(typeof(EducationCourseListPage), speciality, new DrillInNavigationTransitionInfo(), FrameType.EducationFrame);
             }
+#pragma warning disable CS0168 // Переменная "e" объявлена, но ни разу не использована.
             catch (Exception e)
+#pragma warning restore CS0168 // Переменная "e" объявлена, но ни разу не использована.
             {
 
             }
@@ -69,7 +71,9 @@ namespace EduMessage.ViewModels
         }
     }
 
+#pragma warning disable CS0659 // "Crumb" переопределяет Object.Equals(object o), но не переопределяет Object.GetHashCode().
     public struct Crumb
+#pragma warning restore CS0659 // "Crumb" переопределяет Object.Equals(object o), но не переопределяет Object.GetHashCode().
     {
         public string Title { get; set; }
         public object Data { get; set; }

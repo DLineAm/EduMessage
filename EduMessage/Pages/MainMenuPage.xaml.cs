@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using EduMessage.Services;
@@ -28,11 +29,13 @@ namespace EduMessage.Pages
     /// <summary>
     /// Пустая страница, которую можно использовать саму по себе или для перехода внутри фрейма.
     /// </summary>
-    public partial class MainMenuPage : Page, IEventSubscriber<ConversationGot>
+    public partial class MainMenuPage : Page, IEventSubscriber<ConversationGot>, IEventSubscriber<InAppNotificationShowing>
     {
         public MainMenuPage()
         {
             this.InitializeComponent();
+
+            NotificationBorder.Visibility = Visibility.Collapsed;
 
             AnimatedIcon.SetState(SettingsIcon, "Normal");
 
@@ -57,8 +60,8 @@ namespace EduMessage.Pages
                 case string itemString when itemString == App.Account.User.FirstName + " " + App.Account.User.LastName:
                     NavFrame.Navigate(typeof(AccountInfoPage));
                     return;
-                case User user:
-                    NavFrame.Navigate(typeof(ChatPage), user);
+                case UserConversation conversation:
+                    NavFrame.Navigate(typeof(ChatPage), conversation);
                     return;
                 case "Обучение":
                     NavFrame.Navigate(typeof(EducationMainPage));
@@ -86,7 +89,7 @@ namespace EduMessage.Pages
 
                 if (dataContext is UserConversation conversation)
                 {
-                    dataContext = conversation.IdUserNavigation;
+                    item = conversation;
                 }
 
                 if (dataContext is User)
@@ -189,6 +192,22 @@ namespace EduMessage.Pages
                     }
                 });
             }
+        }
+
+        public async void OnEvent(InAppNotificationShowing eventData)
+        {
+            var symbol = eventData.Icon;
+            var text = eventData.Text;
+
+            NotificationIcon.Symbol = symbol;
+            NotificationTextBlock.Text = text;
+
+            NotificationBorder.Visibility = Visibility.Visible;
+
+            FadeInNotificationStoryboard.Begin();
+            await Task.Delay(TimeSpan.FromSeconds(2));
+            FadeOutNotificationStoryboard.Begin();
+            await Task.Delay(TimeSpan.FromMilliseconds(300));
         }
     }
 }

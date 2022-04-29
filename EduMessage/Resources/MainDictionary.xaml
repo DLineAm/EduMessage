@@ -5,8 +5,10 @@
     <!--<SolidColorBrush x:Key="ReceivedMessageBackground" Color="Crimson"></SolidColorBrush>-->
     <SolidColorBrush x:Key="ReceivedMessageBackground" Color="{StaticResource SystemAccentColor}"></SolidColorBrush>
     <SolidColorBrush x:Key="SentMessageBackground" Color="BlueViolet"></SolidColorBrush>
+    <SolidColorBrush x:Key="SentMessageAttachmentBackground" Color="#a05dde"></SolidColorBrush>
     <SolidColorBrush x:Key="DisabledAccentColor" Color="{ThemeResource AccentTextFillColorDisabledBrush}"></SolidColorBrush>
     <SolidColorBrush x:Key="PrimaryAccentColor" Color="{ThemeResource AccentTextFillColorPrimaryBrush}"></SolidColorBrush>
+    <SolidColorBrush x:Key="PrimaryMessageForeground" Color="White"></SolidColorBrush>
     <Style TargetType="Button">
         <Setter Property="Padding" Value="10,3"></Setter>
     </Style>
@@ -19,6 +21,12 @@
         <Setter Property="BorderThickness" Value="1"/>
         <Setter Property="BorderBrush" Value="{ThemeResource CardStrokeColorDefaultBrush}"/>
         <Setter Property="Background" Value="{ThemeResource LayerFillColorDefaultBrush}"/>
+    </Style>
+
+    <Style x:Key="AcrylicCardBorder"
+           BasedOn="{StaticResource CardBorder}"
+           TargetType="Border">
+        <Setter Property="Background" Value="{ThemeResource AcrylicInAppFillColorDefaultBrush}"/>
     </Style>
 
     <!--Background="{ThemeResource LayerFillColorDefaultBrush}"

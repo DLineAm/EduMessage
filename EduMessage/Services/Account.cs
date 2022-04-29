@@ -56,13 +56,17 @@ namespace EduMessage.Services
 
                 return true;
             }
+#pragma warning disable CS0168 // Переменная "e" объявлена, но ни разу не использована.
             catch (Exception e)
+#pragma warning restore CS0168 // Переменная "e" объявлена, но ни разу не использована.
             {
                 return false;
             }
         }
 
+#pragma warning disable CS1998 // В данном асинхронном методе отсутствуют операторы await, поэтому метод будет выполняться синхронно. Воспользуйтесь оператором await для ожидания неблокирующих вызовов API или оператором await Task.Run(...) для выполнения связанных с ЦП заданий в фоновом потоке.
         private async void ReceiveMessage(List<MessageAttachment> message, User user)
+#pragma warning restore CS1998 // В данном асинхронном методе отсутствуют операторы await, поэтому метод будет выполняться синхронно. Воспользуйтесь оператором await для ожидания неблокирующих вызовов API или оператором await Task.Run(...) для выполнения связанных с ЦП заданий в фоновом потоке.
         {
             if (Window.Current.CoreWindow.ActivationMode is CoreWindowActivationMode.None or CoreWindowActivationMode.ActivatedInForeground)
             {
@@ -71,7 +75,7 @@ namespace EduMessage.Services
             try
             {
                 var pair = new KeyValuePair<List<MessageAttachment>, User>(message, user);
-                _notificator.Notificate("Message", pair);
+                _notificator.Notificate("FormattedMessageContent", pair);
             }
             catch (Exception e)
             {

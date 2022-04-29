@@ -1,0 +1,46 @@
+﻿<UserControl
+    x:Class="EduMessage.Resources.LinkUserControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:EduMessage.Resources"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:ui="using:Microsoft.Toolkit.Uwp.UI"
+    mc:Ignorable="d"
+    d:DesignHeight="300"
+    d:DesignWidth="400"
+    Loaded="LinkUserControl_OnLoaded">
+    <UserControl.Resources>
+        <AcrylicBrush x:Key="AttachmentsAcrylicBrush"
+                      BackgroundSource="Backdrop"
+                      TintLuminosityOpacity="0.15"
+                      TintOpacity="0.0"></AcrylicBrush>
+    </UserControl.Resources>
+
+    <Border Style="{StaticResource CardBorder}"
+            Background="{StaticResource AttachmentsAcrylicBrush}"
+            Padding="12"
+            Margin="12"
+            ui:FrameworkElementExtensions.Cursor="Hand"
+            BorderThickness="0"
+            x:Name="LinkBorder">
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"></ColumnDefinition>
+                <ColumnDefinition></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+
+            <Image Width="48"
+                   x:Name="SiteImage"
+                   Source="{Binding ImagePath}"
+                   Loaded="SiteImage_OnLoaded"></Image>
+
+            <TextBlock Grid.Column="1"
+                       Margin="12,0,0,0"
+                       TextTrimming="CharacterEllipsis"
+                       VerticalAlignment="Center"
+                       x:Name="TitleBox"
+                       Text="{Binding SiteTitle}"></TextBlock>
+        </Grid>
+    </Border>
+</UserControl>

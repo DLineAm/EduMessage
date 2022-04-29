@@ -25,7 +25,7 @@
     
     
     <!-- Добавьте сюда директивы среды выполнения, относящиеся к приложению. -->
-
+    <!--<Namespace Name="Microsoft.Extensions.Options" Activate="Required All" />-->
 
   </Application>
 </Directives>

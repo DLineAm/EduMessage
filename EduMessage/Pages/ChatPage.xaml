@@ -10,23 +10,49 @@
     xmlns:animatedVisuals="using:AnimatedVisuals"
     xmlns:models="using:SignalIRServerTest.Models" xmlns:interactivity="using:Microsoft.Xaml.Interactivity" xmlns:core="using:Microsoft.Xaml.Interactions.Core"
     xmlns:viewModels="using:EduMessage.ViewModels"
+    xmlns:ui="using:Microsoft.Toolkit.Uwp.UI"
+    xmlns:resources="using:EduMessage.Resources"
+    xmlns:system="using:System"
     mc:Ignorable="d"
-    NavigationCacheMode="Required">
+    NavigationCacheMode="Required"
+    x:Name="Parent">
 
     <Page.Resources>
         <utils:ByteToImageConverter x:Key="ImageConverter"></utils:ByteToImageConverter>
         <utils:MessageVisibilityConverter x:Key="MessageVisibilityConverter"></utils:MessageVisibilityConverter>
         <utils:SystemAccentColorSetting x:Key="AccentColorSetting"></utils:SystemAccentColorSetting>
         <utils:MessageDateConverter x:Key="DateConverter"></utils:MessageDateConverter>
+        <utils:DateTimeToSendDateConverter x:Key="SendDateConverter"></utils:DateTimeToSendDateConverter>
+        <utils:FormattedMessageToUiElementConverter x:Name="ElementConverter"></utils:FormattedMessageToUiElementConverter>
         <CollectionViewSource x:Name="ViewSource" IsSourceGrouped="True"
-                              Source="{Binding Messages, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}">
+                              Source="{Binding Messages}">
         </CollectionViewSource>
+
+        <Storyboard x:Name="FilesBorderAppearenceStoryboard" TargetName="FilesBorder">
+            <FadeOutThemeAnimation TargetName="FilesBorder"></FadeOutThemeAnimation>
+        </Storyboard>
+        <Storyboard x:Name="DummyFilesBorderAppearenceStoryboard" TargetName="FilesBorder">
+            <FadeInThemeAnimation TargetName="FilesBorder"></FadeInThemeAnimation>
+        </Storyboard>
+        <Storyboard x:Name="RefactorBorderAppearenceStoryboard" TargetName="RefactorBorder">
+            <FadeOutThemeAnimation TargetName="RefactorBorder"></FadeOutThemeAnimation>
+        </Storyboard>
+        <Storyboard x:Name="DummyRefactorBorderAppearenceStoryboard" TargetName="RefactorBorder">
+            <FadeInThemeAnimation TargetName="RefactorBorder"></FadeInThemeAnimation>
+        </Storyboard>
+        <AcrylicBrush x:Key="AttachmentsAcrylicBrush"
+                      BackgroundSource="Backdrop"
+                      TintLuminosityOpacity="0.15"
+                      TintColor="{Binding AccentColorSetting}"
+                      TintOpacity="0.0"></AcrylicBrush>
     </Page.Resources>
 
     <Grid Margin="48,12">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"></RowDefinition>
             <RowDefinition></RowDefinition>
+            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition Height="Auto"></RowDefinition>
             <RowDefinition Height="Auto"></RowDefinition>
         </Grid.RowDefinitions>
         <Grid>
@@ -40,7 +66,8 @@
                 <PersonPicture ProfilePicture="{Binding User.Image, Converter={StaticResource ImageConverter}}"
                                Height="48"
                                Width="48"
-                               Margin="12,0">
+                               Margin="12,0"
+                               ui:FrameworkElementExtensions.Cursor="Hand">
                     <interactivity:Interaction.Behaviors>
                         <core:EventTriggerBehavior EventName="Tapped">
                             <core:InvokeCommandAction Command="{Binding NavigateToAccountInfoCommand}" CommandParameter="{Binding User}"/>
@@ -52,7 +79,7 @@
                     VerticalAlignment="Bottom"
                     Height="10"
                     Width="10"
-                    Margin="0,0,15,10"
+                    Margin="0,0,15,5"
                     BorderBrush="Black"
                     BorderThickness="1"></controls:InfoBadge>
             </Grid>
@@ -72,18 +99,29 @@
                                   Target="{x:Bind ActionsButton}"
                                   Title="Нужные действия под рукой"
                                   IsOpen="True"
-                                  Subtitle="Основные действия с чатом находятся в этой кнопке">
+                                  Subtitle="Основные действия с чатом находятся в этой кнопке"
+                                  PlacementMargin="0,-10,0,0">
                 <controls:TeachingTip.IconSource>
                     <controls:SymbolIconSource Symbol="Like"></controls:SymbolIconSource>
                 </controls:TeachingTip.IconSource>
             </controls:TeachingTip>
 
-            <AppBarButton Grid.Column="2"
-                          Icon="List"
-                          IsCompact="True"
-                          x:Name="ActionsButton"
-                          VerticalAlignment="Center">
-                <AppBarButton.Flyout>
+            <Button Grid.Column="2"
+                    x:Name="ActionsButton"
+                          VerticalAlignment="Center"
+                          Margin="0,0,0,0"
+                    Background="Transparent"
+                    BorderThickness="0">
+                <Button.Content>
+                    <StackPanel Orientation="Horizontal">
+                        <SymbolIcon Symbol="List"></SymbolIcon>
+                        <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE76C;"
+                                  FontSize="8"
+                                  Foreground="Gray"
+                                  Margin="5,0,0,0"></FontIcon>
+                    </StackPanel>
+                </Button.Content>
+                <Button.Flyout>
                     <MenuFlyout>
                         <MenuFlyoutItem Text="Вложения">
                             <MenuFlyoutItem.Icon>
@@ -94,8 +132,8 @@
                                         Text="Профиль"
                                         Command="{Binding NavigateToAccountInfoCommand}" CommandParameter="{Binding User}"/>
                     </MenuFlyout>
-                </AppBarButton.Flyout>
-            </AppBarButton>
+                </Button.Flyout>
+            </Button>
         </Grid>
 
         <StackPanel Grid.Row="1"
@@ -113,10 +151,11 @@
         </StackPanel>
 
 
-        <utils:ChatView IncrementalLoadingThreshold="2"
-                        SelectionMode="None"
+        <ListView SelectionMode="None"
+                  IncrementalLoadingThreshold="2"
                         Grid.Row="1"
-                        ItemsSource="{Binding View, ElementName=ViewSource, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+                        Grid.RowSpan="2"
+                        ItemsSource="{Binding View, ElementName=ViewSource}"
                         x:Name="ChatView"
                         ContainerContentChanging="ChatView_OnContainerContentChanging">
             <ListView.ItemsPanel>
@@ -127,88 +166,129 @@
                 </ItemsPanelTemplate>
             </ListView.ItemsPanel>
 
+            <ListView.ItemContainerStyle>
+                <Style TargetType="ListViewItem">
+                    <Setter Property="ContextFlyout">
+                        <Setter.Value>
+                            <MenuFlyout>
+                                <MenuFlyoutItem Text="Редактировать"
+                                                Icon="Edit"
+                                                Command="{x:Bind ViewModel.StartRefactorModeCommand}"></MenuFlyoutItem>
+                                <MenuFlyoutItem Text="Копировать"
+                                                Icon="Copy"
+                                                Command="{x:Bind ViewModel.CopyToClipboardCommand}"></MenuFlyoutItem>
+                                <MenuFlyoutItem Text="Удалить"
+                                                Icon="Delete"
+                                                Command="{x:Bind ViewModel.DeleteMessageCommand}">
+                                </MenuFlyoutItem>
+                            </MenuFlyout>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </ListView.ItemContainerStyle>
+
             <ListView.ItemTemplate>
                 <DataTemplate x:DataType="viewModels:MessageList">
                     <Grid Margin="10">
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition></RowDefinition>
-                                        <RowDefinition Height="Auto"></RowDefinition>
-                                        <RowDefinition></RowDefinition>
-                                    </Grid.RowDefinitions>
+                        <interactivity:Interaction.Behaviors>
+                            <core:EventTriggerBehavior EventName="RightTapped">
+                                <core:InvokeCommandAction Command="{Binding DataContext.SetSelectedItemCommand, ElementName=Parent}"
+                                                          CommandParameter="{Binding }"></core:InvokeCommandAction>
+                            </core:EventTriggerBehavior>
+                        </interactivity:Interaction.Behaviors>
+                        <Grid.RowDefinitions>
+                            <RowDefinition></RowDefinition>
+                            <RowDefinition Height="Auto"></RowDefinition>
+                            <RowDefinition></RowDefinition>
+                        </Grid.RowDefinitions>
 
-                                    <Polygon Points="0,0 0,18, 18,18"
+                        <Polygon Points="0,0 0,18, 18,18"
                                  Fill="{Binding SystemAccentColor, Source={StaticResource AccentColorSetting}}"
                                  Visibility="{Binding Message.IdUser, Converter={StaticResource MessageVisibilityConverter}, ConverterParameter=upper}"
                                  Margin="10,0,10,0"></Polygon>
 
-                                    <Border Grid.Row="1"
+                        <Border Grid.Row="1"
                                 Background="{Binding SystemAccentColor, Source={StaticResource AccentColorSetting}}"
                                 Visibility="{Binding Message.IdUser, Converter={StaticResource MessageVisibilityConverter}, ConverterParameter=upper}"
                                 CornerRadius="10"></Border>
 
-                                    <Border Grid.Row="1"
+                        <Border Grid.Row="1"
                               Background="{StaticResource SentMessageBackground}"
                               Visibility="{Binding Message.IdUser, Converter={StaticResource MessageVisibilityConverter}, ConverterParameter=bottom}"
                               CornerRadius="10"></Border>
+                        <Grid Grid.Row="1"
+                              DataContext="{Binding }">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"></RowDefinition>
+                                <RowDefinition Height="Auto"></RowDefinition>
+                            </Grid.RowDefinitions>
 
-                                    <Grid Grid.Row="1">
-                                        <Grid.RowDefinitions>
-                                            <RowDefinition Height="Auto"></RowDefinition>
-                                            <RowDefinition Height="Auto"></RowDefinition>
-                                        </Grid.RowDefinitions>
+                            <!--<resources:UIMessageControl MinWidth="300"
+                                                                    MaxWidth="400"
+                                                                    FormattedMessageContent="{x:Bind (viewModels:MessageList)[0]}">
 
-                                        <TextBlock Text="{Binding Message.MessageContent, Mode=OneWay}"
-                                       TextWrapping="Wrap"
-                                       MinWidth="300"
-                                       MaxWidth="400"
-                                       FontSize="20"
-                                       TextAlignment="Left"
-                                       HorizontalAlignment="Left"
-                                       Padding="10,10,5,0"
-                                       Tag="Message"
-                                       DataContextChanged="FrameworkElement_OnDataContextChanged"></TextBlock>
+                            </resources:UIMessageControl>-->
 
-                                        <TextBlock Text="{Binding Message.SendDate, Converter={StaticResource DateConverter}}"
-                                       Grid.Row="1"
-                                       FontSize="12"
-                                       TextWrapping="Wrap"
-                                       Opacity="0.7"
-                                       Padding="10"></TextBlock>
-                                    </Grid>
+                            <Border MinWidth="300"
+                                    MaxWidth="400"
+                                    Child="{Binding Converter={StaticResource ElementConverter}}"></Border>
 
-                                    <Polygon Grid.Row="2"
+                            <TextBlock Text="{Binding Message.SendDate, Converter={StaticResource DateConverter}}"
+                                                   Grid.Row="1"
+                                                   FontSize="12"
+                                                   TextWrapping="Wrap"
+                                                   Opacity="0.7"
+                                                   Padding="10"
+                                                   Foreground="{StaticResource PrimaryMessageForeground}"></TextBlock>
+                        </Grid>
+
+                        <Polygon Grid.Row="2"
                                  HorizontalAlignment="Right"
                                  Points="0,0 18,0 18,18"
                                  Fill="{StaticResource SentMessageBackground}"
                                  Visibility="{Binding Message.IdUser, Converter={StaticResource MessageVisibilityConverter}, ConverterParameter=bottom}"
                                  Margin="0,0,10,0"></Polygon>
-                                </Grid>
+                    </Grid>
                 </DataTemplate>
             </ListView.ItemTemplate>
             <ListView.GroupStyle>
                 <GroupStyle>
+                    <GroupStyle.HeaderContainerStyle>
+                        <Style TargetType="ListViewHeaderItem">
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="ListViewHeaderItem">
+                                        <Border Style="{StaticResource CardBorder}"
+                                                HorizontalAlignment="Center"
+                                                Background="{StaticResource AttachmentsAcrylicBrush}"
+                                                CornerRadius="20">
+                                            <ContentPresenter Content="{TemplateBinding Content}"
+                                                              VerticalAlignment="Center"
+                                                              HorizontalAlignment="Center"
+                                                              Margin="0,-15"></ContentPresenter>
+                                        </Border>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </GroupStyle.HeaderContainerStyle>
                     <GroupStyle.HeaderTemplate>
                         <DataTemplate x:DataType="viewModels:MessageList">
-                            <TextBlock Text="{Binding Key}" Margin="10,0" Foreground="Gray" FontSize="12"/>
+                            <TextBlock Text="{Binding Key, Converter={StaticResource SendDateConverter}}" Margin="10,0" FontSize="12"/>
                         </DataTemplate>
                     </GroupStyle.HeaderTemplate>
                 </GroupStyle>
             </ListView.GroupStyle>
-        </utils:ChatView>
+        </ListView>
 
         <Grid Grid.Row="2">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"></RowDefinition>
-                <RowDefinition Height="Auto"></RowDefinition>
-            </Grid.RowDefinitions>
-
-            <Border Style="{StaticResource CardBorder}"
-                    Background="{ThemeResource AcrylicBackgroundFillColorDefaultBrush}"
-                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+            <Border Style="{StaticResource AcrylicCardBorder}"
                     Padding="12,10"
                     Margin="0,0,0,12"
                     HorizontalAlignment="Left"
-                    VerticalAlignment="Center">
+                    VerticalAlignment="Bottom"
+                    x:Name="RefactorBorder"
+                    Tag="{Binding IsRefactorBorderCollapsed}">
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Text="Редактирование сообщения"
                                Foreground="{ThemeResource ApplicationForegroundThemeBrush}"
@@ -217,7 +297,8 @@
                     <Button  Style="{StaticResource ButtonRevealStyle}"
                              VerticalAlignment="Center"
                              Margin="12,0,0,0"
-                             Height="25">
+                             Height="25"
+                             Command="{Binding CancelRefactorModeCommand}">
                         <Button.Content>
                             <SymbolIcon Symbol="Cancel"
                                         Height="9"/>
@@ -226,37 +307,127 @@
                 </StackPanel>
             </Border>
 
-            <Grid Grid.Row="1">
+            <Grid Margin="0,0,0,12"
+                  HorizontalAlignment="Right"
+                  VerticalAlignment="Bottom"
+                  x:Name="FilesBorder"
+                  Tag="{Binding IsFilesBorderCollapsed}">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"></RowDefinition>
+                    <RowDefinition Height="55"></RowDefinition>
+                </Grid.RowDefinitions>
+
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition></ColumnDefinition>
-                    <ColumnDefinition Width="Auto"></ColumnDefinition>
-                    <ColumnDefinition Width="Auto"></ColumnDefinition>
+                    <ColumnDefinition></ColumnDefinition>
                 </Grid.ColumnDefinitions>
-                <TextBox TextWrapping="Wrap"
+
+                <Border Style="{StaticResource AcrylicCardBorder}"
+                        HorizontalAlignment="Right"
+                        VerticalAlignment="Bottom"
+                        Height="48"
+                        Width="290"
+                        CornerRadius="5"
+                        Margin="0,8,0,0"
+                        Grid.Row="1"
+                        Grid.Column="1">
+                </Border>
+
+                <controls:Expander HorizontalAlignment="Right"
+                                   Background="{ThemeResource AcrylicInAppFillColorDefaultBrush}"
+                                   Padding="12,10"
+                                   ExpandDirection="Up"
+                                   Width="290"
+                                   Grid.RowSpan="2"
+                                   VerticalAlignment="Bottom"
+                                   x:Name="AttachmentsExpander"
+                                   Grid.Column="1">
+                    <controls:Expander.Header>
+                        <StackPanel Orientation="Horizontal">
+                            <SymbolIcon Symbol="OpenFile"></SymbolIcon>
+                            <TextBlock Margin="12,0,0,0">
+                                <Run Text="Прикрепленные файлы ("></Run><Run Text="{Binding MessageAttachments.Count, Mode=OneWay}"></Run><Run Text=")"></Run>
+                            </TextBlock>
+                        </StackPanel>
+                    </controls:Expander.Header>
+
+                    <controls:Expander.Content>
+                        <ListView ItemsSource="{Binding MessageAttachments}"
+                              HorizontalAlignment="Stretch"
+                              SelectionMode="None">
+                            <ListView.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"></ColumnDefinition>
+                                            <ColumnDefinition ></ColumnDefinition>
+                                            <ColumnDefinition Width="Auto"></ColumnDefinition>
+                                        </Grid.ColumnDefinitions>
+                                        <Image Height="24"
+                                           Source="{Binding ImagePath}"></Image>
+
+                                        <TextBlock Text="{Binding Title}"
+                                               Margin="12,0,0,0"
+                                               TextTrimming="CharacterEllipsis"
+                                               VerticalAlignment="Center"
+                                               Grid.Column="1"></TextBlock>
+
+                                        <AppBarButton Margin="12,0,0,-15"
+                                                      Grid.Column="2"
+                                                      VerticalAlignment="Center"
+                                                      IsCompact="True"
+                                                      Command="{Binding DataContext.RemoveAttachmentCommand, ElementName=Parent}"
+                                                      CommandParameter="{Binding }">
+                                            <Button.Content>
+                                                <Viewbox Height="15">
+                                                    <SymbolIcon Symbol="Delete"></SymbolIcon>
+                                                </Viewbox>
+                                            </Button.Content>
+                                        </AppBarButton>
+                                    </Grid>
+                                </DataTemplate>
+                            </ListView.ItemTemplate>
+                        </ListView>
+                    </controls:Expander.Content>
+
+                </controls:Expander>
+
+
+
+            </Grid>
+        </Grid>
+
+
+
+        <Grid Grid.Row="3">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition></ColumnDefinition>
+                <ColumnDefinition Width="Auto"></ColumnDefinition>
+                <ColumnDefinition Width="Auto"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <TextBox TextWrapping="Wrap"
                          PlaceholderText="Напишите что-нибудь..."
                          Text="{Binding Message, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"></TextBox>
-                <Button Grid.Column="2"
+            <Button Grid.Column="2"
                         Height="40"
-                        ToolTipService.ToolTip="Прикрепить">
-                    <Button.Content>
-                        <SymbolIcon Symbol="Attach"></SymbolIcon>
-                    </Button.Content>
-                </Button>
-                <Button Grid.Column="1"
+                        ToolTipService.ToolTip="Прикрепить"
+                        Command="{Binding OpenFileDialogCommand}">
+                <Button.Content>
+                    <SymbolIcon Symbol="Attach"></SymbolIcon>
+                </Button.Content>
+            </Button>
+            <Button Grid.Column="1"
                         Margin="12,0"
                         ToolTipService.ToolTip="Отправить"
                         Height="40"
                         Foreground="White"
                         Command="{Binding SendMessageCommand}"
-                        Background="{Binding SystemAccentColor, Source={StaticResource AccentColorSetting}}">
-                    <Button.KeyboardAccelerators>
-                        <KeyboardAccelerator Key="Enter"></KeyboardAccelerator>
-                    </Button.KeyboardAccelerators>
-                    <Button.Content>
-                        <SymbolIcon Symbol="Send"></SymbolIcon>
-                    </Button.Content>
-                </Button>
-            </Grid>
+                        Background="{Binding SystemAccentColor, Source={StaticResource AccentColorSetting}}"
+                        x:Name="SendButton">
+                <Button.KeyboardAccelerators>
+                    <KeyboardAccelerator Key="Enter"></KeyboardAccelerator>
+                </Button.KeyboardAccelerators>
+            </Button>
         </Grid>
     </Grid>
 </Page>

@@ -1,23 +1,18 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
-using System.Text.RegularExpressions;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
-using Windows.UI.Xaml;
-using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Documents;
-using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Navigation;
+using System.Threading.Tasks;
+using Windows.UI;
 using EduMessage.Services;
 using EduMessage.ViewModels;
-using SignalIRServerTest;
+
 using SignalIRServerTest.Models;
+
+using Windows.UI.Xaml;
+using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Media.Animation;
+using Windows.UI.Xaml.Navigation;
+using MvvmGen.Events;
 
 // Документацию по шаблону элемента "Пустая страница" см. по адресу https://go.microsoft.com/fwlink/?LinkId=234238
 
@@ -28,29 +23,103 @@ namespace EduMessage.Pages
     /// </summary>
     public sealed partial class ChatPage : Page
     {
+        private SymbolIcon _sendSymbolIcon = new (Symbol.Send)
+        {
+            Transitions = new TransitionCollection
+            {
+                new EntranceThemeTransition()
+            },
+            Foreground = new SolidColorBrush(Colors.White)
+        };
+        private SymbolIcon _acceptSymbolIcon = new (Symbol.Accept)
+        {
+            Transitions = new TransitionCollection
+            {
+                new EntranceThemeTransition()
+            },
+            Foreground = new SolidColorBrush(Colors.White)
+        };
+
         private string _userLogin;
         public ChatPage()
         {
             this.InitializeComponent();
+
+            FilesBorder.Visibility = Visibility.Collapsed;
+            RefactorBorder.Visibility = Visibility.Collapsed;
+
+            FilesBorder.RegisterPropertyChangedCallback(TagProperty, FilesBorderTagChanged);
+            RefactorBorder.RegisterPropertyChangedCallback(Border.TagProperty, RefactorBorderTagChanged);
         }
 
-        protected override void OnNavigatedTo(NavigationEventArgs e)
+        public static FormattedMessage GetFormattedMessage(object parameter)
+        {
+            if (parameter is FormattedMessage message)
+            {
+                return message;
+            }
+
+            return new FormattedMessage();
+        }
+
+        private async void RefactorBorderTagChanged(DependencyObject sender, DependencyProperty dp)
+        {
+            var tag = ((Border) sender).Tag;
+
+            if (tag is not bool isFadeAnimation) return;
+
+            if (isFadeAnimation)
+            {
+                RefactorBorderAppearenceStoryboard.Begin();
+                await Task.Delay(TimeSpan.FromMilliseconds(300));
+                RefactorBorder.Visibility = Visibility.Collapsed;
+                SendButton.Content = _sendSymbolIcon;
+                return;
+            }
+
+            SendButton.Content = _acceptSymbolIcon;
+            RefactorBorder.Visibility = Visibility.Visible;
+            DummyRefactorBorderAppearenceStoryboard.Begin();
+        }
+
+        private async void FilesBorderTagChanged(DependencyObject sender, DependencyProperty dp)
+        {
+            var tag = ((Grid) sender).Tag;
+
+            if (tag is not bool isFadeAnimation) return;
+
+            if (isFadeAnimation)
+            {
+                FilesBorderAppearenceStoryboard.Begin();
+                await Task.Delay(TimeSpan.FromMilliseconds(300));
+                FilesBorder.Visibility = Visibility.Collapsed;
+                AttachmentsExpander.IsExpanded = false;
+                return;
+            }
+
+            FilesBorder.Visibility = Visibility.Visible;
+            DummyFilesBorderAppearenceStoryboard.Begin();
+        }
+
+        protected override async void OnNavigatedTo(NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);
 
-            var parameter = e.Parameter as User;
+            var parameter = e.Parameter as UserConversation;
+            var user = parameter.IdUserNavigation;
 
-            if (parameter?.Login == _userLogin)
+            if (user?.Login == _userLogin)
             {
                 return;
             }
 
-            _userLogin = parameter.Login;
+            _userLogin = user.Login;
 
-
-            ViewModel = ControlContainer.Get().ResolveConstructor<ChatPageViewModel>();
+            var aggregator = ControlContainer.Get().Resolve<IEventAggregator>();
+            var notificator = ControlContainer.Get().Resolve<INotificator>("Dialog");
+            ViewModel = new ChatPageViewModel(notificator, aggregator);
             var chat = ControlContainer.Get().Resolve<IChat>();
-            ViewModel.Initialize(parameter, chat);
+            await ViewModel.Initialize(parameter, chat);
             this.DataContext = ViewModel;
         }
 
@@ -63,55 +132,6 @@ namespace EduMessage.Pages
             args.ItemContainer.HorizontalAlignment = message.IdUser == App.Account.User.Id
                 ? HorizontalAlignment.Right
                 : HorizontalAlignment.Left;
-        }
-
-        private void FrameworkElement_OnDataContextChanged(FrameworkElement sender, DataContextChangedEventArgs args)
-        {
-            if (sender is TextBlock {Tag: "Message", DataContext: FormattedMessage formattedMessage} textBlock)
-            {
-                var message = formattedMessage.Message;
-                var messageText = message.MessageContent;
-                var regex =
-                    "(https?:\\/\\/(?:www\\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s\\\\]{2,3}([a-zA-Z0-9.\\/&?\\-=]*[a-zA-z0-9\\/])|www\\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s\\\\]{2,3}([a-zA-Z0-9.\\/&?\\-=]*[a-zA-z0-9\\/])|https?:\\/\\/(?:www\\.|(?!www))[a-zA-Z0-9]+\\.[^\\s\\\\]{2,3}([a-zA-Z0-9.\\/&?\\-=]*[a-zA-z0-9\\/])|www\\.[a-zA-Z0-9]+\\.[^\\s\\\\]{2,3}([a-zA-Z0-9.\\/&?\\-=]*[a-zA-z0-9\\/])|[a-zA-Z0-9]+\\.[^\\s\\\\]{2,3}([a-zA-Z0-9.\\/&?\\-=]*[a-zA-z0-9\\/]))";
-                var links = Regex.Matches(messageText, regex);
-
-                if (links.Count == 0)
-                {
-                    return;
-                }
-
-                var textBlockLength = 0;
-
-                var inlines = textBlock.Inlines;
-                inlines.Clear();
-
-                foreach (Match link in links)
-                {
-                    var difference = link.Index - textBlockLength;
-                    var text = messageText.Substring(textBlockLength, difference);
-                    inlines.Add(new Run{Text = text});
-                    textBlockLength += text.Length;
-
-                    var linkText = messageText.Substring(link.Index, link.Length);
-                    var navigateUri = linkText;
-                    if (!linkText.Contains("www.") && !linkText.Contains("http://") && !linkText.Contains("https://"))
-                    {
-                        navigateUri = linkText.Insert(0, "http://");
-                    }
-                    var hyperlink = new Hyperlink{NavigateUri = new Uri(navigateUri)};
-                    hyperlink.Inlines.Add(new Run{Text = linkText});
-                    inlines.Add(hyperlink);
-
-                    textBlockLength += linkText.Length;
-
-                    var linkIndex = links.ToList().IndexOf(link);
-                    if (linkIndex + 1 == links.Count)
-                    {
-                        var lastText = messageText.Substring(link.Index + link.Length);
-                        inlines.Add(new Run{Text = lastText});
-                    }
-                }
-            }
         }
     }
 }

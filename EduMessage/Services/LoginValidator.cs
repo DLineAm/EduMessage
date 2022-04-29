@@ -23,7 +23,9 @@
                 return ValidationResponse.OkResponse;
 
             }
+#pragma warning disable CS0168 // Переменная "e" объявлена, но ни разу не использована.
             catch (System.Exception e)
+#pragma warning restore CS0168 // Переменная "e" объявлена, но ни разу не использована.
             {
                 return ValidationResponse.ServerErrorResponse;
             }

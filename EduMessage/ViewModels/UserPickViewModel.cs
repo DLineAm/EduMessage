@@ -51,7 +51,9 @@ namespace EduMessage.ViewModels
                 Roles = roleResponse;
                 Role = roleResponse.First();
             }
+#pragma warning disable CS0168 // Переменная "e" объявлена, но ни разу не использована.
             catch (Exception e)
+#pragma warning restore CS0168 // Переменная "e" объявлена, но ни разу не использована.
             {
 
             }
@@ -73,7 +75,9 @@ namespace EduMessage.ViewModels
 
                 Schools = response;
             }
+#pragma warning disable CS0168 // Переменная "e" объявлена, но ни разу не использована.
             catch (Exception e)
+#pragma warning restore CS0168 // Переменная "e" объявлена, но ни разу не использована.
             {
 
             }
@@ -98,7 +102,9 @@ namespace EduMessage.ViewModels
                 Users = userResponse;
                 UpdateNoResultsVisibility(Users.Count);
             }
+#pragma warning disable CS0168 // Переменная "e" объявлена, но ни разу не использована.
             catch (Exception e)
+#pragma warning restore CS0168 // Переменная "e" объявлена, но ни разу не использована.
             { }
         }
 
@@ -126,7 +132,7 @@ namespace EduMessage.ViewModels
 
             try
             {
-                var foundConversations = (await (App.Address + @$"Message/idUser={selectedUser.Id}&title=""")
+                var foundConversations = (await (App.Address + @$"FormattedMessageContent/idUser={selectedUser.Id}&title=""")
                         .SendRequestAsync("", HttpRequestType.Get, App.Account.Jwt))
                     .DeserializeJson<List<UserConversation>>();
 
@@ -137,7 +143,7 @@ namespace EduMessage.ViewModels
                 }
 
                 var response =
-                    (await (App.Address + "Message/Add").SendRequestAsync(conversations, HttpRequestType.Post,
+                    (await (App.Address + "FormattedMessageContent/Add").SendRequestAsync(conversations, HttpRequestType.Post,
                         App.Account.Jwt, isLoopHandleIgnore: true))
                     .DeserializeJson<KeyValuePair<int, List<int>>>();
                 if (response.Key == -1)
@@ -166,7 +172,9 @@ namespace EduMessage.ViewModels
 
                 StartChatNavigation(conversations, selectedUser);
             }
+#pragma warning disable CS0168 // Переменная "e" объявлена, но ни разу не использована.
             catch (Exception e)
+#pragma warning restore CS0168 // Переменная "e" объявлена, но ни разу не использована.
             {
                 return;
             }

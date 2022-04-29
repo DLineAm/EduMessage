@@ -30,6 +30,8 @@ namespace EduMessage.ViewModels
         [Property] private string _fullName;
         [Property] private object _profilePicture;
         [Property] private Visibility _studentInfoVisibility;
+        [Property] private Visibility _otherUserInputVisibility = Visibility.Visible;
+        [Property] private Visibility _backButtonVisibility = Visibility.Collapsed;
 
         public async Task Initialize()
         {
@@ -41,6 +43,8 @@ namespace EduMessage.ViewModels
         {
             User = user;
             await BaseInitialize();
+            OtherUserInputVisibility = Visibility.Collapsed;
+            BackButtonVisibility = Visibility.Visible;
         }
 
         private async Task BaseInitialize()
@@ -67,6 +71,12 @@ namespace EduMessage.ViewModels
             var file = await picker.PickSingleFileAsync();
 
             return file;
+        }
+
+        [Command]
+        private void Back()
+        {
+            new Navigator().GoBack(FrameType.MenuFrame);
         }
 
         [Command]

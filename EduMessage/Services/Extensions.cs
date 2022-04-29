@@ -1,20 +1,34 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+
+using SignalIRServerTest.Models;
+
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Net.Http;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text;
 using System.Threading.Tasks;
 
-using Microsoft.AspNetCore.Http.Connections;
-
-using Newtonsoft.Json;
-
 using Windows.Storage.Streams;
 using Windows.UI.Xaml.Media.Imaging;
+
+using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace EduMessage.Services
 {
     public static class Extensions
     {
+
+        public static async Task WriteAttachmentImagePath(this IEnumerable<Attachment> attachments)
+        {
+            var tasks = attachments.Where(a => a != null)
+                .Select(attachment => attachment.SplitAndGetImage());
+
+            await Task.WhenAll(tasks);
+        }
+
         public static async Task<string> SendRequestAsync<T>(this string address
             , T value
             , HttpRequestType requestType
@@ -24,7 +38,6 @@ namespace EduMessage.Services
         {
             using HttpClient client = CreateClient(token, passCertificateValidation);
 
-            HttpResponseMessage response = null;
             StringContent httpContent = null;
 
             if (value != null)
@@ -35,7 +48,12 @@ namespace EduMessage.Services
                     settings.MaxDepth = 1;
                     settings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
                 }
-                var json = JsonConvert.SerializeObject(value, settings);
+
+                using var stream = new MemoryStream();
+                await JsonSerializer.SerializeAsync(stream,value);
+                stream.Seek(0, SeekOrigin.Begin);
+                using var reader = new StreamReader(stream);
+                var json = await reader.ReadToEndAsync();
                 httpContent = new StringContent(json, Encoding.UTF8, "application/json");
             }
 
@@ -44,7 +62,7 @@ namespace EduMessage.Services
                 throw new NullReferenceException(nameof(value));
             }
 
-            response = await Send(address, requestType, client, httpContent);
+            var response = await Send(address, requestType, client, httpContent);
 
             response.EnsureSuccessStatusCode();
             var result = await response.Content.ReadAsStringAsync();
