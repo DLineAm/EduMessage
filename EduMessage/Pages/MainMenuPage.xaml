@@ -256,7 +256,6 @@
                 </controls:NavigationViewItem>
                 <controls:NavigationViewItem Content="Параметры"
                                              Tapped="SettingsNavigationViewItem_Tapped"
-                                             
                                              controls:AnimatedIcon.State="Normal">
                     <controls:NavigationViewItem.Icon>
                         <controls:AnimatedIcon x:Name='SettingsIcon'>

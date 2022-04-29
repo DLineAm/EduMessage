@@ -11,21 +11,18 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Net;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text.RegularExpressions;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
 using Windows.Networking.BackgroundTransfer;
 using Windows.Storage;
-using Windows.System;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Documents;
-using Windows.UI.Xaml.Input;
-using User = SignalIRServerTest.Models.User;
 
 // Документацию по шаблону элемента "Пользовательский элемент управления" см. по адресу https://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -34,16 +31,13 @@ namespace EduMessage.Resources
     public sealed partial class UIMessageControl : UserControl, INotifyPropertyChanged
     {
         private Visibility _attachmentsListVisibility;
-        private object _imagePath;
-        private string _siteTitle;
         private int _messageId;
-        private string _siteUrl;
 
-        public UIMessageControl()
-        {
-            this.InitializeComponent();
-            (this.Content as FrameworkElement).DataContext = this;
-        }
+        //public UIMessageControl()
+        //{
+        //    this.InitializeComponent();
+        //    (this.Content as FrameworkElement).DataContext = this;
+        //}
 
         public UIMessageControl(FormattedMessage formattedMessage)
         {
@@ -72,25 +66,97 @@ namespace EduMessage.Resources
             }
         }
 
-        private async Task FormatLinks()
+        private async void FormatLinks(object parameter)
         {
-            
-        }
+            var message = FormattedMessageContent.Message;
+                if (message == null)
+                {
+                    return;
+                }
 
-        private async void DownloadProgressChanged(DownloadOperation obj)
-        {
-            try
-            {
-                var file = obj.ResultFile;
-                var data = (await FileIO.ReadBufferAsync(file)).ToArray();
-                await Task.Delay(TimeSpan.FromMilliseconds(10));
-                ImagePath = await data.CreateBitmap(48);
-                //LinkUiVisibility = Visibility.Visible;
-            }
-            catch (Exception e)
-            {
+                if (LinkGrid.Children.Any())
+                {
+                    return;
+                }
+                
 
-            }
+                var messageText = message.MessageContent;
+                if (messageText == null)
+                {
+                    return;
+                }
+
+                const string regex =
+                    "(https?:\\/\\/(?:www\\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s\\\\]{2,3}([a-zA-Z0-9.\\/&?\\-=]*[a-zA-z0-9\\/])|www\\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s\\\\]{2,3}([a-zA-Z0-9.\\/&?\\-=]*[a-zA-z0-9\\/])|https?:\\/\\/(?:www\\.|(?!www))[a-zA-Z0-9]+\\.[^\\s\\\\]{2,3}([a-zA-Z0-9.\\/&?\\-=]*[a-zA-z0-9\\/])|www\\.[a-zA-Z0-9]+\\.[^\\s\\\\]{2,3}([a-zA-Z0-9.\\/&?\\-=]*[a-zA-z0-9\\/])|[a-zA-Z0-9]+\\.[^\\s\\\\]{2,3}([a-zA-Z0-9.\\/&?\\-=]*[a-zA-z0-9\\/]))";
+                var links = Regex.Matches(messageText, regex);
+
+                if (links.Count == 0)
+                {
+                    return;
+                }
+
+
+                var textBlockLength = 0;
+
+                var inlines = MessageBox.Inlines;
+                inlines.Clear();
+
+                string firstLinkText = null;
+                foreach (Match link in links)
+                {
+                    var difference = link.Index - textBlockLength;
+                    var text = messageText.Substring(textBlockLength, difference);
+                    inlines.Add(new Run { Text = text });
+                    textBlockLength += text.Length;
+
+                    var linkText = messageText.Substring(link.Index, link.Length);
+                    var navigateUri = linkText;
+                    if (!linkText.Contains("www.") && !linkText.Contains("http://") && !linkText.Contains("https://"))
+                    {
+                        navigateUri = linkText.Insert(0, "http://");
+                    }
+
+                    firstLinkText ??= navigateUri;
+                    var hyperlink = new Hyperlink { NavigateUri = new Uri(navigateUri) };
+                    hyperlink.Inlines.Add(new Run { Text = linkText });
+                    inlines.Add(hyperlink);
+
+                    textBlockLength += linkText.Length;
+
+                    var linkIndex = links.ToList().IndexOf(link);
+
+                    if (linkIndex + 1 != links.Count) continue;
+
+                    var lastText = messageText.Substring(link.Index + link.Length);
+                    inlines.Add(new Run { Text = lastText });
+                }
+
+                LinkUserControl userControl = null;
+                try
+                {
+                    using var client = new WebClient();
+
+                    string source = await client.DownloadStringTaskAsync(firstLinkText);
+
+                    var title = Regex.Match(source, @"\<title\b[^>]*\>\s*(?<Title>[\s\S]*?)\</title\>",
+                        RegexOptions.IgnoreCase).Groups["Title"].Value;
+
+                    Debug.WriteLine(title);
+
+                    userControl = new LinkUserControl
+                    {
+                        FirstLinkText = firstLinkText,
+                        SiteTitle = title
+                    };
+
+                    MessageId = message.Id;
+                }
+                catch (Exception e)
+                {
+
+                }
+
+                LinkGrid.Children.Add(userControl);
         }
 
         public static readonly DependencyProperty FormattedMessageContentProperty =
@@ -103,26 +169,6 @@ namespace EduMessage.Resources
 
         public ICommand OpenFileCommand => _openFileCommand ??= new DelegateCommand(OpenFile);
 
-        public object ImagePath
-        {
-            get => _imagePath;
-            set
-            {
-                _imagePath = value;
-                OnPropertyChanged();
-            }
-        }
-
-        public string SiteTitle
-        {
-            get => _siteTitle;
-            set
-            {
-                _siteTitle = value;
-                OnPropertyChanged();
-            }
-        }
-
         public int MessageId
         {
             get => _messageId;
@@ -132,6 +178,10 @@ namespace EduMessage.Resources
                 OnPropertyChanged();
             }
         }
+
+        private ICommand _formatTextCommand;
+
+        public ICommand FormatTextCommand => _formatTextCommand ??= new DelegateCommand(FormatLinks);
 
         private async void OpenFile(object obj)
         {
@@ -171,10 +221,10 @@ namespace EduMessage.Resources
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        private async void UIMessageControl_OnLoaded(object sender, RoutedEventArgs e)
-        {
-            await FormatLinks();
-        }
+        //private async void UIMessageControl_OnLoaded(object sender, RoutedEventArgs e)
+        //{
+        //    await FormatLinks();
+        //}
 
         private async void MessageBox_OnDataContextChanged(FrameworkElement sender, DataContextChangedEventArgs args)
         {
@@ -184,12 +234,19 @@ namespace EduMessage.Resources
                 {
                     return;
                 }
+                
+
                 var message = formattedMessage.Message;
                 if (message == null)
                 {
                     return;
                 }
-                MessageId = message.Id;
+
+                if (LinkGrid.Children.Any())
+                {
+                    return;
+                }
+                
 
                 var messageText = message.MessageContent;
                 if (messageText == null)
@@ -227,13 +284,7 @@ namespace EduMessage.Resources
                         navigateUri = linkText.Insert(0, "http://");
                     }
 
-                    if (firstLinkText == null)
-                    {
-                        firstLinkText = navigateUri;
-                        //SiteTitle = string.Empty;
-                        //ImagePath = null;
-                        //LinkGrid.Children.Add(new LinkUserControl(firstLinkText));
-                    }
+                    firstLinkText ??= navigateUri;
                     var hyperlink = new Hyperlink { NavigateUri = new Uri(navigateUri) };
                     hyperlink.Inlines.Add(new Run { Text = linkText });
                     inlines.Add(hyperlink);
@@ -246,37 +297,27 @@ namespace EduMessage.Resources
 
                     var lastText = messageText.Substring(link.Index + link.Length);
                     inlines.Add(new Run { Text = lastText });
-
-                    //try
-                    //{
-                    //    string source = await client.DownloadStringTaskAsync(firstLinkText);
-                    //    var title = Regex.Match(source, @"\<title\b[^>]*\>\s*(?<Title>[\s\S]*?)\</title\>",
-                    //        RegexOptions.IgnoreCase).Groups["Title"].Value;
-                    //    SiteTitle = title;
-                    //    _siteUrl = firstLinkText;
-                    //}
-                    //catch (Exception e)
-                    //{
-                    //    return;
-                    //}
-
-                   
-
                 }
 
                 LinkUserControl userControl = null;
                 try
                 {
                     using var client = new WebClient();
+
                     string source = await client.DownloadStringTaskAsync(firstLinkText);
+
                     var title = Regex.Match(source, @"\<title\b[^>]*\>\s*(?<Title>[\s\S]*?)\</title\>",
                         RegexOptions.IgnoreCase).Groups["Title"].Value;
 
                     Debug.WriteLine(title);
 
-                    userControl = new LinkUserControl();
-                    userControl.FirstLinkText = firstLinkText;
-                    userControl.SiteTitle = title;
+                    userControl = new LinkUserControl
+                    {
+                        FirstLinkText = firstLinkText,
+                        SiteTitle = title
+                    };
+
+                    MessageId = message.Id;
                 }
                 catch (Exception e)
                 {
@@ -284,8 +325,6 @@ namespace EduMessage.Resources
                 }
 
                 LinkGrid.Children.Add(userControl);
-
-                
             }
             catch (Exception e)
             {

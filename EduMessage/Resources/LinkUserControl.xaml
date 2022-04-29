@@ -8,8 +8,7 @@
     xmlns:ui="using:Microsoft.Toolkit.Uwp.UI"
     mc:Ignorable="d"
     d:DesignHeight="300"
-    d:DesignWidth="400"
-    Loaded="LinkUserControl_OnLoaded">
+    d:DesignWidth="400">
     <UserControl.Resources>
         <AcrylicBrush x:Key="AttachmentsAcrylicBrush"
                       BackgroundSource="Backdrop"
@@ -40,7 +39,8 @@
                        TextTrimming="CharacterEllipsis"
                        VerticalAlignment="Center"
                        x:Name="TitleBox"
-                       Text="{Binding SiteTitle}"></TextBlock>
+                       Text="{Binding SiteTitle}"
+                       Foreground="White"></TextBlock>
         </Grid>
     </Border>
 </UserControl>
