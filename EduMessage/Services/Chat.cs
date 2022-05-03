@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Windows.UI.ViewManagement;
 using Microsoft.AspNetCore.SignalR.Client;
 using SignalIRServerTest.Models;
 
@@ -9,15 +10,17 @@ namespace EduMessage.Services
     {
         void Initialize(string address, string token);
         void SetOnMethod<TMessage, TUser>(string methodName, Action<TMessage, TUser> handler);
+        void SetOnMethod<TMessage>(string methodName, Action<TMessage> handler);
         Task OpenConnection();
         Task CloseConnection();
-        Task SendMessage<TMessage>(string methodName, User recipientUser, TMessage message);
+        Task DeleteMessage<TMessage>(string methodName, TMessage message);
         Task SendMessage<TMessage>(string methodName, int recipientId, TMessage message);
 
     }
     public class Chat : IChat
     {
-        private HubConnection _connection;
+        [ThreadStatic]
+        private static HubConnection _connection;
 
         public void Initialize(string address, string token)
         {
@@ -35,6 +38,11 @@ namespace EduMessage.Services
             _connection.On(methodName, handler);
         }
 
+        public void SetOnMethod<TMessage>(string methodName, Action<TMessage> handler)
+        {
+            _connection.On(methodName, handler);
+        }
+
         public async Task OpenConnection()
         {
             await _connection.StartAsync();
@@ -45,13 +53,13 @@ namespace EduMessage.Services
             await _connection.StopAsync();
         }
 
-        public async Task SendMessage<TMessage>(string methodName, User recipientUser, TMessage message)
+        public async Task DeleteMessage<TMessage>(string methodName, TMessage message)
         {
             if (_connection.State != HubConnectionState.Connected)
             {
                 return;
             }
-            await _connection.SendAsync(methodName, message, recipientUser.Id);
+            await _connection.SendAsync(methodName, message);
         }
 
         public async Task SendMessage<TMessage>(string methodName, int recipientId, TMessage message)

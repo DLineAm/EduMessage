@@ -31,14 +31,14 @@ namespace EduMessage.ViewModels
         {
             try
             {
-                var userResponse = (await (App.Address + "User/All").SendRequestAsync("", HttpRequestType.Get, App.Account.Jwt))
+                var userResponse = (await (App.Address + "User/All").SendRequestAsync("", HttpRequestType.Get, App.Account.GetJwt()))
                     .DeserializeJson<List<User>>();
 
                 Users = userResponse;
 
                 UpdateNoResultsVisibility(Users.Count);
 
-                var schoolResponse = (await (App.Address + "Login/Schools").SendRequestAsync("", HttpRequestType.Get, App.Account.Jwt))
+                var schoolResponse = (await (App.Address + "Login/Schools").SendRequestAsync("", HttpRequestType.Get, App.Account.GetJwt()))
                     .DeserializeJson<List<School>>();
 
                 Schools = schoolResponse;
@@ -96,7 +96,7 @@ namespace EduMessage.ViewModels
             try
             {
                 var fullName = FullName ?? @"""";
-                var userResponse = (await (App.Address + $"User/All.schoolId={school.Id}.roleId={Role.Id}.fullName={fullName}").SendRequestAsync("", HttpRequestType.Get, App.Account.Jwt))
+                var userResponse = (await (App.Address + $"User/All.schoolId={school.Id}.roleId={Role.Id}.fullName={fullName}").SendRequestAsync("", HttpRequestType.Get, App.Account.GetJwt()))
                         .DeserializeJson<List<User>>();
 
                 Users = userResponse;
@@ -118,9 +118,9 @@ namespace EduMessage.ViewModels
             {
                 new()
                 {
-                    IdUser = App.Account.User.Id,
+                    IdUser = App.Account.GetUser().Id,
                     IdConversationNavigation = conversation,
-                    IdUserNavigation = App.Account.User
+                    IdUserNavigation = App.Account.GetUser()
                 },
                 new()
                 {
@@ -133,7 +133,7 @@ namespace EduMessage.ViewModels
             try
             {
                 var foundConversations = (await (App.Address + @$"FormattedMessageContent/idUser={selectedUser.Id}&title=""")
-                        .SendRequestAsync("", HttpRequestType.Get, App.Account.Jwt))
+                        .SendRequestAsync("", HttpRequestType.Get, App.Account.GetJwt()))
                     .DeserializeJson<List<UserConversation>>();
 
                 if (foundConversations != null)
@@ -144,7 +144,7 @@ namespace EduMessage.ViewModels
 
                 var response =
                     (await (App.Address + "FormattedMessageContent/Add").SendRequestAsync(conversations, HttpRequestType.Post,
-                        App.Account.Jwt, isLoopHandleIgnore: true))
+                        App.Account.GetJwt(), isLoopHandleIgnore: true))
                     .DeserializeJson<KeyValuePair<int, List<int>>>();
                 if (response.Key == -1)
                 {
@@ -166,7 +166,7 @@ namespace EduMessage.ViewModels
                     conversationElement.Id = newConversationId;
                 }
 
-                var toRemove = conversations.FirstOrDefault(c => c.IdUser == App.Account.User.Id);
+                var toRemove = conversations.FirstOrDefault(c => c.IdUser == App.Account.GetUser().Id);
 
                 conversations.Remove(toRemove);
 

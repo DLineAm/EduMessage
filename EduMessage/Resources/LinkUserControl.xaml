@@ -22,7 +22,8 @@
             Margin="12"
             ui:FrameworkElementExtensions.Cursor="Hand"
             BorderThickness="0"
-            x:Name="LinkBorder">
+            x:Name="LinkBorder"
+            Tapped="LinkBorder_OnTapped">
         <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"></ColumnDefinition>

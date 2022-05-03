@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using Windows.UI.Xaml.Media.Animation;
 using EduMessage.Pages;
 using EduMessage.Services;
@@ -6,6 +7,7 @@ using MvvmGen;
 using Microsoft.Toolkit.Uwp.Notifications;
 using Windows.UI.Xaml;
 using System.Threading.Tasks;
+using Windows.UI.Core;
 using MvvmGen.Events;
 
 namespace EduMessage.ViewModels
@@ -19,6 +21,12 @@ namespace EduMessage.ViewModels
         [Property] private string _errorText;
         [Property] private bool _isSaveLogin = true;
         [Property] private bool _isLoginEnabled = true;
+        private readonly SynchronizationContext _context;
+
+        public BaseLoginPageViewModel()
+        {
+            _context = SynchronizationContext.Current;
+        }
 
         [Command(CanExecuteMethod = nameof(CanLogin))]
         private async Task TryLogin()
@@ -41,14 +49,23 @@ namespace EduMessage.ViewModels
 
         private async Task SetLoaderVisibility(Visibility visibility)
         {
-            IsLoginEnabled = visibility != Visibility.Visible;
-            EventAggregator.Publish(new BaseLoaderVisibilityChangedEvent(visibility));
-            //App.InvokeLoaderVisibilityChanged(visibility);
-
-            if (visibility == Visibility.Visible)
+            _context?.Post( async _ =>
             {
-                await Task.Delay(1);
-            }
+                await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(
+                    CoreDispatcherPriority.Normal, async () =>
+                    {
+                        IsLoginEnabled = visibility != Visibility.Visible;
+
+                        if (visibility == Visibility.Visible)
+                        {
+                            await Task.Delay(1);
+                        }
+                    });
+
+                EventAggregator.Publish(new BaseLoaderVisibilityChangedEvent(visibility));
+            }, null);
+            
+
         }
 
         [CommandInvalidate(nameof(IsLoginEnabled))]

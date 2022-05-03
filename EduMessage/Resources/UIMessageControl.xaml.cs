@@ -1,5 +1,4 @@
 ﻿using EduMessage.Annotations;
-using EduMessage.Services;
 using EduMessage.ViewModels;
 
 using MvvmGen.Commands;
@@ -11,15 +10,10 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Net;
-using System.Reflection;
 using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using System.Windows.Input;
 
-using Windows.Networking.BackgroundTransfer;
-using Windows.Storage;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Documents;
@@ -32,12 +26,7 @@ namespace EduMessage.Resources
     {
         private Visibility _attachmentsListVisibility;
         private int _messageId;
-
-        //public UIMessageControl()
-        //{
-        //    this.InitializeComponent();
-        //    (this.Content as FrameworkElement).DataContext = this;
-        //}
+        private bool _isMessageFormatted;
 
         public UIMessageControl(FormattedMessage formattedMessage)
         {
@@ -68,6 +57,10 @@ namespace EduMessage.Resources
 
         private async void FormatLinks(object parameter)
         {
+            if (_isMessageFormatted)
+            {
+                return;
+            }
             var message = FormattedMessageContent.Message;
                 if (message == null)
                 {
@@ -156,6 +149,7 @@ namespace EduMessage.Resources
 
                 }
 
+                _isMessageFormatted = true;
                 LinkGrid.Children.Add(userControl);
         }
 
@@ -221,11 +215,6 @@ namespace EduMessage.Resources
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        //private async void UIMessageControl_OnLoaded(object sender, RoutedEventArgs e)
-        //{
-        //    await FormatLinks();
-        //}
-
         private async void MessageBox_OnDataContextChanged(FrameworkElement sender, DataContextChangedEventArgs args)
         {
             try
@@ -237,18 +226,8 @@ namespace EduMessage.Resources
                 
 
                 var message = formattedMessage.Message;
-                if (message == null)
-                {
-                    return;
-                }
 
-                if (LinkGrid.Children.Any())
-                {
-                    return;
-                }
-                
-
-                var messageText = message.MessageContent;
+                var messageText = message?.MessageContent;
                 if (messageText == null)
                 {
                     return;
@@ -297,6 +276,11 @@ namespace EduMessage.Resources
 
                     var lastText = messageText.Substring(link.Index + link.Length);
                     inlines.Add(new Run { Text = lastText });
+                }
+
+                if (LinkGrid.Children.Count != 0)
+                {
+                    return;
                 }
 
                 LinkUserControl userControl = null;

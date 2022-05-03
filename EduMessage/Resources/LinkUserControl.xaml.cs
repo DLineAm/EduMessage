@@ -6,9 +6,10 @@ using System.ComponentModel;
 using System.IO;
 using System.Net;
 using System.Runtime.CompilerServices;
-
+using Windows.System;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Input;
 
 // Документацию по шаблону элемента "Пользовательский элемент управления" см. по адресу https://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -84,6 +85,11 @@ namespace EduMessage.Resources
                 }
             }
             catch (Exception ex){ }
+        }
+
+        private async void LinkBorder_OnTapped(object sender, TappedRoutedEventArgs e)
+        {
+            await Launcher.LaunchUriAsync(new Uri(_firstLinkText));
         }
     }
 }

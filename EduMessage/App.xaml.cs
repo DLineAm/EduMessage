@@ -7,15 +7,21 @@ using MvvmGen.Events;
 
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Net.Http;
 using System.Text.RegularExpressions;
-
+using System.Threading.Tasks;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
+using Windows.ApplicationModel.Core;
 using Windows.UI;
+using Windows.UI.Core;
+using Windows.UI.ViewManagement;
+using Windows.UI.WindowManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Hosting;
 using Windows.UI.Xaml.Navigation;
 using SignalIRServerTest.Models;
 
@@ -27,6 +33,9 @@ namespace EduMessage
     /// </summary>
     sealed partial class App : Application
     {
+        public static bool _isAlreadyLaunched;
+        public ObservableCollection<CoreApplicationView> secondaryViews = new ObservableCollection<CoreApplicationView>();
+        private bool _isMainViewClosed;
         //"https://169.254.77.140:5001/"
         public static string Address = "https://192.168.1.6:5001/";
 
@@ -49,7 +58,7 @@ namespace EduMessage
             this.Suspending += OnSuspending;
         }
 
-        protected override void OnActivated(IActivatedEventArgs args)
+        protected override async void OnActivated(IActivatedEventArgs args)
         {
             base.OnActivated(args);
 
@@ -58,21 +67,23 @@ namespace EduMessage
                 ToastArguments toastArgs = ToastArguments.Parse(toastEventArgs.Argument);
                 if (toastArgs.Contains("dnd"))
                 {
-                    
+
                 }
 
                 if (toastArgs.TryGetValue("action", out var value))
                 {
                     if (value.Contains("reply") && toastArgs.TryGetValue("userId", out var recipientIdString))
                     {
+                        toastArgs.TryGetValue("conversationId", out var conversationIdString);
                         var recipientId = Convert.ToInt32(recipientIdString);
                         var replyInput = toastEventArgs.UserInput["tbReply"];
 
                         var message = new Message
                         {
+                            IdConversation = string.IsNullOrWhiteSpace(conversationIdString) ? 0 : Convert.ToInt32(conversationIdString),
                             MessageContent = replyInput as string,
                             IdRecipient = recipientId,
-                            IdUser = App.Account.User.Id,
+                            IdUser = App.Account.GetUser().Id,
                             SendDate = DateTime.Now
                         };
 
@@ -81,15 +92,21 @@ namespace EduMessage
                             IdMessageNavigation = message
                         };
 
-                        var list = new List<MessageAttachment> {messageAttachments};
+                        var list = new List<MessageAttachment> { messageAttachments };
 
                         var chat = ControlContainer.Get().Resolve<IChat>();
-                        chat.SendMessage("SendToUser",recipientId, list);
+                        await chat.SendMessage("SendToUser", recipientId, list);
 
                         var aggregator = ControlContainer.Get().Resolve<IEventAggregator>();
-                        aggregator.Publish(new ReplySentEvent(list, recipientId));
+                        await Windows.UI.Core.CoreWindow.GetForCurrentThread().Dispatcher.RunAsync(
+                            CoreDispatcherPriority.Normal,
+                            () =>
+                            {
+                                aggregator.Publish(new ReplySentEvent(list, recipientId));
+
+                            });
                     }
-                    
+
                 }
             }
         }
@@ -107,18 +124,107 @@ namespace EduMessage
                 .WithUrl(App.Address + "chat")
                 .Build();
 
-            connection.On<string>("SendMessage", s => Debug.WriteLine(s));
+            var container = CreateContainerAndRegisterTypes();
 
+            var notificator = container.Resolve<INotificator>("Toast");
+            var userBuilder = container.Resolve<IUserBuilder>();
+
+            Account = new Account(userBuilder, notificator);
+            EventAggregator = container.Resolve<IEventAggregator>();
+
+            Frame rootFrame = Window.Current.Content as Frame;
+
+            // Не повторяйте инициализацию приложения, если в окне уже имеется содержимое,
+            // только обеспечьте активность окна
+            if (rootFrame == null)
+            {
+                // Создание фрейма, который станет контекстом навигации, и переход к первой странице
+                rootFrame = new Frame();
+
+                rootFrame.NavigationFailed += OnNavigationFailed;
+
+                if (e.PreviousExecutionState == ApplicationExecutionState.Terminated)
+                {
+                    //TODO: Загрузить состояние из ранее приостановленного приложения
+                }
+
+                // Размещение фрейма в текущем окне
+                Window.Current.Content = rootFrame;
+            }
+
+            //if (e.PrelaunchActivated == false)
+            //{
+            if (rootFrame.Content == null)
+            {
+                // Если стек навигации не восстанавливается для перехода к первой странице,
+                // настройка новой страницы путем передачи необходимой информации в качестве параметра
+                // навигации
+                rootFrame.Navigate(typeof(MainPage), e.Arguments);
+            }
+            else if (_isAlreadyLaunched)
+            {
+                if (_isMainViewClosed)
+                {
+                    int newViewId = 0;
+                    await secondaryViews[0].Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+                    {
+                        var currentPage = (MainPage)((Frame)Window.Current.Content).Content;
+                        Window.Current.Activate();
+                    });
+                    await CreateNewView(e);
+                }
+                await CreateNewView(e);
+                return;
+            }
+            // Обеспечение активности текущего окна
+            Window.Current.Activate();
+            //}       
+
+            var uiSettings = new Windows.UI.ViewManagement.UISettings();
+
+            uiSettings.ColorValuesChanged += (_, _) =>
+            {
+                var rgba = uiSettings.GetColorValue(Windows.UI.ViewManagement.UIColorType.Accent);
+                EventAggregator.Publish(new ColorChangedEvent(rgba));
+            };
+
+            Window.Current.CoreWindow.Activated += Current_Activated;
+        }
+
+        private async Task CreateNewView(LaunchActivatedEventArgs e)
+        {
             try
             {
-                await connection.StartAsync();
-                await connection.InvokeAsync("SendMessage", "Hello world");
+                CoreApplicationView newView = CoreApplication.CreateNewView();
+                int newViewId = 0;
+                await newView.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+                {
+                    var container = CreateContainerAndRegisterTypes();
+
+                    var frame = new Frame();
+                    frame.Loaded += delegate
+                    {
+                        frame.Navigate(typeof(MainPage));
+                    };
+                    Window.Current.Content = frame;
+                    Window.Current.Activate();
+
+
+                    secondaryViews.Add(CoreApplication.GetCurrentView());
+                    newViewId = ApplicationView.GetForCurrentView().Id;
+                });
+
+                int currentViewId = e.CurrentlyShownApplicationViewId;
+                var result = await ApplicationViewSwitcher.TryShowAsStandaloneAsync(newViewId, ViewSizePreference.Default, currentViewId, ViewSizePreference.Default);
             }
             catch (Exception ex)
             {
-                Debug.WriteLine(ex.Message);
-            }
 
+            }
+        }
+
+        private ControlContainer CreateContainerAndRegisterTypes()
+        {
             var container = ControlContainer.Get();
 
             container.Register(Component
@@ -155,54 +261,7 @@ namespace EduMessage
                 .ImplementedBy<Chat>()
                 .Singleton());
 
-            var notificator = container.Resolve<INotificator>("Toast");
-            var userBuilder = container.Resolve<IUserBuilder>();
-
-            Account = new Account(userBuilder, notificator);
-            EventAggregator = container.Resolve<IEventAggregator>();
-
-            Frame rootFrame = Window.Current.Content as Frame;
-
-            // Не повторяйте инициализацию приложения, если в окне уже имеется содержимое,
-            // только обеспечьте активность окна
-            if (rootFrame == null)
-            {
-                // Создание фрейма, который станет контекстом навигации, и переход к первой странице
-                rootFrame = new Frame();
-
-                rootFrame.NavigationFailed += OnNavigationFailed;
-
-                if (e.PreviousExecutionState == ApplicationExecutionState.Terminated)
-                {
-                    //TODO: Загрузить состояние из ранее приостановленного приложения
-                }
-
-                // Размещение фрейма в текущем окне
-                Window.Current.Content = rootFrame;
-            }
-
-            if (e.PrelaunchActivated == false)
-            {
-                if (rootFrame.Content == null)
-                {
-                    // Если стек навигации не восстанавливается для перехода к первой странице,
-                    // настройка новой страницы путем передачи необходимой информации в качестве параметра
-                    // навигации
-                    rootFrame.Navigate(typeof(MainPage), e.Arguments);
-                }
-                // Обеспечение активности текущего окна
-                Window.Current.Activate();
-            }       
-
-            var uiSettings = new Windows.UI.ViewManagement.UISettings();
-
-            uiSettings.ColorValuesChanged += (_, _) =>
-            {
-                var rgba = uiSettings.GetColorValue(Windows.UI.ViewManagement.UIColorType.Accent);
-                EventAggregator.Publish(new ColorChangedEvent(rgba));
-            };
-
-            Window.Current.CoreWindow.Activated += Current_Activated;
+            return container;
         }
 
         private void Current_Activated(object sender, Windows.UI.Core.WindowActivatedEventArgs e)

@@ -35,7 +35,7 @@ namespace EduMessage.ViewModels
 
         public async Task Initialize()
         {
-            User = App.Account.User;
+            User = App.Account.GetUser();
             await BaseInitialize();
         }
 
@@ -103,13 +103,13 @@ namespace EduMessage.ViewModels
                 var pair = new KeyValuePair<int, byte[]>(User.Id, imageBytes);
 
                 var response = (await (App.Address + "User/UploadImage")
-                    .SendRequestAsync(pair, HttpRequestType.Put,App.Account.Jwt))
+                    .SendRequestAsync(pair, HttpRequestType.Put,App.Account.GetJwt()))
                     .DeserializeJson<bool>();
 
                 if (response)
                 {
                     User.Image = imageBytes;
-                    App.Account.User.Image = imageBytes;
+                    App.Account.GetUser().Image = imageBytes;
 
                     ProfilePicture = await imageBytes.CreateBitmap();
 

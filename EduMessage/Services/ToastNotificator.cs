@@ -19,6 +19,7 @@ namespace EduMessage.Services
             }
 
             var messageFromPair = messagePair.Key.FirstOrDefault().IdMessageNavigation;
+            var conversationId = messageFromPair.IdConversation;
             
 
             var messageText = messageFromPair.MessageContent;
@@ -32,6 +33,7 @@ namespace EduMessage.Services
                     .SetTextBoxId("tbReply")
                     .SetContent("Ответить")
                     .AddArgument("userId", user.Id)
+                    .AddArgument("conversationId", conversationId.ToString())
                     .AddArgument("action", "reply")
                     .SetImageUri(new Uri("ms-appx:///Assets/" + (IsDarkTheme() ? "reply_light.png" : "reply_dark.png")))
                 )
@@ -45,22 +47,42 @@ namespace EduMessage.Services
 
         private async Task<string> SaveImage(byte[] image)
         {
-            if (image == null)
+            try
             {
-                
-                return "ms-appx:///Assets/" + (IsDarkTheme() ?  "user_white.png" : "user.png");
+                if (image == null)
+                {
+                    return "ms-appx:///Assets/" + (IsDarkTheme() ? "user_white.png" : "user.png");
+                }
+                var folder = ApplicationData.Current.LocalFolder;
+                var files = await folder.GetFilesAsync();
+                var file = files.ToList().FirstOrDefault(f => f.Name == "notification.png") ??
+                           await folder.CreateFileAsync("notification.png");
+                await FileIO.WriteBytesAsync(file, image);
+                return file.Path;
             }
-            var folder = ApplicationData.Current.LocalFolder;
-            var files = await folder.GetFilesAsync();
-            var file = files.ToList().FirstOrDefault(f => f.Name == "notification.png") ??
-                       await folder.CreateFileAsync("notification.png");
-            await FileIO.WriteBytesAsync(file, image);
-            return file.Path;
+            catch (Exception e)
+            {
+                return "ms-appx:///Assets/" + (IsDarkTheme() ? "user_white.png" : "user.png");
+            }
         }
 
         private bool IsDarkTheme()
         {
             return Application.Current.RequestedTheme == ApplicationTheme.Dark;
+        }
+    }
+
+    public struct Triple<TX, TY, TZ>
+    {
+        public TX First;
+        public TY Second;
+        public TZ Third;
+
+        public Triple(TZ third, TY second, TX first)
+        {
+            Third = third;
+            Second = second;
+            First = first;
         }
     }
 }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
+using Windows.UI.Core;
 using EduMessage.Services;
 using EduMessage.ViewModels;
 
@@ -10,6 +11,7 @@ using SignalIRServerTest;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
+using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using Microsoft.UI.Xaml.Controls;
 using MvvmGen;
@@ -35,43 +37,49 @@ namespace EduMessage.Pages
         {
             this.InitializeComponent();
 
-            NotificationBorder.Visibility = Visibility.Collapsed;
 
-            AnimatedIcon.SetState(SettingsIcon, "Normal");
+            //NotificationBorder.Visibility = Visibility.Collapsed;
 
-            var aggregator = ControlContainer.Get().Resolve<IEventAggregator>();
-            aggregator.RegisterSubscriber(this);
+            //AnimatedIcon.SetState(SettingsIcon, "Normal");
+
+            //var aggregator = ControlContainer.Get().Resolve<IEventAggregator>();
+            //aggregator.RegisterSubscriber(this);
         }
 
         public MainMenuViewModel ViewModel { get; private set; }
 
         private void NavigationViewControl_SelectionChanged(NavigationView sender, NavigationViewSelectionChangedEventArgs args)
         {
-            var item = (NavigationViewItem)args.SelectedItem;
+            //var item = (NavigationViewItem)args.SelectedItem;
         }
 
-        private void NavigationViewControl_ItemInvoked(NavigationView sender, NavigationViewItemInvokedEventArgs args)
+        private async void NavigationViewControl_ItemInvoked(NavigationView sender, NavigationViewItemInvokedEventArgs args)
         {
             var invokedItem = args.InvokedItem;
             object item = UnboxItem(invokedItem);
 
-            switch (item)
-            {
-                case string itemString when itemString == App.Account.User.FirstName + " " + App.Account.User.LastName:
-                    NavFrame.Navigate(typeof(AccountInfoPage));
-                    return;
-                case UserConversation conversation:
-                    NavFrame.Navigate(typeof(ChatPage), conversation);
-                    return;
-                case "Обучение":
-                    NavFrame.Navigate(typeof(EducationMainPage));
-                    break;
-                case "Параметры":
-                    NavFrame.Navigate(typeof(ItemsPickPage));
-                    break;
-                default:
-                    break;
-            }
+            await Windows.UI.Core.CoreWindow.GetForCurrentThread().Dispatcher.RunAsync(CoreDispatcherPriority.Normal,
+                () =>
+                {
+                    switch (item)
+                    {
+                        case string itemString
+                            when itemString == App.Account.GetUser().FirstName + " " + App.Account.GetUser().LastName:
+                            NavFrame.Navigate(typeof(AccountInfoPage));
+                            return;
+                        case UserConversation conversation:
+                            NavFrame.Navigate(typeof(ChatPage), conversation);
+                            return;
+                        case "Обучение":
+                            NavFrame.Navigate(typeof(EducationMainPage));
+                            break;
+                        case "Параметры":
+                            NavFrame.Navigate(typeof(ItemsPickPage));
+                            break;
+                        default:
+                            break;
+                    }
+                });
         }
 
         private static object UnboxItem(object invokedItem)
@@ -105,39 +113,64 @@ namespace EduMessage.Pages
 
         }
 
-        private void NavigationViewControl_DisplayModeChanged(NavigationView sender, NavigationViewDisplayModeChangedEventArgs args)
+        private async void NavigationViewControl_DisplayModeChanged(NavigationView sender, NavigationViewDisplayModeChangedEventArgs args)
         {
-            const int topIndent = 16;
-            const int expandedIndent = 56;
-            var minimalIndent = 104;
+            if (App._isAlreadyLaunched)
+            {
+                return;
+            }
+            await Windows.UI.Core.CoreWindow.GetForCurrentThread().Dispatcher.RunAsync(CoreDispatcherPriority.Normal,
+                () =>
+                {
+                    const int topIndent = 16;
+                    const int expandedIndent = 56;
+                    var minimalIndent = 104;
 
-            if (NavigationViewControl.IsBackButtonVisible.Equals(Microsoft.UI.Xaml.Controls.NavigationViewBackButtonVisible.Collapsed))
-            {
-                minimalIndent = 58;
-            }
+                    if (NavigationViewControl.IsBackButtonVisible.Equals(Microsoft.UI.Xaml.Controls.NavigationViewBackButtonVisible.Collapsed))
+                    {
+                        minimalIndent = 58;
+                    }
 
-            var titleBar = MainPage.AppTitleBorder;
-            var currMargin = titleBar.Margin;
+                    var titleBar = MainPage.AppTitleBorder;
+                    var currMargin = titleBar.Margin;
 
-            if (sender.PaneDisplayMode == Microsoft.UI.Xaml.Controls.NavigationViewPaneDisplayMode.Top)
-            {
-                titleBar.Margin = new Thickness(topIndent, currMargin.Top, currMargin.Right, currMargin.Bottom);
-            }
-            else if (sender.DisplayMode == Microsoft.UI.Xaml.Controls.NavigationViewDisplayMode.Minimal)
-            {
-                titleBar.Margin = new Thickness(minimalIndent, currMargin.Top, currMargin.Right, currMargin.Bottom);
-            }
-            else
-            {
-                titleBar.Margin = new Thickness(expandedIndent, currMargin.Top, currMargin.Right, currMargin.Bottom);
-            }
+                    if (sender.PaneDisplayMode == Microsoft.UI.Xaml.Controls.NavigationViewPaneDisplayMode.Top)
+                    {
+                        titleBar.Margin = new Thickness(topIndent, currMargin.Top, currMargin.Right, currMargin.Bottom);
+                    }
+                    else if (sender.DisplayMode == Microsoft.UI.Xaml.Controls.NavigationViewDisplayMode.Minimal)
+                    {
+                        titleBar.Margin = new Thickness(minimalIndent, currMargin.Top, currMargin.Right, currMargin.Bottom);
+                    }
+                    else
+                    {
+                        titleBar.Margin = new Thickness(expandedIndent, currMargin.Top, currMargin.Right, currMargin.Bottom);
+                    }
+                });
+            
         }
 
         private async void MainMenuPage_OnLoaded(object sender, RoutedEventArgs e)
         {
             ViewModel = ControlContainer.Get().ResolveConstructor<MainMenuViewModel>();
-            this.DataContext = ViewModel;
+            await Windows.UI.Core.CoreWindow.GetForCurrentThread().Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+            {
+                NotificationBorder.Visibility = Visibility.Collapsed;
+
+                AnimatedIcon.SetState(SettingsIcon, "Normal");
+
+                var aggregator = ControlContainer.Get().Resolve<IEventAggregator>();
+                aggregator.RegisterSubscriber(this);
+
+                this.DataContext = ViewModel;
+            });
+            //this.DataContext = ViewModel;
             await ViewModel.Initialize();
+
+            var response = (await (App.Address + "Message/All")
+                    .SendRequestAsync("", HttpRequestType.Get, App.Account.GetJwt()))
+                .DeserializeJson<List<UserConversation>>();
+            await GenerateNavItems(response);
         }
 
         private void ButtonBase_OnClick(object sender, RoutedEventArgs e)
@@ -161,6 +194,7 @@ namespace EduMessage.Pages
 
         private async Task GenerateNavItems(List<UserConversation> conversations)
         {
+
             foreach (var userConversation in conversations)
             {
                 var user = userConversation.IdUserNavigation;
@@ -186,12 +220,13 @@ namespace EduMessage.Pages
                             new TextBlock
                             {
                                 Text = conversation.Title ?? user.FirstName + " " + user.LastName,
-                                Margin = new Thickness(16,0,0,0)
+                                Margin = new Thickness(16, 0, 0, 0)
                             }
                         }
                     }
                 });
             }
+
         }
 
         public async void OnEvent(InAppNotificationShowing eventData)
@@ -208,6 +243,17 @@ namespace EduMessage.Pages
             await Task.Delay(TimeSpan.FromSeconds(2));
             FadeOutNotificationStoryboard.Begin();
             await Task.Delay(TimeSpan.FromMilliseconds(300));
+        }
+
+        private async void MenuFlyoutItem_OnClick(object sender, RoutedEventArgs e)
+        {
+            await Window.Current.Dispatcher.RunAsync(CoreDispatcherPriority.Normal,
+                () =>
+                {
+                    var parent = VisualTreeHelper.GetParent(this) as ContentPresenter;
+                    (parent.DataContext as MainPageViewModel).SelectedContent = new LoginPage();
+
+                });
         }
     }
 }

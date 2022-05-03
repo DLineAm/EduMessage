@@ -24,6 +24,7 @@ using Windows.Storage;
 using Windows.System;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
+using Windows.UI.Xaml.Controls;
 
 namespace EduMessage.ViewModels
 {
@@ -48,12 +49,12 @@ namespace EduMessage.ViewModels
         {
             _speciality = speciality;
 
-            UpdateTeacherInputVisibility(App.Account.User.IdRole == 2 ? Visibility.Visible : Visibility.Collapsed);
+            UpdateTeacherInputVisibility(App.Account.GetUser().IdRole == 2 ? Visibility.Visible : Visibility.Collapsed);
 
             try
             {
                 var response = (await (App.Address + $"Education/Courses.SpecialityId={speciality.Id}")
-                    .SendRequestAsync("", HttpRequestType.Get, App.Account.Jwt))
+                    .SendRequestAsync("", HttpRequestType.Get, App.Account.GetJwt()))
                     .DeserializeJson<List<CourseAttachment>>();
 
                 Courses = new ObservableCollection<FormattedCourse>(await ConvertToFormattedCourse(response));
@@ -161,15 +162,14 @@ namespace EduMessage.ViewModels
 
             EventAggregator.Publish(new LoaderVisibilityChanged(Visibility.Visible, "Сохранение курса"));
 
-            Course course = _isCourseAddMode 
-                ?  new Course
+            var selectedCourse = _selectedCourse?.Course;
+            Course course = new Course
                 {
-                    Id = 0,
+                    Id = selectedCourse?.Id ?? 0,
                     Title = CourseTitle,
                     Description = CourseDescription,
                     IdSpeciality = _speciality.Id
-                }
-                : _selectedCourse.Course;
+                };
 
             List<Attachment> attachments = Files.ToList();
 
@@ -181,8 +181,8 @@ namespace EduMessage.ViewModels
             {
                 var courseToAdd = new CourseAttachment
                 {
-                    Id = _selectedCourse.Id,
-                    IdCourse = course.Id == 0 ? null : course.Id,
+                    Id = _selectedCourse?.Id ?? 0,
+                    IdCourse = course.Id,
                     IdCourseNavigation = course,
                     IdAttachmanentNavigation = attachment
                 };
@@ -198,7 +198,7 @@ namespace EduMessage.ViewModels
             {
                 var courseToAdd = new CourseAttachment
                 {
-                    Id = _selectedCourse.Id,
+                    Id = _selectedCourse?.Id ?? 0,
                     IdCourseNavigation = course
                 };
                 if (course.Id != 0)
@@ -213,6 +213,7 @@ namespace EduMessage.ViewModels
                 if (!_isCourseAddMode)
                 {
                     await SendCoursePutRequest(courses);
+                    EventAggregator.Publish(new InAppNotificationShowing(Symbol.Accept, "Курс изменен!"));
                     EventAggregator.Publish(new CourseAddedOrChangedEvent(true));
                     EventAggregator.Publish(new LoaderVisibilityChanged(Visibility.Collapsed, string.Empty));
                     UpdateNoResultsFoundVisibility(Visibility.Collapsed);
@@ -220,36 +221,42 @@ namespace EduMessage.ViewModels
                 }
 
                 var response = (await (App.Address + "Education/Courses.FromList")
-                        .SendRequestAsync(courses, HttpRequestType.Post, App.Account.Jwt))
-                    .DeserializeJson<KeyValuePair<int, List<int>>>();
+                        .SendRequestAsync(courses, HttpRequestType.Post, App.Account.GetJwt()))
+                    .DeserializeJson<KeyValuePair<int, List<CourseAttachment>>>();
 
                 if (response.Key != -1)
                 {
-                    List<int> attachmentIds = response.Value;
                     course.Id = response.Key;
-                    for (int i = 0; i < attachmentIds.Count; i++)
-                    {
-                        int id = attachmentIds[i];
-                        CourseAttachment courseAttachment = courses[i];
+                    //List<int> attachmentIds = response.Value;
+                    //course.Id = response.Key;
+                    //var list = new List<CourseAttachment>();
+                    //for (int i = 0; i < attachmentIds.Count; i++)
+                    //{
+                    //    int id = attachmentIds[i];
+                    //    CourseAttachment courseAttachment = courses[i];
 
-                        if (courseAttachment.IdAttachmanentNavigation == null)
-                        {
-                            continue;
-                        }
-                        courseAttachment.IdAttachmanentNavigation.Id = id;
-                        courseAttachment.IdAttachmanent = id;
-                    }
+                    //    if (courseAttachment.IdAttachmanentNavigation == null)
+                    //    {
+                    //        continue;
+                    //    }
+                    //    courseAttachment.IdCourseNavigation.Id = id;
+                    //    courseAttachment.IdCourse = id;
+                    //    courseAttachment.Id = id;
+                    //    list.Add(courseAttachment);
+                    //}
 
-                    List<FormattedCourse> formattedCourses = await ConvertToFormattedCourse(courses);
+                    List<FormattedCourse> formattedCourses = await ConvertToFormattedCourse(response.Value);
                     formattedCourses.ForEach(Courses.Add);
                 }
 
+                EventAggregator.Publish(new InAppNotificationShowing(Symbol.Accept, "Курс добавлен!"));
                 EventAggregator.Publish(new CourseAddedOrChangedEvent(true));
                 EventAggregator.Publish(new LoaderVisibilityChanged(Visibility.Collapsed, string.Empty));
                 UpdateNoResultsFoundVisibility(Visibility.Collapsed);
             }
             catch (Exception e)
             {
+                EventAggregator.Publish(new InAppNotificationShowing(Symbol.ClosePane, "Не удалось добавить курс!"));
                 EventAggregator.Publish(new CourseAddedOrChangedEvent(false));
                 EventAggregator.Publish(new LoaderVisibilityChanged(Visibility.Collapsed, string.Empty));
             }
@@ -258,7 +265,7 @@ namespace EduMessage.ViewModels
         private async Task SendCoursePutRequest(List<CourseAttachment> content)
         {
             var putResponse = ( await (App.Address + "Education/Courses")
-                                    .SendRequestAsync(content, HttpRequestType.Put, App.Account.Jwt))
+                                    .SendRequestAsync(content, HttpRequestType.Put, App.Account.GetJwt()))
                                     .DeserializeJson<bool>();
 
             if (putResponse)
@@ -380,12 +387,13 @@ namespace EduMessage.ViewModels
             try
             {
                 var response = (await (App.Address + $"Education/Courses.id={course.Course.Id}")
-                        .SendRequestAsync("", HttpRequestType.Delete, App.Account.Jwt))
+                        .SendRequestAsync("", HttpRequestType.Delete, App.Account.GetJwt()))
                     .DeserializeJson<bool>();
 
                 if (response)
                 {
                     Courses.Remove(course);
+                    EventAggregator.Publish(new InAppNotificationShowing(Symbol.Accept, "Курс удален!"));
                 }
 
                 if (Courses.Count == 0)

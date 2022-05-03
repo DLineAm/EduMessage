@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.Threading.Tasks;
 
 using Windows.UI.Core;
+using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 
 namespace EduMessage.Services
@@ -14,9 +15,10 @@ namespace EduMessage.Services
     public class Account
     {
         private readonly INotificator _notificator;
-        public User User { get; private set; }
 
-        public string Jwt { get; private set; }
+        [ThreadStatic] private static User _user;
+
+        [ThreadStatic] private static string _jwt;
 
         public IUserBuilder UserBuilder { get; }
 
@@ -37,10 +39,10 @@ namespace EduMessage.Services
                     return false;
                 }
 
-                Jwt = jwt as string;
+                _jwt = jwt as string;
 
                 var user = (await (App.Address + "Login/GetUser.ByToken")
-                    .SendRequestAsync("", HttpRequestType.Get, Jwt))
+                    .SendRequestAsync("", HttpRequestType.Get, _jwt))
                     .DeserializeJson<User>();
 
                 if (user == null)
@@ -48,11 +50,11 @@ namespace EduMessage.Services
                     return false;
                 }
 
-                chat.Initialize(App.Address + "Chat", Jwt);
+                chat.Initialize(App.Address + "Chat", _jwt);
                 chat.SetOnMethod<List<MessageAttachment>, User>("ReceiveForMe", ReceiveMessage);
                 await chat.OpenConnection();
 
-                User = user;
+                _user = user;
 
                 return true;
             }
@@ -64,11 +66,16 @@ namespace EduMessage.Services
             }
         }
 
+        public User GetUser()
+        {
+            return _user;
+        }
+
 #pragma warning disable CS1998 // В данном асинхронном методе отсутствуют операторы await, поэтому метод будет выполняться синхронно. Воспользуйтесь оператором await для ожидания неблокирующих вызовов API или оператором await Task.Run(...) для выполнения связанных с ЦП заданий в фоновом потоке.
         private async void ReceiveMessage(List<MessageAttachment> message, User user)
 #pragma warning restore CS1998 // В данном асинхронном методе отсутствуют операторы await, поэтому метод будет выполняться синхронно. Воспользуйтесь оператором await для ожидания неблокирующих вызовов API или оператором await Task.Run(...) для выполнения связанных с ЦП заданий в фоновом потоке.
         {
-            if (Window.Current.CoreWindow.ActivationMode is CoreWindowActivationMode.None or CoreWindowActivationMode.ActivatedInForeground)
+            if (Window.Current == null || Window.Current.CoreWindow.ActivationMode is CoreWindowActivationMode.None or CoreWindowActivationMode.ActivatedInForeground)
             {
                 return;
             }
@@ -88,7 +95,7 @@ namespace EduMessage.Services
             var settings = Settings.Get();
             if (isAddMode)
             {
-                settings.Values["Jwt"] = Jwt;
+                settings.Values["Jwt"] = GetJwt();
             }
             else
             {
@@ -110,17 +117,16 @@ namespace EduMessage.Services
                     return "Неверное имя пользователя или пароль";
                 }
 
-                Jwt = token;
-
+                _jwt = token;
 
                 UpdateToken(isSaveLogin);
 
-                User = user;
-
                 var chat = ControlContainer.Get().Resolve<IChat>();
-                chat.Initialize(App.Address + "Chat", Jwt);
+                chat.Initialize(App.Address + "Chat", GetJwt());
                 chat.SetOnMethod<List<MessageAttachment>, User>("ReceiveForMe", ReceiveMessage);
                 await chat.OpenConnection();
+
+                _user = user;
 
                 return string.Empty;
             }
@@ -131,6 +137,11 @@ namespace EduMessage.Services
 
         }
 
+        public string GetJwt()
+        {
+            return _jwt;
+        }
+
         public async Task<bool> Register(IUserBuilder builder)
         {
             if (!builder.UserInvalidate())
@@ -139,10 +150,10 @@ namespace EduMessage.Services
             }
 
             var user = builder.Build();
-            User = user;
+            _user = user;
 
             var result = (await (App.Address + "Login/Register")
-                .SendRequestAsync(User, HttpRequestType.Post))
+                .SendRequestAsync(_user, HttpRequestType.Post))
                 .DeserializeJson<KeyValuePair<int, string>>();
 
             var savedUserId = result.Key;
@@ -150,7 +161,7 @@ namespace EduMessage.Services
 
             if (!string.IsNullOrEmpty(token))
             {
-                Jwt = token;
+                _jwt = token;
 
                 UpdateToken(true);
             }
@@ -159,7 +170,7 @@ namespace EduMessage.Services
             {
                 return false;
             }
-            User.Id = savedUserId;
+            _user.Id = savedUserId;
             return true;
         }
 

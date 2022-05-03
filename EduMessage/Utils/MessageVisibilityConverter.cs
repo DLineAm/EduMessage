@@ -9,15 +9,19 @@ namespace EduMessage.Utils
     {
         public object Convert(object value, Type targetType, object parameter, string language)
         {
+            if (App.Account.GetUser() == null)
+            {
+                return Visibility.Collapsed;
+            }
             if (value is not int idUser)
             {
                 return Visibility.Visible;
             }
-            if (parameter is "upper" && idUser != App.Account.User.Id)
+            if (parameter is "upper" && idUser != App.Account.GetUser().Id)
             {
                 return Visibility.Visible;
             }
-            if (parameter is "bottom" && idUser == App.Account.User.Id)
+            if (parameter is "bottom" && idUser == App.Account.GetUser().Id)
             {
                 return Visibility.Visible;
             }

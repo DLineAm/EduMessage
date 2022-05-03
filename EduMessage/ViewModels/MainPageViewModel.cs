@@ -9,6 +9,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.UI.Core;
+using Windows.UI.Xaml;
 
 namespace EduMessage.ViewModels
 {
@@ -20,17 +22,26 @@ namespace EduMessage.ViewModels
         public async void Initialize()
         {
             var chat = ControlContainer.Get().Resolve<IChat>();
-            var result = await App.Account.TryLoadToken(chat);
-            if (result)
+            await Windows.UI.Core.CoreWindow.GetForCurrentThread().Dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
             {
-                SelectedContent = new MainMenuPage();
-            }
-            else
-            {
-                SelectedContent = new LoginPage();
-            }
-              
+                if (App._isAlreadyLaunched)
+                {
+                    SelectedContent = new LoginPage();
+                    return;
+                }
+                var result = await App.Account.TryLoadToken(chat);
 
+                if (result)
+                {
+                    SelectedContent = new MainMenuPage();
+                }
+                else
+                {
+                    SelectedContent = new LoginPage();
+                }
+                App._isAlreadyLaunched = true;
+
+            });
         }
 
         public void OnEvent(UserExitedEvent eventData)

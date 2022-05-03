@@ -129,7 +129,8 @@ namespace EduMessage.Pages
         {
             var formattedMessage = (FormattedMessage) args.Item;
             var message = formattedMessage.Message;
-            args.ItemContainer.HorizontalAlignment = message.IdUser == App.Account.User.Id
+            if(App.Account.GetUser() == null) return;
+            args.ItemContainer.HorizontalAlignment = message.IdUser == App.Account.GetUser().Id
                 ? HorizontalAlignment.Right
                 : HorizontalAlignment.Left;
         }

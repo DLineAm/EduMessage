@@ -22,18 +22,14 @@ namespace EduMessage.ViewModels
         [Property] private Visibility _loaderVisibility = Visibility.Collapsed;
         [Property] private string _loaderText;
         [Property] private Color _loaderColor = App.ColorManager.GetAccentColor();
+        [Property] private List<UserConversation> _conversationList;
 
         public async Task Initialize()
         {
-            AccountName = App.Account.User.FirstName + " " + App.Account.User.LastName;
-            var imageBytes = App.Account.User.Image;
+            var user = App.Account.GetUser();
+            AccountName = user.FirstName + " " + user.LastName;
+            var imageBytes = user.Image;
             ChangeProfilePicture(imageBytes);
-
-            var response = (await (App.Address + "Message/All")
-                    .SendRequestAsync("", HttpRequestType.Get, App.Account.Jwt))
-                .DeserializeJson<List<UserConversation>>();
-
-            EventAggregator.Publish(new ConversationGot(response));
         }
 
         public void OnEvent(AccountImageUploadedEvent eventData)
@@ -64,13 +60,6 @@ namespace EduMessage.ViewModels
                 var bitmap = await imageBytes.CreateBitmap(36);
                 AccountImage = bitmap;
             }
-        }
-
-        [Command]
-        private void Exit()
-        {
-            App.Account.UpdateToken(false);
-            EventAggregator.Publish(new UserExitedEvent());
         }
     }
 

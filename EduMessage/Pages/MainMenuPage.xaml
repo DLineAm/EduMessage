@@ -7,7 +7,8 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:controls="using:Microsoft.UI.Xaml.Controls" xmlns:animatedVisuals="using:AnimatedVisuals"
     xmlns:animatedVisuals1="using:Microsoft.UI.Xaml.Controls.AnimatedVisuals"
-    xmlns:ui="using:Microsoft.Toolkit.Uwp.UI"
+    xmlns:ui="using:Microsoft.Toolkit.Uwp.UI" 
+    xmlns:utils="using:EduMessage.Utils"
     mc:Ignorable="d"
     Loaded="MainMenuPage_OnLoaded">
 
@@ -18,6 +19,8 @@
         <Storyboard x:Name="FadeOutNotificationStoryboard">
             <FadeOutThemeAnimation TargetName="NotificationBorder"></FadeOutThemeAnimation>
         </Storyboard>
+        <utils:SystemAccentColorSetting x:Name="AccentColorSetting"></utils:SystemAccentColorSetting>
+        <utils:ColorBrushToColorConverter x:Key="ColorBrushToColorConverter"></utils:ColorBrushToColorConverter>
     </Page.Resources>
 
     <Grid>
@@ -37,7 +40,7 @@
                        Margin="0,0,-8,0"/>
                 <controls:AnimatedVisualPlayer Height="65"
                                                Margin="0,-7.7,0,0">
-                    <animatedVisuals:Loader Color_000000="{x:Bind ViewModel.LoaderColor, Mode=OneWay}"/>
+                    <animatedVisuals:Loader Color_000000="{x:Bind AccentColorSetting.SystemAccentColor, Mode=OneWay, Converter={StaticResource ColorBrushToColorConverter}}"/>
                 </controls:AnimatedVisualPlayer>
                 
             </StackPanel>
@@ -48,6 +51,7 @@
         <controls:NavigationView IsTitleBarAutoPaddingEnabled="False"
                                  Grid.Row="1"
                          Canvas.ZIndex="0"
+                             
                          Margin="0,0,0,0"        
                          x:Name="NavigationViewControl"
                          DisplayModeChanged="NavigationViewControl_DisplayModeChanged"
@@ -55,6 +59,16 @@
                          ItemInvoked="NavigationViewControl_ItemInvoked"
                          SelectionChanged="NavigationViewControl_SelectionChanged"
                                  IsSettingsVisible="False">
+            <!--<controls:NavigationView.MenuItemTemplate>
+                <DataTemplate>
+                    <StackPanel Orientation="Horizontal"
+                                Margin="-35,0,0,0">
+                        <PersonPicture Height="20"></PersonPicture>
+                        <TextBlock Margin="16,0,0,0"
+                                   Text="aboba"></TextBlock>
+                    </StackPanel>
+                </DataTemplate>
+            </controls:NavigationView.MenuItemTemplate>-->
 
             <controls:NavigationView.PaneHeader>
                 <Grid>
@@ -234,7 +248,7 @@
                     <controls:NavigationViewItem.ContextFlyout>
                         <MenuFlyout>
                             <MenuFlyoutItem Text="Выйти"
-                                            Command="{Binding ExitCommand}">
+                                            Click="MenuFlyoutItem_OnClick">
                                 <MenuFlyoutItem.Icon>
                                     <SymbolIcon Symbol="Cancel"/>
                                 </MenuFlyoutItem.Icon>

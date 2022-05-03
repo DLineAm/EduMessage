@@ -11,11 +11,13 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Threading;
 using System.Threading.Tasks;
 
 using Windows.ApplicationModel.DataTransfer;
 using Windows.Storage;
 using Windows.Storage.Pickers;
+using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media.Animation;
@@ -36,6 +38,8 @@ namespace EduMessage.ViewModels
         [Property] private bool _isRefactorBorderCollapsed = true;
         private UserConversation _conversation;
         private FormattedMessage _selectedFormattedMessage;
+        private SynchronizationContext _context;
+        private event EventHandler<int> _addedMessageIdReceived;
 
         private IChat _chat;
 
@@ -49,7 +53,7 @@ namespace EduMessage.ViewModels
             try
             {
                 var response = (await (App.Address + $"Message/Id={conversation.IdConversation}")
-                        .SendRequestAsync("", HttpRequestType.Get, App.Account.Jwt))
+                        .SendRequestAsync("", HttpRequestType.Get, App.Account.GetJwt()))
                     .DeserializeJson<List<MessageAttachment>>();
 
                 var alreadyExistedMessageIds = new List<int>();
@@ -67,6 +71,7 @@ namespace EduMessage.ViewModels
                     var formattedMessage = new FormattedMessage { Message = message, Attachments = attachments.ToList() };
                     alreadyExistedMessageIds.Add(message.Id);
 
+                    _context = SynchronizationContext.Current;
                     AddToMessagesWithGrouping(formattedMessage);
                 }
 
@@ -84,17 +89,32 @@ namespace EduMessage.ViewModels
                 NoResultsVisualVisibility = Visibility.Visible;
             }
 
-            _chat.SetOnMethod<List<MessageAttachment>, User>("ReceiveForMe", (m, u) =>
+            _chat.SetOnMethod<List<MessageAttachment>, User>("ReceiveForMe", async (m, u) =>
             {
                 var message = m.FirstOrDefault().IdMessageNavigation;
                 var formattedMessage = new FormattedMessage { Message = message, Attachments = new List<Attachment>() };
                 foreach (var attachment in m.Select(messageAttachment => messageAttachment.IdAttachmentNavigation)
                              .Where(attachment => attachment != null))
                 {
+                    attachment.ImagePath = await attachment.Data.CreateBitmap();
                     formattedMessage.Attachments.Add(attachment);
                 }
 
                 AddToMessagesWithGrouping(formattedMessage);
+            });
+
+            _chat.SetOnMethod<int>("ReceiveAddedMessage", messageId =>
+            {
+                _addedMessageIdReceived?.Invoke(null, messageId);
+            });
+
+            _chat.SetOnMethod<int>("ReceiveDeletedMessage", messageId =>
+            {
+                foreach (var messageList in Messages)
+                {
+                    var formattedMessage = messageList.FirstOrDefault(m => m.Message.Id == messageId);
+                    messageList.Remove(formattedMessage);
+                }
             });
         }
 
@@ -128,8 +148,7 @@ namespace EduMessage.ViewModels
 
             if (MessageAttachments.Count + filesCount > 10)
             {
-                //new ToastNotificator().Notificate();
-                Notificator.Notificate("Ошибка", "Количество вложоений должно быть не более 10");
+                Notificator.Notificate("Ошибка", "Количество вложений должно быть не более 10");
                 return;
             }
 
@@ -158,20 +177,33 @@ namespace EduMessage.ViewModels
             result.ForEach(MessageAttachments.Add);
             UpdateAttachmentsListVisibility();
         }
-        
 
-        private void AddToMessagesWithGrouping(FormattedMessage formattedMessage)
+
+        private async void AddToMessagesWithGrouping(FormattedMessage formattedMessage, bool checkForExist = false)
         {
-            var groupParameter = formattedMessage.Message.SendDate.Date;
-            var foundMessageGroup = Messages.FirstOrDefault(m => (DateTime)m.Key == groupParameter);
-            if (foundMessageGroup == null)
+            if (checkForExist)
             {
-                Messages.Add(new MessageList(new[] { formattedMessage }) { Key = groupParameter });
-                NoResultsVisualVisibility = Visibility.Collapsed;
-                return;
+                foreach (var messageList in Messages)
+                {
+                    if (messageList.Any(f => f.Message.Id == formattedMessage.Message.Id))
+                    {
+                        return;
+                    }
+                }
             }
-            foundMessageGroup.Add(formattedMessage);
-            NoResultsVisualVisibility = Visibility.Collapsed;
+            _context?.Post(_ =>
+            {
+                var groupParameter = formattedMessage.Message.SendDate.Date;
+                var foundMessageGroup = Messages.FirstOrDefault(m => (DateTime)m.Key == groupParameter);
+                if (foundMessageGroup == null)
+                {
+                    Messages.Add(new MessageList(new[] { formattedMessage }) { Key = groupParameter });
+                    NoResultsVisualVisibility = Visibility.Collapsed;
+                    return;
+                }
+                foundMessageGroup.Add(formattedMessage);
+                NoResultsVisualVisibility = Visibility.Collapsed;
+            }, null);
         }
 
         [Command]
@@ -196,7 +228,7 @@ namespace EduMessage.ViewModels
             package.SetText(message.MessageContent);
             Clipboard.SetContent(package);
 
-            EventAggregator.Publish(new InAppNotificationShowing(Symbol.Like,
+            EventAggregator.Publish(new InAppNotificationShowing(Symbol.Accept,
                 "Текст сообщения скопирован в буфер обмена!"));
         }
 
@@ -242,11 +274,18 @@ namespace EduMessage.ViewModels
                 var message = new Message
                 {
                     IdRecipient = _user.Id,
-                    IdUser = App.Account.User.Id,
+                    IdUser = App.Account.GetUser().Id,
                     MessageContent = Message,
                     SendDate = DateTime.Now,
                     IdConversation = _conversation.IdConversation
                 };
+                void Handler(object sender, int i)
+                {
+                    message.Id = i;
+
+                    _addedMessageIdReceived -= Handler;
+                }
+                _addedMessageIdReceived += Handler;
                 var list = new List<MessageAttachment>();
 
                 foreach (var attachment in MessageAttachments)
@@ -267,7 +306,7 @@ namespace EduMessage.ViewModels
                 if (MessageAttachments.Count == 0)
                 {
                     var messageAttachment = new MessageAttachment
-                        { IdMessageNavigation = message };
+                    { IdMessageNavigation = message };
                     list.Add(messageAttachment);
                 }
                 if (MessageAttachments.Count != 0)
@@ -296,7 +335,10 @@ namespace EduMessage.ViewModels
         [Command]
         private async void DeleteMessage()
         {
-            if (_selectedFormattedMessage.Message is null) return;
+            var message = _selectedFormattedMessage.Message;
+            if (message is null) return;
+
+            await _chat.DeleteMessage("DeleteMessage", message.Id);
 
             for (var index = 0; index < Messages.Count; index++)
             {
@@ -328,7 +370,16 @@ namespace EduMessage.ViewModels
                 Message = message,
                 Attachments = null
             };
-            AddToMessagesWithGrouping(formattedMessage);
+
+            void Handler(object sender, int i)
+            {
+                message.Id = i;
+
+                _addedMessageIdReceived -= Handler;
+            }
+            _addedMessageIdReceived += Handler;
+
+            AddToMessagesWithGrouping(formattedMessage, true);
         }
     }
 

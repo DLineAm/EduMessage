@@ -6,13 +6,14 @@ namespace EduMessage.Services
 {
     public class ControlContainer
     {
-        private static ControlContainer _instance;
+        [ThreadStatic] private static ControlContainer _instance;
 
         private ControlContainer() { }
 
         public static ControlContainer Get() => _instance ??= new ControlContainer();
 
         private readonly Dictionary<string, Component> _types = new();
+        
         private readonly List<object> _singletonComponents = new();
 
         public void Register(Component component)
@@ -83,7 +84,7 @@ namespace EduMessage.Services
 
     public class Component
     {
-        public Type InterfaceType { get; private set; }
+        public Type InterfaceType { get; }
         public Type ImplementationType { get; private set; }
         public string ImplementationName { get; private set; }
         public bool IsSingleton { get; set; }
