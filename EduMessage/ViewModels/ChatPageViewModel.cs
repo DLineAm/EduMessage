@@ -17,7 +17,6 @@ using System.Threading.Tasks;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.Storage;
 using Windows.Storage.Pickers;
-using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media.Animation;
@@ -36,10 +35,12 @@ namespace EduMessage.ViewModels
         [Property] private ObservableCollection<Attachment> _messageAttachments = new();
         [Property] private bool _isFilesBorderCollapsed = true;
         [Property] private bool _isRefactorBorderCollapsed = true;
+        [Property] private Visibility _flyoutMenuItemsVisibility;
+
         private UserConversation _conversation;
         private FormattedMessage _selectedFormattedMessage;
         private SynchronizationContext _context;
-        private event EventHandler<int> _addedMessageIdReceived;
+        private event EventHandler<int> AddedMessageIdReceived;
 
         private IChat _chat;
 
@@ -54,7 +55,8 @@ namespace EduMessage.ViewModels
             {
                 var response = (await (App.Address + $"Message/Id={conversation.IdConversation}")
                         .SendRequestAsync("", HttpRequestType.Get, App.Account.GetJwt()))
-                    .DeserializeJson<List<MessageAttachment>>();
+                    .DeserializeJson<List<MessageAttachment>>()
+                    .OrderBy(ma => ma.IdMessageNavigation.SendDate);
 
                 var alreadyExistedMessageIds = new List<int>();
                 var messages = response.Select(messageAttachment => messageAttachment.IdMessageNavigation).ToList();
@@ -105,7 +107,7 @@ namespace EduMessage.ViewModels
 
             _chat.SetOnMethod<int>("ReceiveAddedMessage", messageId =>
             {
-                _addedMessageIdReceived?.Invoke(null, messageId);
+                AddedMessageIdReceived?.Invoke(null, messageId);
             });
 
             _chat.SetOnMethod<int>("ReceiveDeletedMessage", messageId =>
@@ -114,7 +116,17 @@ namespace EduMessage.ViewModels
                 {
                     var formattedMessage = messageList.FirstOrDefault(m => m.Message.Id == messageId);
                     messageList.Remove(formattedMessage);
+                    if (!messageList.Any())
+                    {
+                        Messages.Remove(messageList);
+                    }
                 }
+            });
+
+            _chat.SetOnMethod<List<MessageAttachment>>("MessageChanged", m =>
+            {
+                var message = m.FirstOrDefault()?.IdMessageNavigation;
+                ReplaceChangedMessage(m, message);
             });
         }
 
@@ -179,16 +191,13 @@ namespace EduMessage.ViewModels
         }
 
 
-        private async void AddToMessagesWithGrouping(FormattedMessage formattedMessage, bool checkForExist = false)
+        private void AddToMessagesWithGrouping(FormattedMessage formattedMessage, bool checkForExist = false)
         {
             if (checkForExist)
             {
-                foreach (var messageList in Messages)
+                if (Messages.Any(messageList => messageList.Any(f => f.Message.Id == formattedMessage.Message.Id)))
                 {
-                    if (messageList.Any(f => f.Message.Id == formattedMessage.Message.Id))
-                    {
-                        return;
-                    }
+                    return;
                 }
             }
             _context?.Post(_ =>
@@ -238,11 +247,11 @@ namespace EduMessage.ViewModels
             var message = _selectedFormattedMessage.Message;
             if (message is null) return;
 
-            var attachments = _selectedFormattedMessage.Attachments
+            var attachments = _selectedFormattedMessage.Attachments?
                 .Where(a => a != null)
                 .ToList();
             MessageAttachments.Clear();
-            attachments.ForEach(MessageAttachments.Add);
+            attachments?.ForEach(MessageAttachments.Add);
             UpdateAttachmentsListVisibility();
 
             Message = message.MessageContent;
@@ -264,6 +273,14 @@ namespace EduMessage.ViewModels
         {
             if (parameter is not FormattedMessage formattedMessage) return;
             _selectedFormattedMessage = formattedMessage;
+
+            if (_selectedFormattedMessage.Message.IdUser != App.Account.GetUser().Id)
+            {
+                FlyoutMenuItemsVisibility = Visibility.Collapsed;
+                return;
+            }
+
+            FlyoutMenuItemsVisibility = Visibility.Visible;
         }
 
         [Command]
@@ -271,6 +288,42 @@ namespace EduMessage.ViewModels
         {
             try
             {
+                if (!IsRefactorBorderCollapsed)
+                {
+                    var messageToChange = _selectedFormattedMessage.Message;
+                    messageToChange.IsChanged = true;
+                    messageToChange.MessageContent = Message;
+                    var attachments = MessageAttachments.ToList();
+
+                    var messageAttachments = attachments.Select(a => new MessageAttachment
+                    {
+                        IdMessage = messageToChange.Id,
+                        IdMessageNavigation = messageToChange,
+                        IdAttachment = a.Id == 0 ? null : a.Id,
+                        IdAttachmentNavigation = a
+                    }).ToList();
+
+                    if (!messageAttachments.Any())
+                    {
+                        messageAttachments.Add(new MessageAttachment
+                        {
+                            IdMessage = messageToChange.Id,
+                            IdMessageNavigation = messageToChange,
+                        });
+                    }
+
+                    await _chat.SendMessage("ChangeMessage", messageAttachments);
+
+                    Message = string.Empty;
+                    MessageAttachments.Clear();
+                    IsRefactorBorderCollapsed = true;
+                    UpdateAttachmentsListVisibility();
+                    EventAggregator.Publish(new InAppNotificationShowing(Symbol.Accept, "Сообщение изменено"));
+
+                    ReplaceChangedMessage(messageAttachments, messageToChange);
+
+                    return;
+                }
                 var message = new Message
                 {
                     IdRecipient = _user.Id,
@@ -283,20 +336,14 @@ namespace EduMessage.ViewModels
                 {
                     message.Id = i;
 
-                    _addedMessageIdReceived -= Handler;
+                    AddedMessageIdReceived -= Handler;
                 }
-                _addedMessageIdReceived += Handler;
-                var list = new List<MessageAttachment>();
-
-                foreach (var attachment in MessageAttachments)
-                {
-                    var messageAttachment = new MessageAttachment
+                AddedMessageIdReceived += Handler;
+                var list = MessageAttachments.Select(attachment => new MessageAttachment
                     {
-                        IdMessageNavigation = message,
-                        IdAttachmentNavigation = attachment
-                    };
-                    list.Add(messageAttachment);
-                }
+                        IdMessageNavigation = message, IdAttachmentNavigation = attachment
+                    })
+                    .ToList();
 
                 var formattedMessage = new FormattedMessage
                 {
@@ -332,23 +379,42 @@ namespace EduMessage.ViewModels
             }
         }
 
+        private void ReplaceChangedMessage(List<MessageAttachment> messageAttachments, Message messageToChange)
+        {
+            messageAttachments.Where(ma => ma.IdAttachmentNavigation != null)
+                .ToList()
+                .ForEach(async ma => await ma.IdAttachmentNavigation.SplitAndGetImage());
+
+            foreach (var formattedMessages in Messages)
+            {
+                var foundMessage = formattedMessages.FirstOrDefault(ms => ms.Message.Id == messageToChange?.Id);
+                if (foundMessage.Message == null) continue;
+
+                var index = formattedMessages.IndexOf(foundMessage);
+                formattedMessages.RemoveAt(index);
+                foundMessage.Message = messageToChange;
+                foundMessage.Attachments = messageAttachments.Select(ma => ma.IdAttachmentNavigation).ToList();
+                formattedMessages.Insert(index, foundMessage);
+            }
+        }
+
         [Command]
         private async void DeleteMessage()
         {
             var message = _selectedFormattedMessage.Message;
             if (message is null) return;
 
-            await _chat.DeleteMessage("DeleteMessage", message.Id);
+            await _chat.SendMessage("DeleteMessage", message.Id);
 
             for (var index = 0; index < Messages.Count; index++)
             {
                 var messageList = Messages[index];
-                messageList.Remove(_selectedFormattedMessage);
-                if (messageList.Count == 0)
-                {
-                    await Task.Delay(TimeSpan.FromMilliseconds(500));
-                    Messages.Remove(messageList);
-                }
+                var messageToDelete = messageList.FirstOrDefault(m => m.Message.Id == message.Id);
+                if (messageToDelete.Message == null) continue;
+                messageList.Remove(messageToDelete);
+                if (messageList.Count != 0) continue;
+                await Task.Delay(TimeSpan.FromMilliseconds(500));
+                Messages.Remove(messageList);
             }
         }
 
@@ -375,31 +441,11 @@ namespace EduMessage.ViewModels
             {
                 message.Id = i;
 
-                _addedMessageIdReceived -= Handler;
+                AddedMessageIdReceived -= Handler;
             }
-            _addedMessageIdReceived += Handler;
+            AddedMessageIdReceived += Handler;
 
             AddToMessagesWithGrouping(formattedMessage, true);
         }
     }
-
-    public class MessageList : ObservableCollection<FormattedMessage>
-    {
-        public MessageList(IEnumerable<FormattedMessage> items) : base(items)
-        {
-
-        }
-
-        public object Key { get; set; }
-    }
-
-    public struct FormattedMessage
-    {
-
-        public Message Message { get; set; }
-        public List<Attachment> Attachments { get; set; }
-    }
-
-    public record InAppNotificationShowing(Symbol Icon, string Text);
-
 }

@@ -45,6 +45,4 @@ namespace EduMessage.ViewModels
             EventAggregator.Publish(new SelectedSpecialityChangedeEvent(Speciality));
         }
     }
-
-    public record SelectedSpecialityChangedeEvent(Speciality Speciality);
 }

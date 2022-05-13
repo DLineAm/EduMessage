@@ -55,7 +55,7 @@ namespace EduMessage.Resources
             }
         }
 
-        private async void FormatLinks(object parameter)
+        public async void FormatLinks(object parameter)
         {
             if (_isMessageFormatted)
             {

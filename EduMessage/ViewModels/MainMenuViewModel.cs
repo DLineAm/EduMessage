@@ -62,8 +62,4 @@ namespace EduMessage.ViewModels
             }
         }
     }
-
-    public record UserExitedEvent();
-
-    public record ConversationGot(List<UserConversation> Conversations);
 }

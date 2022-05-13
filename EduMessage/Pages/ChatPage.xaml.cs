@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Windows.System.UserProfile;
 using Windows.UI;
 using EduMessage.Services;
 using EduMessage.ViewModels;
@@ -9,9 +10,11 @@ using SignalIRServerTest.Models;
 
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Animation;
 using Windows.UI.Xaml.Navigation;
+using EduMessage.Resources;
 using MvvmGen.Events;
 
 // Документацию по шаблону элемента "Пустая страница" см. по адресу https://go.microsoft.com/fwlink/?LinkId=234238
@@ -21,7 +24,7 @@ namespace EduMessage.Pages
     /// <summary>
     /// Пустая страница, которую можно использовать саму по себе или для перехода внутри фрейма.
     /// </summary>
-    public sealed partial class ChatPage : Page
+    public sealed partial class ChatPage : Page, IEventSubscriber<MessageChanged>
     {
         private SymbolIcon _sendSymbolIcon = new (Symbol.Send)
         {
@@ -40,6 +43,8 @@ namespace EduMessage.Pages
             Foreground = new SolidColorBrush(Colors.White)
         };
 
+        public Visibility FlyoutMenuItemsVisibility { get; set; }
+
         private string _userLogin;
         public ChatPage()
         {
@@ -50,17 +55,12 @@ namespace EduMessage.Pages
 
             FilesBorder.RegisterPropertyChangedCallback(TagProperty, FilesBorderTagChanged);
             RefactorBorder.RegisterPropertyChangedCallback(Border.TagProperty, RefactorBorderTagChanged);
+
+            var aggregator = ControlContainer.Get().Resolve<IEventAggregator>();
+
+            aggregator.RegisterSubscriber(this);
         }
 
-        public static FormattedMessage GetFormattedMessage(object parameter)
-        {
-            if (parameter is FormattedMessage message)
-            {
-                return message;
-            }
-
-            return new FormattedMessage();
-        }
 
         private async void RefactorBorderTagChanged(DependencyObject sender, DependencyProperty dp)
         {
@@ -133,6 +133,39 @@ namespace EduMessage.Pages
             args.ItemContainer.HorizontalAlignment = message.IdUser == App.Account.GetUser().Id
                 ? HorizontalAlignment.Right
                 : HorizontalAlignment.Left;
+        }
+
+        public void OnEvent(MessageChanged eventData)
+        {
+            //var message = eventData.FoundMessage;
+
+            //var messageFromListView = ChatView.Items.ToList().FindIndex(m => ((FormattedMessage)m).Message.Id == message.Message.Id);
+
+            //var listViewItem = ChatView.ContainerFromIndex(messageFromListView) as ListViewItem;
+
+            //var mainGrid = listViewItem.ContentTemplateRoot as Grid;
+
+            //var innerGrid = mainGrid.Children.FirstOrDefault(c => c.GetType() == typeof(Grid)) as Grid;
+
+            //var border = innerGrid.Children.FirstOrDefault() as Border;
+
+            //var messageControl = border.Child as UIMessageControl;
+
+            //messageControl.DataContext = message;
+            //messageControl.FormattedMessageContent = message;
+
+            //messageControl.FormatLinks(null);
+        }
+
+        private void UIElement_OnRightTapped(object sender, RightTappedRoutedEventArgs e)
+        {
+            var grid = sender as Grid;
+            var formattedMessage = (FormattedMessage)grid.DataContext;
+            var message = formattedMessage.Message;
+
+            FlyoutMenuItemsVisibility =
+                message.IdUser == App.Account.GetUser().Id ? Visibility.Visible : Visibility.Collapsed;
+            Bindings.Update();
         }
     }
 }

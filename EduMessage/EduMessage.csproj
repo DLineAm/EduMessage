@@ -207,7 +207,7 @@
       <DependentUpon>UIMessageControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Services\Account.cs" />
-    <Compile Include="Services\BoolToVisibilityConverter.cs" />
+    <Compile Include="Utils\BoolToVisibilityConverter.cs" />
     <Compile Include="Services\Chat.cs" />
     <Compile Include="Services\ColorManager.cs" />
     <Compile Include="Services\ControlContainer.cs" />
@@ -225,7 +225,7 @@
     <Compile Include="Services\PasswordValidator.cs" />
     <Compile Include="Services\PersonNameValidator.cs" />
     <Compile Include="Services\Settings.cs" />
-    <Compile Include="Services\TextBlockVisibilityConverter.cs" />
+    <Compile Include="Utils\TextBlockVisibilityConverter.cs" />
     <Compile Include="Services\ToastNotificator.cs" />
     <Compile Include="Services\UserBuilder.cs" />
     <Compile Include="Services\ValidateStatusType.cs" />
@@ -243,20 +243,33 @@
     <Compile Include="Utils\TaskToValueConverter.cs" />
     <Compile Include="ViewModels\AccountImageUploadedEvent.cs" />
     <Compile Include="ViewModels\AccountInfoViewModel.cs" />
+    <Compile Include="Models\Events\BaseLoaderVisibilityChangedEvent.cs" />
     <Compile Include="ViewModels\BaseLoginPageViewModel.cs" />
     <Compile Include="Models\CourseFiles.cs" />
     <Compile Include="Models\EducationFile.cs" />
     <Compile Include="ViewModels\ChatPageViewModel.cs" />
+    <Compile Include="Models\Events\ConversationGot.cs" />
+    <Compile Include="Models\Events\CourseAddedOrChangedEvent.cs" />
+    <Compile Include="Models\Events\CourseDialogStartShowing.cs" />
+    <Compile Include="Models\Crumb.cs" />
     <Compile Include="ViewModels\EducationFolderPageViewModel.cs" />
     <Compile Include="ViewModels\EducationListPageViewModel.cs" />
     <Compile Include="ViewModels\EducationMainPageViewModel.cs" />
     <Compile Include="ViewModels\EmailConfirmingPageViewModel.cs" />
+    <Compile Include="Models\FormattedCourse.cs" />
+    <Compile Include="Models\FormattedMessage.cs" />
+    <Compile Include="Models\Events\InAppNotificationShowing.cs" />
+    <Compile Include="Models\Events\LoaderVisibilityChanged.cs" />
     <Compile Include="ViewModels\LoginPageViewModel.cs" />
     <Compile Include="ViewModels\MainMenuViewModel.cs" />
     <Compile Include="ViewModels\MainPageViewModel.cs" />
+    <Compile Include="Models\Events\MessageChanged.cs" />
+    <Compile Include="Models\MessageList.cs" />
     <Compile Include="ViewModels\PersonalInfoAddPageViewModel.cs" />
     <Compile Include="ViewModels\PrimaryRegisterPageViewModel.cs" />
     <Compile Include="ViewModels\SchoolChoosePageViewModel.cs" />
+    <Compile Include="Models\Events\SelectedSpecialityChangedeEvent.cs" />
+    <Compile Include="Models\Events\UserExitedEvent.cs" />
     <Compile Include="ViewModels\UserPickViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -417,6 +430,9 @@
     </PackageReference>
     <PackageReference Include="Microsoft.AspNetCore.SignalR.Client.Core">
       <Version>6.0.3</Version>
+    </PackageReference>
+    <PackageReference Include="Microsoft.AspNetCore.SignalR.Protocols.MessagePack">
+      <Version>6.0.4</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.Extensions.Http">
       <Version>6.0.0</Version>

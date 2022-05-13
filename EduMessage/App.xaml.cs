@@ -38,6 +38,7 @@ namespace EduMessage
         private bool _isMainViewClosed;
         //"https://169.254.77.140:5001/"
         public static string Address = "https://192.168.1.6:5001/";
+        //public static string Address = "https://localhost:44347/";
 
         //public static string Address = "https://169.254.77.140:5001/";
         //public static string Address = "https://169.254.74.121:5001/";

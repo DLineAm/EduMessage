@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using Windows.Storage;
 using Windows.System;
@@ -13,8 +14,10 @@ namespace SignalIRServerTest.Models
 {
     public partial class Attachment : INotifyPropertyChanged
     {
+        [JsonIgnore]
         private object _imagePath;
 
+        [JsonIgnore]
         public object ImagePath
         {
             get => _imagePath;

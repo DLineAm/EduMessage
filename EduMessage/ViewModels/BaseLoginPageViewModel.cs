@@ -91,6 +91,4 @@ namespace EduMessage.ViewModels
             return !string.IsNullOrWhiteSpace(Login) && !string.IsNullOrWhiteSpace(Password) && IsLoginEnabled;
         }
     }
-
-    public record BaseLoaderVisibilityChangedEvent(Visibility Visibility);
 }

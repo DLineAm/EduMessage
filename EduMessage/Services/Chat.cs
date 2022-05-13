@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Windows.UI.ViewManagement;
 using Microsoft.AspNetCore.SignalR.Client;
+using Microsoft.Extensions.DependencyInjection;
 using SignalIRServerTest.Models;
 
 namespace EduMessage.Services
@@ -13,7 +14,7 @@ namespace EduMessage.Services
         void SetOnMethod<TMessage>(string methodName, Action<TMessage> handler);
         Task OpenConnection();
         Task CloseConnection();
-        Task DeleteMessage<TMessage>(string methodName, TMessage message);
+        Task SendMessage<TMessage>(string methodName, TMessage message);
         Task SendMessage<TMessage>(string methodName, int recipientId, TMessage message);
 
     }
@@ -30,6 +31,7 @@ namespace EduMessage.Services
                     options.AccessTokenProvider = () => Task.FromResult(token);
                 } )
                 .WithAutomaticReconnect()
+                //.AddMessagePackProtocol()
                 .Build();
         }
 
@@ -53,7 +55,7 @@ namespace EduMessage.Services
             await _connection.StopAsync();
         }
 
-        public async Task DeleteMessage<TMessage>(string methodName, TMessage message)
+        public async Task SendMessage<TMessage>(string methodName, TMessage message)
         {
             if (_connection.State != HubConnectionState.Connected)
             {

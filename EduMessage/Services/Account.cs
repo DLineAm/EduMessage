@@ -7,7 +7,6 @@ using System.Diagnostics;
 using System.Threading.Tasks;
 
 using Windows.UI.Core;
-using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 
 namespace EduMessage.Services
@@ -50,7 +49,7 @@ namespace EduMessage.Services
                     return false;
                 }
 
-                chat.Initialize(App.Address + "Chat", _jwt);
+                chat.Initialize(App.Address + "Chat", GetJwt());
                 chat.SetOnMethod<List<MessageAttachment>, User>("ReceiveForMe", ReceiveMessage);
                 await chat.OpenConnection();
 

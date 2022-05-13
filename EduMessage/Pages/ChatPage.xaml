@@ -12,7 +12,8 @@
     xmlns:viewModels="using:EduMessage.ViewModels"
     xmlns:ui="using:Microsoft.Toolkit.Uwp.UI"
     xmlns:resources="using:EduMessage.Resources"
-    xmlns:system="using:System"
+    xmlns:system="using:System" 
+    xmlns:services="using:EduMessage.Services"
     mc:Ignorable="d"
     NavigationCacheMode="Required"
     x:Name="Parent">
@@ -24,6 +25,7 @@
         <utils:MessageDateConverter x:Key="DateConverter"></utils:MessageDateConverter>
         <utils:DateTimeToSendDateConverter x:Key="SendDateConverter"></utils:DateTimeToSendDateConverter>
         <utils:FormattedMessageToUiElementConverter x:Name="ElementConverter"></utils:FormattedMessageToUiElementConverter>
+        <services:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"></services:BoolToVisibilityConverter>
         <CollectionViewSource x:Name="ViewSource" IsSourceGrouped="True"
                               Source="{Binding Messages}">
         </CollectionViewSource>
@@ -173,13 +175,15 @@
                             <MenuFlyout>
                                 <MenuFlyoutItem Text="Редактировать"
                                                 Icon="Edit"
-                                                Command="{x:Bind ViewModel.StartRefactorModeCommand}"></MenuFlyoutItem>
+                                                Command="{x:Bind ViewModel.StartRefactorModeCommand}"
+                                                Visibility="{x:Bind FlyoutMenuItemsVisibility}"></MenuFlyoutItem>
                                 <MenuFlyoutItem Text="Копировать"
                                                 Icon="Copy"
                                                 Command="{x:Bind ViewModel.CopyToClipboardCommand}"></MenuFlyoutItem>
                                 <MenuFlyoutItem Text="Удалить"
                                                 Icon="Delete"
-                                                Command="{x:Bind ViewModel.DeleteMessageCommand}">
+                                                Command="{x:Bind ViewModel.DeleteMessageCommand}"
+                                                Visibility="{x:Bind FlyoutMenuItemsVisibility}">
                                 </MenuFlyoutItem>
                             </MenuFlyout>
                         </Setter.Value>
@@ -189,7 +193,8 @@
 
             <ListView.ItemTemplate>
                 <DataTemplate x:DataType="viewModels:MessageList">
-                    <Grid Margin="10">
+                    <Grid Margin="10"
+                          RightTapped="UIElement_OnRightTapped">
                         <interactivity:Interaction.Behaviors>
                             <core:EventTriggerBehavior EventName="RightTapped">
                                 <core:InvokeCommandAction Command="{Binding DataContext.SetSelectedItemCommand, ElementName=Parent}"
@@ -231,15 +236,43 @@
 
                             <Border MinWidth="300"
                                     MaxWidth="400"
-                                    Child="{Binding Converter={StaticResource ElementConverter}}"></Border>
+                                    Child="{Binding Converter={StaticResource ElementConverter}, UpdateSourceTrigger=PropertyChanged}"></Border>
+                            <Grid Grid.Row="1">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition></ColumnDefinition>
+                                    <ColumnDefinition></ColumnDefinition>
+                                </Grid.ColumnDefinitions>
 
-                            <TextBlock Text="{Binding Message.SendDate, Converter={StaticResource DateConverter}}"
-                                                   Grid.Row="1"
-                                                   FontSize="12"
-                                                   TextWrapping="Wrap"
-                                                   Opacity="0.7"
-                                                   Padding="10"
-                                                   Foreground="{StaticResource PrimaryMessageForeground}"></TextBlock>
+                                <TextBlock Text="{Binding Message.SendDate, Converter={StaticResource DateConverter}}"
+                                           FontSize="12"
+                                           TextWrapping="Wrap"
+                                           Opacity="0.7"
+                                           Padding="10"
+                                           Foreground="{StaticResource PrimaryMessageForeground}"></TextBlock>
+
+                                <StackPanel Grid.Column="1"
+                                            HorizontalAlignment="Right"
+                                            VerticalAlignment="Center"
+                                            Orientation="Horizontal"
+                                            Visibility="{Binding Message.IsChanged, Converter={StaticResource BoolToVisibilityConverter}}">
+                                    <Viewbox Height="13"
+                                             Margin="0,0,-7,0">
+                                        <SymbolIcon Symbol="Edit"
+                                                    Foreground="{StaticResource PrimaryMessageForeground}"
+                                                    Opacity="0.7"
+                                                    ></SymbolIcon>
+                                    </Viewbox>
+                                    <TextBlock Text="ред."
+                                               FontSize="12"
+                                               Padding="10"
+                                               Opacity="0.7"
+                                               Foreground="{StaticResource PrimaryMessageForeground}"></TextBlock>
+                                </StackPanel>
+
+                               
+                            </Grid>
+
+                           
                         </Grid>
 
                         <Polygon Grid.Row="2"
