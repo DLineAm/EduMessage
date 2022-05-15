@@ -159,7 +159,11 @@
                         Grid.RowSpan="2"
                         ItemsSource="{Binding View, ElementName=ViewSource}"
                         x:Name="ChatView"
-                        ContainerContentChanging="ChatView_OnContainerContentChanging">
+                        ContainerContentChanging="ChatView_OnContainerContentChanging"
+                  ScrollViewer.VerticalScrollMode="Enabled"
+                  ScrollViewer.VerticalScrollBarVisibility="Auto"
+                  Loaded="ChatView_OnLoaded"
+                  Tapped="ChatView_OnTapped">
             <ListView.ItemsPanel>
                 <ItemsPanelTemplate>
                     <ItemsStackPanel ItemsUpdatingScrollMode="KeepLastItemInView"

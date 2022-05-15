@@ -57,9 +57,7 @@ namespace EduMessage.Services
 
                 return true;
             }
-#pragma warning disable CS0168 // Переменная "e" объявлена, но ни разу не использована.
             catch (Exception e)
-#pragma warning restore CS0168 // Переменная "e" объявлена, но ни разу не использована.
             {
                 return false;
             }
@@ -70,11 +68,11 @@ namespace EduMessage.Services
             return _user;
         }
 
-#pragma warning disable CS1998 // В данном асинхронном методе отсутствуют операторы await, поэтому метод будет выполняться синхронно. Воспользуйтесь оператором await для ожидания неблокирующих вызовов API или оператором await Task.Run(...) для выполнения связанных с ЦП заданий в фоновом потоке.
-        private async void ReceiveMessage(List<MessageAttachment> message, User user)
-#pragma warning restore CS1998 // В данном асинхронном методе отсутствуют операторы await, поэтому метод будет выполняться синхронно. Воспользуйтесь оператором await для ожидания неблокирующих вызовов API или оператором await Task.Run(...) для выполнения связанных с ЦП заданий в фоновом потоке.
+        private void ReceiveMessage(List<MessageAttachment> message, User user)
         {
-            if (Window.Current == null || Window.Current.CoreWindow.ActivationMode is CoreWindowActivationMode.None or CoreWindowActivationMode.ActivatedInForeground)
+            if (Window.Current == null ||
+                Window.Current.CoreWindow.ActivationMode is CoreWindowActivationMode.None or CoreWindowActivationMode.ActivatedInForeground ||
+                App.IsDoNotDisturbEnabled)
             {
                 return;
             }
@@ -106,11 +104,9 @@ namespace EduMessage.Services
         {
             try
             {
-                var pair = (await (App.Address + $"Login/Users.login={loginEmail}.password={password}")
-                    .SendRequestAsync("", HttpRequestType.Get))
+                var (user, token) = (await (App.Address + $"Login/Users.login={loginEmail}.password={password}")
+                        .SendRequestAsync("", HttpRequestType.Get))
                     .DeserializeJson<KeyValuePair<User, string>>();
-                var user = pair.Key;
-                var token = pair.Value;
                 if (user == null)
                 {
                     return "Неверное имя пользователя или пароль";
@@ -151,12 +147,9 @@ namespace EduMessage.Services
             var user = builder.Build();
             _user = user;
 
-            var result = (await (App.Address + "Login/Register")
-                .SendRequestAsync(_user, HttpRequestType.Post))
+            var (savedUserId, token) = (await (App.Address + "Login/Register")
+                    .SendRequestAsync(_user, HttpRequestType.Post))
                 .DeserializeJson<KeyValuePair<int, string>>();
-
-            var savedUserId = result.Key;
-            var token = result.Value;
 
             if (!string.IsNullOrEmpty(token))
             {

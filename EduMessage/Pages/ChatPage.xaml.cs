@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Windows.System.UserProfile;
@@ -46,6 +47,8 @@ namespace EduMessage.Pages
         public Visibility FlyoutMenuItemsVisibility { get; set; }
 
         private string _userLogin;
+        private ScrollViewer _chatScrollViewer;
+
         public ChatPage()
         {
             this.InitializeComponent();
@@ -61,6 +64,23 @@ namespace EduMessage.Pages
             aggregator.RegisterSubscriber(this);
         }
 
+        private void ChatScrollViewer_ViewChanged(object sender, ScrollViewerViewChangedEventArgs e)
+        {
+            var scroll = _chatScrollViewer.VerticalOffset;
+            var absoluteHeight = _chatScrollViewer.ExtentHeight;
+
+            Debug.WriteLine("scroll = " + scroll);
+        }
+
+        public ScrollViewer GetVisualChild(DependencyObject parent)
+        {
+            Border border = VisualTreeHelper.GetChild(parent, 0)
+                as Border;
+            ScrollViewer scrollViewer = VisualTreeHelper.GetChild(border, 0)
+                as ScrollViewer;
+
+            return scrollViewer;
+        }
 
         private async void RefactorBorderTagChanged(DependencyObject sender, DependencyProperty dp)
         {
@@ -166,6 +186,21 @@ namespace EduMessage.Pages
             FlyoutMenuItemsVisibility =
                 message.IdUser == App.Account.GetUser().Id ? Visibility.Visible : Visibility.Collapsed;
             Bindings.Update();
+        }
+
+        private void ChatView_OnLoaded(object sender, RoutedEventArgs e)
+        {
+            _chatScrollViewer = GetVisualChild(ChatView);
+            _chatScrollViewer.ViewChanged += ChatScrollViewer_ViewChanged;
+        }
+
+        private void ChatView_OnTapped(object sender, TappedRoutedEventArgs e)
+        {
+            var item = ViewModel.Messages.Last().Last();
+
+            var index = ChatView.Items.ToList().FindIndex(i => ((FormattedMessage)i).Message.Id == item.Message.Id);
+
+            var listViewItem = ChatView.ContainerFromIndex(index);
         }
     }
 }

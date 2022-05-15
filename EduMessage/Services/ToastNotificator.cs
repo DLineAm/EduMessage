@@ -71,18 +71,4 @@ namespace EduMessage.Services
             return Application.Current.RequestedTheme == ApplicationTheme.Dark;
         }
     }
-
-    public struct Triple<TX, TY, TZ>
-    {
-        public TX First;
-        public TY Second;
-        public TZ Third;
-
-        public Triple(TZ third, TY second, TX first)
-        {
-            Third = third;
-            Second = second;
-            First = first;
-        }
-    }
 }

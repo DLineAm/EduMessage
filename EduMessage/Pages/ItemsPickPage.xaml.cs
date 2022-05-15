@@ -79,6 +79,4 @@ namespace EduMessage.Pages
 
 
     }
-
-    public record DropCompletedEvent(IReadOnlyList<IStorageItem> Items);
 }

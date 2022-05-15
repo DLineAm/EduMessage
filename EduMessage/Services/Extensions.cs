@@ -140,9 +140,4 @@ namespace EduMessage.Services
             return source;
         }
     }
-
-    public enum HttpRequestType
-    {
-        Get, Post, Put, Delete
-    }
 }

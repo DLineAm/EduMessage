@@ -1,41 +1,42 @@
 ﻿using EduMessage.Services;
 
-using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Toolkit.Uwp.Notifications;
 
 using MvvmGen.Events;
 
+using SignalIRServerTest.Models;
+
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
-using System.Net.Http;
-using System.Text.RegularExpressions;
+using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
+
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
 using Windows.ApplicationModel.Core;
-using Windows.UI;
+using Windows.System.Profile;
 using Windows.UI.Core;
 using Windows.UI.ViewManagement;
-using Windows.UI.WindowManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Hosting;
 using Windows.UI.Xaml.Navigation;
-using SignalIRServerTest.Models;
 
 namespace EduMessage
 {
-    public record ColorChangedEvent(Color Color);
     /// <summary>
     /// Обеспечивает зависящее от конкретного приложения поведение, дополняющее класс Application по умолчанию.
     /// </summary>
     sealed partial class App : Application
     {
         public static bool _isAlreadyLaunched;
-        public ObservableCollection<CoreApplicationView> secondaryViews = new ObservableCollection<CoreApplicationView>();
+        public ObservableCollection<CoreApplicationView> secondaryViews = new();
         private bool _isMainViewClosed;
+
+        [ThreadStatic] public static bool IsDoNotDisturbEnabled;
+
+        private readonly DispatcherTimer _dndTimer;
+
         //"https://169.254.77.140:5001/"
         public static string Address = "https://192.168.1.6:5001/";
         //public static string Address = "https://localhost:44347/";
@@ -46,7 +47,6 @@ namespace EduMessage
         public static IEventAggregator EventAggregator;
 
         public static ColorManager ColorManager { get; } = new();
-        //public static ControlContainer Container { get; } = ControlContainer.Get();
         public static Account Account { get; private set; }
 
         /// <summary>
@@ -57,6 +57,15 @@ namespace EduMessage
         {
             this.InitializeComponent();
             this.Suspending += OnSuspending;
+            _dndTimer = new DispatcherTimer
+            {
+                Interval = TimeSpan.FromHours(1)
+            };
+            _dndTimer.Tick += delegate { IsDoNotDisturbEnabled = false; _dndTimer.Stop(); };
+
+            //TODO: Сохранять идентификатор устройства при входе в аккаунт
+            SystemIdentificationInfo systemId = SystemIdentification.GetSystemIdForPublisher();
+            byte[] buffer = systemId.Id.ToArray();
         }
 
         protected override async void OnActivated(IActivatedEventArgs args)
@@ -68,7 +77,8 @@ namespace EduMessage
                 ToastArguments toastArgs = ToastArguments.Parse(toastEventArgs.Argument);
                 if (toastArgs.Contains("dnd"))
                 {
-
+                    IsDoNotDisturbEnabled = true;
+                    _dndTimer.Start();
                 }
 
                 if (toastArgs.TryGetValue("action", out var value))
@@ -95,19 +105,19 @@ namespace EduMessage
 
                         var list = new List<MessageAttachment> { messageAttachments };
 
-                        var chat = ControlContainer.Get().Resolve<IChat>();
+                        var chat = ControlContainer.Get()
+                            .Resolve<IChat>();
                         await chat.SendMessage("SendToUser", recipientId, list);
 
-                        var aggregator = ControlContainer.Get().Resolve<IEventAggregator>();
-                        await Windows.UI.Core.CoreWindow.GetForCurrentThread().Dispatcher.RunAsync(
-                            CoreDispatcherPriority.Normal,
-                            () =>
+                        var aggregator = ControlContainer.Get()
+                            .Resolve<IEventAggregator>();
+                        await CoreWindow.GetForCurrentThread().Dispatcher
+                            .RunAsync(CoreDispatcherPriority.Normal, () =>
                             {
                                 aggregator.Publish(new ReplySentEvent(list, recipientId));
 
                             });
                     }
-
                 }
             }
         }
@@ -119,12 +129,6 @@ namespace EduMessage
         /// <param name="e">Сведения о запросе и обработке запуска.</param>
         protected override async void OnLaunched(LaunchActivatedEventArgs e)
         {
-            var clientHandler = new HttpClientHandler { ServerCertificateCustomValidationCallback = (_, _, _, _) => true };
-            var client = new HttpClient(clientHandler);
-            var connection = new HubConnectionBuilder()
-                .WithUrl(App.Address + "chat")
-                .Build();
-
             var container = CreateContainerAndRegisterTypes();
 
             var notificator = container.Resolve<INotificator>("Toast");
@@ -133,11 +137,9 @@ namespace EduMessage
             Account = new Account(userBuilder, notificator);
             EventAggregator = container.Resolve<IEventAggregator>();
 
-            Frame rootFrame = Window.Current.Content as Frame;
-
             // Не повторяйте инициализацию приложения, если в окне уже имеется содержимое,
             // только обеспечьте активность окна
-            if (rootFrame == null)
+            if (Window.Current.Content is not Frame rootFrame)
             {
                 // Создание фрейма, который станет контекстом навигации, и переход к первой странице
                 rootFrame = new Frame();
@@ -166,10 +168,8 @@ namespace EduMessage
             {
                 if (_isMainViewClosed)
                 {
-                    int newViewId = 0;
                     await secondaryViews[0].Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
                     {
-                        var currentPage = (MainPage)((Frame)Window.Current.Content).Content;
                         Window.Current.Activate();
                     });
                     await CreateNewView(e);
@@ -179,13 +179,12 @@ namespace EduMessage
             }
             // Обеспечение активности текущего окна
             Window.Current.Activate();
-            //}       
 
-            var uiSettings = new Windows.UI.ViewManagement.UISettings();
+            var uiSettings = new UISettings();
 
             uiSettings.ColorValuesChanged += (_, _) =>
             {
-                var rgba = uiSettings.GetColorValue(Windows.UI.ViewManagement.UIColorType.Accent);
+                var rgba = uiSettings.GetColorValue(UIColorType.Accent);
                 EventAggregator.Publish(new ColorChangedEvent(rgba));
             };
 
@@ -200,7 +199,7 @@ namespace EduMessage
                 int newViewId = 0;
                 await newView.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
                 {
-                    var container = CreateContainerAndRegisterTypes();
+                    CreateContainerAndRegisterTypes();
 
                     var frame = new Frame();
                     frame.Loaded += delegate
@@ -216,7 +215,7 @@ namespace EduMessage
                 });
 
                 int currentViewId = e.CurrentlyShownApplicationViewId;
-                var result = await ApplicationViewSwitcher.TryShowAsStandaloneAsync(newViewId, ViewSizePreference.Default, currentViewId, ViewSizePreference.Default);
+                bool result = await ApplicationViewSwitcher.TryShowAsStandaloneAsync(newViewId, ViewSizePreference.Default, currentViewId, ViewSizePreference.Default);
             }
             catch (Exception ex)
             {
@@ -301,6 +300,4 @@ namespace EduMessage
             deferral.Complete();
         }
     }
-
-    public record ReplySentEvent(List<MessageAttachment> Message, int recipientId);
 }

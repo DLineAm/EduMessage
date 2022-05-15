@@ -38,9 +38,4 @@ namespace EduMessage.Services
             findedDialog.Title = title;
         }
     }
-
-    public interface IDialogNotificator
-    {
-        void Notificate(string title, string message, string knownDialogName = "");
-    }
 }

@@ -428,7 +428,7 @@ namespace EduMessage.ViewModels
         }
         public void OnEvent(ReplySentEvent eventData)
         {
-            var userId = eventData.recipientId;
+            var userId = eventData.RecipientId;
             var messageList = eventData.Message;
             var message = messageList.FirstOrDefault().IdMessageNavigation;
             var formattedMessage = new FormattedMessage
