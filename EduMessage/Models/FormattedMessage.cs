@@ -9,7 +9,7 @@ namespace EduMessage.ViewModels
     public struct FormattedMessage : INotifyPropertyChanged
     {
         private Message _message;
-        private List<Attachment> _attachments;
+        private HashSet<Attachment> _attachments;
 
         public Message Message
         {
@@ -21,7 +21,7 @@ namespace EduMessage.ViewModels
             }
         }
 
-        public List<Attachment> Attachments
+        public HashSet<Attachment> Attachments
         {
             get => _attachments;
             set

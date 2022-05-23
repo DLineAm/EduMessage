@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 using SignalIRServerTest.Models;
+using Attachment = SignalIRServerTest.Models.Attachment;
+
 
 namespace SignalIRServerTest
 {

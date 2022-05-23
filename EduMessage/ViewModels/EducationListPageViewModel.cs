@@ -1,8 +1,6 @@
 ﻿using EduMessage.Pages;
 using EduMessage.Services;
 
-using Microsoft.Toolkit.Uwp.Helpers;
-
 using MvvmGen;
 using MvvmGen.Events;
 
@@ -18,7 +16,6 @@ using System.Threading.Tasks;
 
 using Windows.ApplicationModel.Core;
 using Windows.Storage;
-using Windows.System;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -75,7 +72,17 @@ namespace EduMessage.ViewModels
             foreach (var courseAttachment in response)
             {
                 var course = courseAttachment.IdCourseNavigation;
-                if (formattedCourses.Any(c => c.Course.Id == course.Id))
+                var any = false;
+                foreach (var c in formattedCourses)
+                {
+                    if (c.Course.Id == course.Id)
+                    {
+                        any = true;
+                        break;
+                    }
+                }
+
+                if (any)
                 {
                     continue;
                 }
@@ -224,23 +231,6 @@ namespace EduMessage.ViewModels
                 if (response.Key != -1)
                 {
                     course.Id = response.Key;
-                    //List<int> attachmentIds = response.Value;
-                    //course.Id = response.Key;
-                    //var list = new List<CourseAttachment>();
-                    //for (int i = 0; i < attachmentIds.Count; i++)
-                    //{
-                    //    int id = attachmentIds[i];
-                    //    CourseAttachment courseAttachment = courses[i];
-
-                    //    if (courseAttachment.IdAttachmanentNavigation == null)
-                    //    {
-                    //        continue;
-                    //    }
-                    //    courseAttachment.IdCourseNavigation.Id = id;
-                    //    courseAttachment.IdCourse = id;
-                    //    courseAttachment.Id = id;
-                    //    list.Add(courseAttachment);
-                    //}
 
                     List<FormattedCourse> formattedCourses = await ConvertToFormattedCourse(response.Value);
                     formattedCourses.ForEach(Courses.Add);
@@ -313,8 +303,9 @@ namespace EduMessage.ViewModels
         {
             var result = new List<Attachment>();
             var tasks = new List<Task>();
-            foreach (var item in items)
+            for (int i = 0; i < items.Count; i++)
             {
+                IStorageItem item = items[i];
                 if (item is StorageFolder folder)
                 {
                     var filesInFolder = await ReadFiles(await folder.GetFilesAsync());
@@ -353,15 +344,6 @@ namespace EduMessage.ViewModels
 
             return result;
         }
-
-        private async Task<object> GetImage(string type, byte[] data) => type switch
-        {
-            ".docx" => "ms-appx:///Assets/word.png",
-            ".pdf" => "ms-appx:///Assets/pdf.png",
-            ".txt" => "ms-appx:///Assets/txt.png",
-            ".png" or ".jpg" or ".jpeg" => await data.CreateBitmap(48),
-            _ => "ms-appx:///Assets/file.png"
-        };
 
         [Command]
         private void InitializeAddCourseDialog()

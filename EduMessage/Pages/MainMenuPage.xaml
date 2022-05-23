@@ -291,6 +291,22 @@
             </controls:NavigationView.AutoSuggestBox>
 
             <Frame Padding="12" x:Name="NavFrame" x:FieldModifier="public">
+                <Page>
+                    <StackPanel VerticalAlignment="Center"
+                                HorizontalAlignment="Center">
+                        <Viewbox
+                            Height="70">
+                            <SymbolIcon Symbol="AllApps"
+                                        ></SymbolIcon>
+                        </Viewbox>
+                        
+                        <TextBlock Text="Чтобы начать, выберите беседу из списка в меню или создайте новую, также вы можете нажать на вкладку обучение  и просмотреть обучающие курсы"
+                                   MaxWidth="350"
+                                   TextWrapping="Wrap"
+                                   TextAlignment="Center"
+                                   Margin="0,12,0,0"></TextBlock>
+                    </StackPanel>
+                </Page>
             </Frame>
 
         </controls:NavigationView>

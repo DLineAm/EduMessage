@@ -69,8 +69,10 @@ namespace EduMessage.Resources
         {
             try
             {
+                const string faviconSite = "https://www.google.com/s2/favicons?sz=32&domain_url=";
                 const string iconName = "/favicon.ico";
-                var iconLink = new Uri(_firstLinkText + iconName);
+                //var iconLink = new Uri(_firstLinkText + iconName);
+                var iconLink = new Uri(faviconSite + _firstLinkText);
 
                 var request = WebRequest.Create(iconLink);
                 var response = await request.GetResponseAsync();

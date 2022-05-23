@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Diagnostics;
+
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
+using Windows.Foundation;
 using Windows.System.UserProfile;
 using Windows.UI;
 using EduMessage.Services;
@@ -66,10 +69,10 @@ namespace EduMessage.Pages
 
         private void ChatScrollViewer_ViewChanged(object sender, ScrollViewerViewChangedEventArgs e)
         {
-            var scroll = _chatScrollViewer.VerticalOffset;
-            var absoluteHeight = _chatScrollViewer.ExtentHeight;
+            //var scroll = _chatScrollViewer.VerticalOffset;
+            //var absoluteHeight = _chatScrollViewer.ExtentHeight;
 
-            Debug.WriteLine("scroll = " + scroll);
+            //Debug.WriteLine("scroll = " + scroll.ToString(CultureInfo.InvariantCulture));
         }
 
         public ScrollViewer GetVisualChild(DependencyObject parent)
@@ -190,17 +193,27 @@ namespace EduMessage.Pages
 
         private void ChatView_OnLoaded(object sender, RoutedEventArgs e)
         {
-            _chatScrollViewer = GetVisualChild(ChatView);
-            _chatScrollViewer.ViewChanged += ChatScrollViewer_ViewChanged;
+            //_chatScrollViewer = GetVisualChild(ChatView);
+            //_chatScrollViewer.ViewChanged += ChatScrollViewer_ViewChanged;
         }
 
         private void ChatView_OnTapped(object sender, TappedRoutedEventArgs e)
         {
-            var item = ViewModel.Messages.Last().Last();
+            //var item = ViewModel.Messages.Last().Last();
 
-            var index = ChatView.Items.ToList().FindIndex(i => ((FormattedMessage)i).Message.Id == item.Message.Id);
+            //var index = ChatView.Items.ToList().FindIndex(i => ((FormattedMessage)i).Message.Id == item.Message.Id);
 
-            var listViewItem = ChatView.ContainerFromIndex(index);
+            //var listViewItem = ChatView.ContainerFromIndex(index);
+        }
+
+        private void AttachmentsMenuFlyoutItem_OnClick(object sender, RoutedEventArgs e)
+        {
+            AttachmentsBorder.Slide(Orientation.Horizontal, 500, 0, easing:new PowerEase{EasingMode = EasingMode.EaseOut, Power = 4});
+        }
+
+        private void AttachmentCloseButton_OnClick(object sender, RoutedEventArgs e)
+        {
+            AttachmentsBorder.Slide(Orientation.Horizontal, 0, 500, easing:new PowerEase{EasingMode = EasingMode.EaseIn, Power = 4});
         }
     }
 }

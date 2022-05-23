@@ -7,6 +7,9 @@ using MvvmGen;
 using Microsoft.Toolkit.Uwp.Notifications;
 using Windows.UI.Xaml;
 using System.Threading.Tasks;
+using Windows.Security.Cryptography;
+using Windows.Security.Cryptography.Core;
+using Windows.Storage.Streams;
 using Windows.UI.Core;
 using MvvmGen.Events;
 
@@ -45,6 +48,15 @@ namespace EduMessage.ViewModels
             }
 
             new Navigator().Navigate(typeof(MainMenuPage), null, new DrillInNavigationTransitionInfo());
+        }
+
+        private string GetHashedString(string value)
+        {
+            var alg = HashAlgorithmProvider.OpenAlgorithm(HashAlgorithmNames.Sha256); 
+            IBuffer buff = CryptographicBuffer.ConvertStringToBinary(value, BinaryStringEncoding.Utf8); 
+            var hashed = alg.HashData(buff); 
+            var res = CryptographicBuffer.EncodeToHexString(hashed); 
+            return res;
         }
 
         private async Task SetLoaderVisibility(Visibility visibility)

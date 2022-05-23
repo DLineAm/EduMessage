@@ -14,7 +14,7 @@
     xmlns:lottie="using:Microsoft.Toolkit.Uwp.UI.Lottie"
     xmlns:services="using:EduMessage.Services"
     xmlns:models="using:SignalIRServerTest.Models"
-    xmlns:utils="using:EduMessage.Utils"
+    xmlns:utils="using:EduMessage.Utils" 
     x:Name="window"
     Loaded="Page_Loaded">
     <Page.Resources>

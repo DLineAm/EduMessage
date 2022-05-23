@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using SignalIRServerTest.Models;
+using Attachment = SignalIRServerTest.Models.Attachment;
 
 #nullable disable
 

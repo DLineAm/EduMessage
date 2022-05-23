@@ -1,7 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Security.Cryptography;
 using System.Threading.Tasks;
+using Windows.Security.Cryptography;
+using Windows.Security.Cryptography.Core;
+using Windows.Storage.Streams;
 using Windows.UI.Core;
 using EduMessage.Services;
 using EduMessage.ViewModels;
@@ -45,6 +49,8 @@ namespace EduMessage.Pages
             //var aggregator = ControlContainer.Get().Resolve<IEventAggregator>();
             //aggregator.RegisterSubscriber(this);
         }
+
+ 
 
         public MainMenuViewModel ViewModel { get; private set; }
 
