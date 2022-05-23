@@ -4,11 +4,12 @@ using EduMessage.Services;
 using MvvmGen;
 using MvvmGen.Events;
 
+using SignalIRServerTest;
+
 using System;
 using System.Threading.Tasks;
 
 using Windows.UI.Xaml;
-using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media.Animation;
 
 namespace EduMessage.ViewModels
@@ -21,8 +22,24 @@ namespace EduMessage.ViewModels
         [Property] private string _code;
         [Property] private string _errorText;
         [Property] private bool _isLoginEnabled = true;
+        [Property] private string _title;
 
-        public string Email; 
+        private string _email;
+        private bool _isLoadedFromLogin;
+
+        public void Initialize(string email, bool isLoadedFromLogin)
+        {
+            _email = email;
+            _isLoadedFromLogin = isLoadedFromLogin;
+
+            if (isLoadedFromLogin)
+            {
+                Title = "Вход с нового устройства";
+                return;
+            }
+
+            Title = "Регистрация";
+        }
 
         [Command(CanExecuteMethod = nameof(CanConfirm))]
         private async void Confirm()
@@ -30,7 +47,7 @@ namespace EduMessage.ViewModels
             try
             {
                 await SetLoaderVisibility(Visibility.Visible);
-                var responseString = await (App.Address + $"Login/ValidateCode.email={Email}.emailCode={Code}")
+                var responseString = await (App.Address + $"Login/ValidateCode.email={_email}.emailCode={Code}")
                     .SendRequestAsync("", HttpRequestType.Get);
 
                 if (string.IsNullOrEmpty(responseString))
@@ -48,7 +65,30 @@ namespace EduMessage.ViewModels
                     return;
                 }
 
-                App.Account.UserBuilder.AddString("Email", Email);
+                if (_isLoadedFromLogin)
+                {
+                    var machineName = Environment.MachineName;
+                    var device = new Device
+                    {
+                        CreateDate = DateTime.Now,
+                        IdUser = App.Account.GetUser().Id,
+                        Name = machineName,
+                        SerialNumber = App.Account.GetMachineId()
+                    };
+
+                    var deviceResponse = (await (App.Address + "Device")
+                            .SendRequestAsync(device, HttpRequestType.Post))
+                        .DeserializeJson<bool>();
+                    if (!deviceResponse)
+                    {
+                        ErrorText = "Не удалось проверить подлинность устройства, повторите попытку позже";
+                    }
+                    App.Account.UpdateToken(true);
+                    new Navigator().Navigate(typeof(MainMenuPage), null, new DrillInNavigationTransitionInfo());
+                    return;
+                }
+
+                App.Account.UserBuilder.AddString("_email", _email);
                 new Navigator().Navigate(typeof(PersonalInfoAddPage),
                     null
                     , new SlideNavigationTransitionInfo {Effect = SlideNavigationTransitionEffect.FromLeft}
@@ -65,11 +105,11 @@ namespace EduMessage.ViewModels
             }
         }
 
+
         private async Task SetLoaderVisibility(Visibility visibility)
         {
             IsLoginEnabled = visibility != Visibility.Visible;
             EventAggregator.Publish(new BaseLoaderVisibilityChangedEvent(visibility));
-            //App.InvokeLoaderVisibilityChanged(visibility);
 
             if (visibility == Visibility.Visible)
             {

@@ -29,7 +29,8 @@ namespace EduMessage
     /// </summary>
     sealed partial class App : Application
     {
-        public static bool _isAlreadyLaunched;
+        public static bool IsAlreadyLaunched;
+        public static int OpenedWindows;
         public ObservableCollection<CoreApplicationView> secondaryViews = new();
         private bool _isMainViewClosed;
 
@@ -62,10 +63,6 @@ namespace EduMessage
                 Interval = TimeSpan.FromHours(1)
             };
             _dndTimer.Tick += delegate { IsDoNotDisturbEnabled = false; _dndTimer.Stop(); };
-
-            //TODO: Сохранять идентификатор устройства при входе в аккаунт
-            SystemIdentificationInfo systemId = SystemIdentification.GetSystemIdForPublisher();
-            byte[] buffer = systemId.Id.ToArray();
         }
 
         protected override async void OnActivated(IActivatedEventArgs args)
@@ -129,6 +126,7 @@ namespace EduMessage
         /// <param name="e">Сведения о запросе и обработке запуска.</param>
         protected override async void OnLaunched(LaunchActivatedEventArgs e)
         {
+            OpenedWindows++;
             var container = CreateContainerAndRegisterTypes();
 
             var notificator = container.Resolve<INotificator>("Toast");
@@ -164,7 +162,7 @@ namespace EduMessage
                 // навигации
                 rootFrame.Navigate(typeof(MainPage), e.Arguments);
             }
-            else if (_isAlreadyLaunched)
+            else if (IsAlreadyLaunched)
             {
                 if (_isMainViewClosed)
                 {

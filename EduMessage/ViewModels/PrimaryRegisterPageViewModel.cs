@@ -1,13 +1,15 @@
-﻿using System;
-using System.Threading.Tasks;
-using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Media.Animation;
+﻿using EduMessage.Pages;
 using EduMessage.Services;
+
 using MvvmGen;
-using System.Net.Mail;
-using Windows.UI.Xaml;
-using EduMessage.Pages;
 using MvvmGen.Events;
+
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+
+using Windows.UI.Xaml;
+using Windows.UI.Xaml.Media.Animation;
 
 namespace EduMessage.ViewModels
 {
@@ -134,7 +136,7 @@ namespace EduMessage.ViewModels
                     .AddString("Password", Password);
 
                 new Navigator().Navigate(typeof(EmailConfirmingPage)
-                    , Email
+                    , new KeyValuePair<string,bool>(Email,false)
                     , new SlideNavigationTransitionInfo {Effect = SlideNavigationTransitionEffect.FromLeft}
                     , FrameType.LoginFrame);
             }

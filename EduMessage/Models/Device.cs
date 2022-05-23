@@ -8,11 +8,11 @@ namespace SignalIRServerTest
 {
     public partial class Device
     {
-        public int Id { get; set; }
+        //public int Id { get; set; }
         public int IdUser { get; set; }
         public string Name { get; set; }
         public DateTime CreateDate { get; set; }
-        public int? SerialNumber { get; set; }
+        public byte[] SerialNumber { get; set; }
 
         public virtual User IdUserNavigation { get; set; }
     }

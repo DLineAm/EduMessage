@@ -84,6 +84,17 @@ namespace EduMessage.Services
             switch (requestType)
             {
                 case HttpRequestType.Get:
+                    if (httpContent != null)
+                    {
+                        var request = new HttpRequestMessage
+                        {
+                            Method = HttpMethod.Get,
+                            RequestUri = new Uri(address),
+                            Content = httpContent
+                        };
+                        response = await client.SendAsync(request);
+                        break;
+                    }
                     response = client.GetAsync(address).Result;
                     break;
                 case HttpRequestType.Post:

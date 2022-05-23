@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using Windows.UI.Xaml.Media.Animation;
 using EduMessage.Pages;
@@ -43,6 +44,12 @@ namespace EduMessage.ViewModels
 
             if (result != string.Empty)
             {
+                if (result.Contains("New device"))
+                {
+                    var email = result.Split('=')[1];
+                    new Navigator().Navigate(typeof(EmailConfirmingPage), new KeyValuePair<string,bool>(email,true), new SlideNavigationTransitionInfo(), FrameType.LoginFrame);
+                    return;
+                }
                 ErrorText = result;
                 return;
             }
@@ -61,7 +68,7 @@ namespace EduMessage.ViewModels
 
         private async Task SetLoaderVisibility(Visibility visibility)
         {
-            _context?.Post( async _ =>
+            if (App.OpenedWindows == 1)
             {
                 await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(
                     CoreDispatcherPriority.Normal, async () =>
@@ -75,9 +82,7 @@ namespace EduMessage.ViewModels
                     });
 
                 EventAggregator.Publish(new BaseLoaderVisibilityChangedEvent(visibility));
-            }, null);
-            
-
+            }
         }
 
         [CommandInvalidate(nameof(IsLoginEnabled))]

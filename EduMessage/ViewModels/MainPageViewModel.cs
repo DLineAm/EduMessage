@@ -24,7 +24,7 @@ namespace EduMessage.ViewModels
             var chat = ControlContainer.Get().Resolve<IChat>();
             await Windows.UI.Core.CoreWindow.GetForCurrentThread().Dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
             {
-                if (App._isAlreadyLaunched)
+                if (App.IsAlreadyLaunched)
                 {
                     SelectedContent = new LoginPage();
                     return;
@@ -39,7 +39,7 @@ namespace EduMessage.ViewModels
                 {
                     SelectedContent = new LoginPage();
                 }
-                App._isAlreadyLaunched = true;
+                App.IsAlreadyLaunched = true;
 
             });
         }

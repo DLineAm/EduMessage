@@ -10,7 +10,7 @@
         <TextBlock HorizontalAlignment="Center"
                    VerticalAlignment="Center"
                    Margin="12"
-                   Text="Регистрация"
+                   Text="{Binding Title}"
                    Style="{StaticResource 26TitleTextBlock}"></TextBlock>
 
         <TextBlock Text="На указанную почту было отправлено письмо с кодом подтверждения, введите его в поле ввода кода"

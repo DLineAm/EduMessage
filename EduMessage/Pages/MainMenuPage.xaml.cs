@@ -121,7 +121,7 @@ namespace EduMessage.Pages
 
         private async void NavigationViewControl_DisplayModeChanged(NavigationView sender, NavigationViewDisplayModeChangedEventArgs args)
         {
-            if (App._isAlreadyLaunched)
+            if (App.IsAlreadyLaunched)
             {
                 return;
             }
@@ -253,6 +253,7 @@ namespace EduMessage.Pages
 
         private async void MenuFlyoutItem_OnClick(object sender, RoutedEventArgs e)
         {
+            App.Account.UpdateToken(false);
             await Window.Current.Dispatcher.RunAsync(CoreDispatcherPriority.Normal,
                 () =>
                 {

@@ -4,10 +4,12 @@ using SignalIRServerTest.Models;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
-
+using Windows.System.Profile;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
+using SignalIRServerTest;
 
 namespace EduMessage.Services
 {
@@ -104,6 +106,11 @@ namespace EduMessage.Services
         {
             try
             {
+                var isDeviceNotExists = (await (App.Address + "Device/Validate")
+                        .SendRequestAsync(GetMachineId(), HttpRequestType.Get))
+                    .DeserializeJson<bool>();
+
+
                 var (user, token) = (await (App.Address + $"Login/Users.login={loginEmail}.password={password}")
                         .SendRequestAsync("", HttpRequestType.Get))
                     .DeserializeJson<KeyValuePair<User, string>>();
@@ -112,7 +119,21 @@ namespace EduMessage.Services
                     return "Неверное имя пользователя или пароль";
                 }
 
+                _user = user;
+
                 _jwt = token;
+
+                if (isDeviceNotExists)
+                {
+                    var responseString = (await (App.Address + $"Login/Send.email={user.Email}")
+                        .SendRequestAsync("", HttpRequestType.Get))
+                        .DeserializeJson<bool>();
+                    if (!responseString)
+                    {
+                        return "Ошибка подключения к серверу, повторите попытку позже";
+                    }
+                    return $"New device={user.Email}";
+                }
 
                 UpdateToken(isSaveLogin);
 
@@ -121,7 +142,6 @@ namespace EduMessage.Services
                 chat.SetOnMethod<List<MessageAttachment>, User>("ReceiveForMe", ReceiveMessage);
                 await chat.OpenConnection();
 
-                _user = user;
 
                 return string.Empty;
             }
@@ -147,15 +167,33 @@ namespace EduMessage.Services
             var user = builder.Build();
             _user = user;
 
+            
+
             var (savedUserId, token) = (await (App.Address + "Login/Register")
                     .SendRequestAsync(_user, HttpRequestType.Post))
                 .DeserializeJson<KeyValuePair<int, string>>();
+
+            
 
             if (!string.IsNullOrEmpty(token))
             {
                 _jwt = token;
 
                 UpdateToken(true);
+
+                var machineName = System.Environment.MachineName;
+
+                var device = new Device
+                {
+                    CreateDate = DateTime.Now,
+                    IdUser = savedUserId,
+                    Name = machineName,
+                    SerialNumber = GetMachineId()
+                };
+
+                var response = (await (App.Address + "Device")
+                        .SendRequestAsync(device, HttpRequestType.Post))
+                    .DeserializeJson<bool>();
             }
 
             if (savedUserId == -1)
@@ -166,6 +204,11 @@ namespace EduMessage.Services
             return true;
         }
 
-
+        public byte[] GetMachineId()
+        {
+            SystemIdentificationInfo systemId = SystemIdentification.GetSystemIdForPublisher();
+            byte[] buffer = systemId.Id.ToArray();
+            return buffer;
+        }
     }
 }

@@ -39,8 +39,11 @@ namespace EduMessage.Pages
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);
-            var email = e.Parameter as string;
-            ViewModel.Email = email;
+            if (e.Parameter is KeyValuePair<string, bool>(var email, var isLoadedFromLogin))
+            {
+                ViewModel.Initialize(email, isLoadedFromLogin);
+            }
+            
         }
 
         public EmailConfirmingPageViewModel ViewModel { get; }
