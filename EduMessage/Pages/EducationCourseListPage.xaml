@@ -230,8 +230,9 @@
                            PrimaryButtonClick="CourseAddDialog_OnPrimaryButtonClick"
                            SecondaryButtonClick="CourseAddDialog_OnSecondaryButtonClick"
                            SecondaryButtonText="Отмена"
-                           x:Name="CourseAddDialog">
-            <StackPanel Margin="0,12,0,0">
+                           x:Name="CourseAddDialog"
+                           DefaultButton="Primary">
+            <StackPanel Margin="0,0,0,0">
                 <TextBlock Text="{Binding ErrorText}"
                            Foreground="Red"
                            Margin="0 0 0 12"></TextBlock>

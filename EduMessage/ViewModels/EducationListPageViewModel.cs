@@ -158,6 +158,8 @@ namespace EduMessage.ViewModels
             CourseTitle = educationCourse.Title;
             CourseDescription = educationCourse.Description;
 
+            IsClearButtonEnabled = Files.Count > 0;
+
             EventAggregator.Publish(new CourseDialogStartShowing(_isCourseAddMode));
         }
 
@@ -371,6 +373,8 @@ namespace EduMessage.ViewModels
             Files.Clear();
             CourseTitle = string.Empty;
             CourseDescription = string.Empty;
+
+            IsClearButtonEnabled = false;
 
             EventAggregator.Publish(new CourseDialogStartShowing(_isCourseAddMode));
         }

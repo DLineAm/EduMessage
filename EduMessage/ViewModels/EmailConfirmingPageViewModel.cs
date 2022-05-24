@@ -23,6 +23,7 @@ namespace EduMessage.ViewModels
         [Property] private string _errorText;
         [Property] private bool _isLoginEnabled = true;
         [Property] private string _title;
+        [Property] private Visibility _signInButtonVisibility = Visibility.Visible;
 
         private string _email;
         private bool _isLoadedFromLogin;
@@ -35,6 +36,7 @@ namespace EduMessage.ViewModels
             if (isLoadedFromLogin)
             {
                 Title = "Вход с нового устройства";
+                SignInButtonVisibility = Visibility.Collapsed;
                 return;
             }
 
@@ -132,7 +134,7 @@ namespace EduMessage.ViewModels
         [Command(CanExecuteMethod = nameof(IsButtonsEnabled))]
         private void GoToLogin()
         {
-            new Navigator().Navigate(typeof(BaseLoginPage), null, new SlideNavigationTransitionInfo { Effect = SlideNavigationTransitionEffect.FromRight });
+            new Navigator().Navigate(typeof(BaseLoginPage), null, new SlideNavigationTransitionInfo { Effect = SlideNavigationTransitionEffect.FromRight }, FrameType.LoginFrame);
         }
 
         [CommandInvalidate(nameof(IsLoginEnabled))]

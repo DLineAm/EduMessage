@@ -11,7 +11,10 @@
                    VerticalAlignment="Center"
                    Margin="12"
                    Text="{Binding Title}"
-                   Style="{StaticResource 26TitleTextBlock}"></TextBlock>
+                   Style="{StaticResource 26TitleTextBlock}"
+                   Width="250"
+                   TextWrapping="Wrap"
+                   TextAlignment="Center"></TextBlock>
 
         <TextBlock Text="На указанную почту было отправлено письмо с кодом подтверждения, введите его в поле ввода кода"
                    TextWrapping="Wrap"
@@ -35,9 +38,10 @@
         <Grid Margin="0,12,0,0">
             <StackPanel HorizontalAlignment="Left">
                 <HyperlinkButton Content="Вход в аккаунт"
-                                 Command="{Binding GoToLoginCommand}"/>
+                                 Visibility="{Binding SignInButtonVisibility}"
+                                 Command="{Binding GoToLoginCommand}"
+                                 Margin="0 0 0 12"/>
                 <HyperlinkButton Content="Назад"
-                                 Margin="0,12,0,0"
                                  Command="{Binding GoBackCommand}"/>
             </StackPanel>
 

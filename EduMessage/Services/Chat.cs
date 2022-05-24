@@ -21,7 +21,7 @@ namespace EduMessage.Services
                 .WithUrl(address, options =>
                 {
                     options.AccessTokenProvider = () => Task.FromResult(token);
-                } )
+                })
                 .WithAutomaticReconnect()
                 //.AddMessagePackProtocol()
                 .Build();
@@ -44,7 +44,10 @@ namespace EduMessage.Services
 
         public async Task CloseConnection()
         {
-            await _connection.StopAsync();
+            if (_connection != null)
+            {
+                await _connection.StopAsync();
+            }
         }
 
         public async Task SendMessage<TMessage>(string methodName, TMessage message)
@@ -80,7 +83,7 @@ namespace EduMessage.Services
             //var writer = channel.Writer;
             //try
             //{
-                
+
             //    foreach (var ch in message)
             //    {
             //        var result = writer.WriteAsync(ch);
@@ -90,7 +93,7 @@ namespace EduMessage.Services
 
             //    var reader = channel.Reader;
 
-                
+
             //}
             //catch (Exception e)
             //{

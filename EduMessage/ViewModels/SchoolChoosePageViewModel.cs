@@ -192,7 +192,7 @@ namespace EduMessage.ViewModels
         [Command(CanExecuteMethod = nameof(IsButtonsEnabled))]
         private void GoToLogin()
         {
-            new Navigator().Navigate(typeof(BaseLoginPage), null, new SlideNavigationTransitionInfo { Effect = SlideNavigationTransitionEffect.FromRight });
+            new Navigator().Navigate(typeof(BaseLoginPage), null, new SlideNavigationTransitionInfo { Effect = SlideNavigationTransitionEffect.FromRight }, FrameType.LoginFrame);
         }
     }
 }

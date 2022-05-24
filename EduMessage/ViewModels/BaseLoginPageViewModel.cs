@@ -51,7 +51,10 @@ namespace EduMessage.ViewModels
                 if (result.Contains("New device"))
                 {
                     var email = result.Split('=')[1];
-                    new Navigator().Navigate(typeof(EmailConfirmingPage), new KeyValuePair<string,bool>(email,true), new SlideNavigationTransitionInfo(), FrameType.LoginFrame);
+                    new Navigator().Navigate(typeof(EmailConfirmingPage),
+                        new KeyValuePair<string,bool>(email,true),
+                        new SlideNavigationTransitionInfo{Effect = SlideNavigationTransitionEffect.FromLeft},
+                        FrameType.LoginFrame);
                     return;
                 }
                 ErrorText = result;

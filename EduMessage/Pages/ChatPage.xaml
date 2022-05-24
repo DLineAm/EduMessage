@@ -375,7 +375,8 @@
                         <DataTemplate x:DataType="models:Attachment">
                             <Image Height="80"
                                    Width="80"
-                                   Source="{Binding ImagePath}"></Image>
+                                   Source="{Binding ImagePath}"
+                                   ui:FrameworkElementExtensions.Cursor="Hand"></Image>
                         </DataTemplate>
                     </ListView.ItemTemplate>
                 </ListView>
