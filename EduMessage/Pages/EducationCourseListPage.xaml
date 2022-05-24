@@ -222,7 +222,7 @@
             </Grid>
         </Border>
 
-        <resources:BaseContentDialog Grid.ColumnSpan="2"
+        <ContentDialog Grid.ColumnSpan="2"
                            Title="Добавление курса"
                            PrimaryButtonText="Применить"
                            Closing="CourseAddDialog_OnClosing"
@@ -318,7 +318,7 @@
                 </Grid>
 
             </StackPanel>
-        </resources:BaseContentDialog>
+        </ContentDialog>
 
     </Grid>
 </Page>

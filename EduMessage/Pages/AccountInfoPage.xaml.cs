@@ -20,6 +20,8 @@ namespace EduMessage.Pages
     /// </summary>
     public sealed partial class AccountInfoPage : Page, IEventSubscriber<DialogResultChanged>
     {
+        private bool _contentDialogCompleted;
+
         public AccountInfoPage()
         {
             this.InitializeComponent();
@@ -50,8 +52,8 @@ namespace EduMessage.Pages
 
         private async void DeleteButton_OnClick(object sender, RoutedEventArgs e)
         {
-            ContentDialog.Completed = false;
-            while (!ContentDialog.Completed)
+            _contentDialogCompleted = false;
+            while (!_contentDialogCompleted)
             {
                 await ContentDialog.ShowAsync();
             }
@@ -59,7 +61,7 @@ namespace EduMessage.Pages
 
         private void ContentDialog_OnSecondaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
         {
-            ContentDialog.Completed = true;
+            _contentDialogCompleted = true;
         }
 
         private void ContentDialog_OnPrimaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
@@ -69,7 +71,7 @@ namespace EduMessage.Pages
 
         public void OnEvent(DialogResultChanged eventData)
         {
-            ContentDialog.Completed = eventData.Result;
+            _contentDialogCompleted = eventData.Result;
             if (eventData.Result)
             {
                 ContentDialog.Hide();

@@ -23,6 +23,8 @@ namespace EduMessage.Pages
         private bool _isPageLoaded;
         private bool _isCancelButtonPressed;
         private bool _isSuccessCourseAddOrChange;
+        private bool _contentDialogCompleted;
+
         public EducationCourseListPage()
         {
             this.InitializeComponent();
@@ -63,8 +65,8 @@ namespace EduMessage.Pages
 
             try
             {
-                CourseAddDialog.Completed = false;
-                while (!CourseAddDialog.Completed)
+                _contentDialogCompleted = false;
+                while (!_contentDialogCompleted)
                 {
                     await CourseAddDialog.ShowAsync();
                 }
@@ -95,12 +97,12 @@ namespace EduMessage.Pages
 
         private void CourseAddDialog_OnSecondaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
         {
-            CourseAddDialog.Completed = true;
+            _contentDialogCompleted = true;
         }
 
         public void OnEvent(CourseAddedOrChangedEvent eventData)
         {
-            CourseAddDialog.Completed = eventData.IsSuccess;
+            _contentDialogCompleted = eventData.IsSuccess;
             if (eventData.IsSuccess)
             {
                 CourseAddDialog.Hide();

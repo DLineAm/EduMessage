@@ -15,6 +15,26 @@
             <RowDefinition Height="auto"/>
             <RowDefinition/>
         </Grid.RowDefinitions>
+
+        <ContentDialog x:Name="ContentDialog"
+                       Title="Подтверждение удаления аккаунта"
+                       PrimaryButtonText="Подтвердить"
+                       SecondaryButtonText="Отмена"
+                       SecondaryButtonClick="ContentDialog_OnSecondaryButtonClick"
+                       PrimaryButtonClick="ContentDialog_OnPrimaryButtonClick"
+                       Grid.RowSpan="2"
+                       PrimaryButtonCommand="{Binding DeleteAccountCommand}">
+            <StackPanel>
+                <PasswordBox Header="Пароль"
+                             Password="{Binding Password, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"></PasswordBox>
+                <PasswordBox Header="Повтор пароля"
+                             Margin="0 12"
+                             Password="{Binding RepeatPassword, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"></PasswordBox>
+                <TextBlock Text="{Binding ErrorText}"
+                           Foreground="Red"></TextBlock>
+            </StackPanel>
+        </ContentDialog>
+
         <StackPanel Orientation="Horizontal"
                     Margin="0,12">
             <Button Style="{StaticResource NavigationBackButtonNormalStyle}"
@@ -301,23 +321,7 @@
             </Grid>
         </ScrollViewer>
 
-        <resources:BaseContentDialog x:Name="ContentDialog"
-                       Title="Подтверждение удаления аккаунта"
-                       PrimaryButtonText="Подтвердить"
-                       SecondaryButtonText="Отмена"
-                       SecondaryButtonClick="ContentDialog_OnSecondaryButtonClick"
-                       PrimaryButtonClick="ContentDialog_OnPrimaryButtonClick"
-                       PrimaryButtonCommand="{Binding DeleteAccountCommand}">
-            <StackPanel>
-                <PasswordBox Header="Пароль"
-                         Password="{Binding Password, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"></PasswordBox>
-                <PasswordBox Header="Повтор пароля"
-                         Margin="0 12"
-                         Password="{Binding RepeatPassword, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"></PasswordBox>
-                <TextBlock Text="{Binding ErrorText}"
-                           Foreground="Red"></TextBlock>
-            </StackPanel>
-        </resources:BaseContentDialog>
+        
 
     </Grid>
 </Page>
