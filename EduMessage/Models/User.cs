@@ -21,7 +21,7 @@ namespace SignalIRServerTest.Models
         public string MiddleName { get; set; }
         public string LastName { get; set; }
         public string Login { get; set; }
-        public string Password { get; set; }
+        //public string Password { get; set; }
         public string Email { get; set; }
         public long? Phone { get; set; }
         public string Address { get; set; }
@@ -31,6 +31,7 @@ namespace SignalIRServerTest.Models
         public int? IdGroup { get; set; }
         public int IdRole { get; set; }
         public byte[] Image { get; set; }
+        public bool Deleted { get; set; }
 
         public virtual City IdCityNavigation { get; set; }
         public virtual EducationForm IdEducationFormNavigation { get; set; }

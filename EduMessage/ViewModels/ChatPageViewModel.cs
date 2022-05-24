@@ -20,6 +20,7 @@ using Windows.Storage.Pickers;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media.Animation;
+using Newtonsoft.Json;
 
 
 namespace EduMessage.ViewModels
@@ -55,7 +56,7 @@ namespace EduMessage.ViewModels
             try
             {
                 var response = (await (App.Address + $"Message/Id=" + conversation.IdConversation.ToString())
-                        .SendRequestAsync("", HttpRequestType.Get, App.Account.GetJwt()))
+                        .SendRequestAsync<string>(null, HttpRequestType.Get, App.Account.GetJwt()))
                     .DeserializeJson<HashSet<MessageAttachment>>()
                     .OrderBy(ma => ma.IdMessageNavigation.SendDate);
 
@@ -104,7 +105,7 @@ namespace EduMessage.ViewModels
                     var attachment = messageAttachment.IdAttachmentNavigation;
                     if (attachment != null)
                     {
-                        attachment.ImagePath = await attachment.Data.CreateBitmap();
+                        await attachment.SplitAndGetImage();
                         formattedMessage.Attachments.Add(attachment);
                     }
                 }
@@ -214,28 +215,50 @@ namespace EduMessage.ViewModels
                     }
                 }
             }
-            _context?.Post(_ =>
-            {
-                var groupParameter = formattedMessage.Message.SendDate.Date;
-                MessageList foundMessageGroup = null;
-                foreach (var m in Messages)
-                {
-                    if ((DateTime)m.Key == groupParameter)
-                    {
-                        foundMessageGroup = m;
-                        break;
-                    }
-                }
 
-                if (foundMessageGroup == null)
+            if (App.OpenedWindows > 1)
+            {
+                if (_context != null)
                 {
-                    Messages.Add(new(new[] { formattedMessage }) { Key = groupParameter });
-                    NoResultsVisualVisibility = Visibility.Collapsed;
+                    _context.Post(_ => { AddMessageBase(formattedMessage); }, null);
                     return;
                 }
-                foundMessageGroup.Add(formattedMessage);
+                AddMessageBase(formattedMessage);
+                return;
+            }
+           
+            AddMessageBase(formattedMessage);
+        }
+
+        private void AddMessageBase(FormattedMessage formattedMessage)
+        {
+            var groupParameter = formattedMessage.Message.SendDate.Date;
+            if (Messages.Count == 0)
+            {
+                Messages.Add(new(new[] {formattedMessage}) {Key = groupParameter});
                 NoResultsVisualVisibility = Visibility.Collapsed;
-            }, null);
+                return;
+            }
+
+            MessageList foundMessageGroup = null;
+            foreach (var m in Messages)
+            {
+                if ((DateTime) m.Key == groupParameter)
+                {
+                    foundMessageGroup = m;
+                    break;
+                }
+            }
+
+            if (foundMessageGroup == null)
+            {
+                Messages.Add(new(new[] {formattedMessage}) {Key = groupParameter});
+                NoResultsVisualVisibility = Visibility.Collapsed;
+                return;
+            }
+
+            foundMessageGroup.Add(formattedMessage);
+            NoResultsVisualVisibility = Visibility.Collapsed;
         }
 
         [Command]
@@ -401,7 +424,16 @@ namespace EduMessage.ViewModels
 
                 AddToMessagesWithGrouping(formattedMessage);
 
-                await _chat.SendMessage("SendToUser", _user.Id, list);
+                var addResponse = (await (App.Address + "Message/AddMessage")
+                    .SendRequestAsync(list, HttpRequestType.Post, App.Account.GetJwt()))
+                    .DeserializeJson<int>();
+
+                if (addResponse != -1)
+                {
+                    await _chat.SendMessage("SendToUser", addResponse, _user.Id);
+                }
+
+                //await _chat.SendMessage("SendToUser", json, _user.Id);
 
                 Message = string.Empty;
                 MessageAttachments.Clear();

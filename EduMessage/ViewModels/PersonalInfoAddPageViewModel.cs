@@ -36,7 +36,7 @@ namespace EduMessage.ViewModels
             {
                 await SetLoaderVisibility(Visibility.Visible);
                 var result = (await (App.Address + "Login/Cities")
-                    .SendRequestAsync("", HttpRequestType.Get))
+                    .SendRequestAsync<string>(null, HttpRequestType.Get))
                     .DeserializeJson<List<City>>();
 
                 Cities = result;
@@ -81,7 +81,7 @@ namespace EduMessage.ViewModels
                 }
 
                 var phoneValidateResult = (await (App.Address + $"Login/Validate.phone={Phone}")
-                        .SendRequestAsync("", HttpRequestType.Get))
+                        .SendRequestAsync<string>(null, HttpRequestType.Get))
                     .DeserializeJson<bool>();
 
                 if (!phoneValidateResult)

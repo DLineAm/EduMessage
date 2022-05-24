@@ -48,7 +48,7 @@ namespace EduMessage.ViewModels
             {
                 await SetLoaderVisibility(Visibility.Visible);
                 var responseString = await (App.Address + $"Login/ValidateCode.email={_email}.emailCode={Code}")
-                    .SendRequestAsync("", HttpRequestType.Get);
+                    .SendRequestAsync<string>(null, HttpRequestType.Get);
 
                 if (string.IsNullOrEmpty(responseString))
                 {
@@ -88,7 +88,7 @@ namespace EduMessage.ViewModels
                     return;
                 }
 
-                App.Account.UserBuilder.AddString("_email", _email);
+                App.Account.UserBuilder.AddString("email", _email);
                 new Navigator().Navigate(typeof(PersonalInfoAddPage),
                     null
                     , new SlideNavigationTransitionInfo {Effect = SlideNavigationTransitionEffect.FromLeft}

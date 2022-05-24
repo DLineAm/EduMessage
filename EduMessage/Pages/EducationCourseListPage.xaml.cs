@@ -63,7 +63,11 @@ namespace EduMessage.Pages
 
             try
             {
-                await CourseAddDialog.ShowAsync();
+                CourseAddDialog.Completed = false;
+                while (!CourseAddDialog.Completed)
+                {
+                    await CourseAddDialog.ShowAsync();
+                }
             }
 #pragma warning disable CS0168 // Переменная "e" объявлена, но ни разу не использована.
             catch (Exception e)
@@ -91,12 +95,33 @@ namespace EduMessage.Pages
 
         private void CourseAddDialog_OnSecondaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
         {
-            _isCancelButtonPressed = true;
+            CourseAddDialog.Completed = true;
         }
 
         public void OnEvent(CourseAddedOrChangedEvent eventData)
         {
-            _isSuccessCourseAddOrChange = eventData.IsSuccess;
+            CourseAddDialog.Completed = eventData.IsSuccess;
+            if (eventData.IsSuccess)
+            {
+                CourseAddDialog.Hide();
+            }
         }
+
+        //private async void AddCourseButton_OnClick(object sender, RoutedEventArgs e)
+        //{
+        //    await CourseAddDialog.ShowAsync();
+
+        //    try
+        //    {
+        //        CourseAddDialog.Completed = false;
+        //        while (!CourseAddDialog.Completed)
+        //        {
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+
+        //    }
+        //}
     }
 }

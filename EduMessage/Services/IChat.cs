@@ -11,7 +11,10 @@ namespace EduMessage.Services
         Task OpenConnection();
         Task CloseConnection();
         Task SendMessage<TMessage>(string methodName, TMessage message);
-        Task SendMessage<TMessage>(string methodName, int recipientId, TMessage message);
+        //Task SendMessage<TMessage>(string methodName, int recipientId, TMessage message);
+        Task SendMessage<TMessage>(string methodName, TMessage message, int recipientId);
+        Task StreamAsync<TMessage>(string methodName, TMessage message, int recipientId);
+        Task StreamAsChannelAsync(string methodName, string message, int recipientId);
 
     }
 }

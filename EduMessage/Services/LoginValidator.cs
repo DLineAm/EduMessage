@@ -12,7 +12,7 @@
             try
             {
                 var response = (App.Address + $"Login/Validate.login={value}")
-                    .SendRequestAsync("", HttpRequestType.Get).Result
+                    .SendRequestAsync<string>(null, HttpRequestType.Get).Result
                     .DeserializeJson<bool>();
 
                 if (!response)

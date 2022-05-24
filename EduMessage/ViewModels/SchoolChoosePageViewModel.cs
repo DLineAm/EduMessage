@@ -90,25 +90,25 @@ namespace EduMessage.ViewModels
 
 
                 var groups = (await (App.Address + "Login/Groups")
-                    .SendRequestAsync("", HttpRequestType.Get))
+                    .SendRequestAsync<string>(null, HttpRequestType.Get))
                     .DeserializeJson<List<Group>>();
 
                 Groups = groups;
 
                 var specialities = (await (App.Address + "Login/Specialities")
-                    .SendRequestAsync("", HttpRequestType.Get))
+                    .SendRequestAsync<string>(null, HttpRequestType.Get))
                     .DeserializeJson<List<Speciality>>();
 
                 Spetialities = specialities;
 
                 var forms = (await (App.Address + "Login/EducationForms")
-                    .SendRequestAsync("", HttpRequestType.Get))
+                    .SendRequestAsync<string>(null, HttpRequestType.Get))
                     .DeserializeJson<List<EducationForm>>();
 
                 EducationForms = forms;
 
                 var roles = (await (App.Address + "Login/Roles")
-                    .SendRequestAsync("", HttpRequestType.Get))
+                    .SendRequestAsync<string>(null, HttpRequestType.Get))
                     .DeserializeJson<List<Role>>();
 
                 Roles = roles;
@@ -129,7 +129,7 @@ namespace EduMessage.ViewModels
             try
             {
                 var result = (await (App.Address + $"Login/Specialities.idGroup={Group.Id}")
-                    .SendRequestAsync("", HttpRequestType.Get))
+                    .SendRequestAsync<string>(null, HttpRequestType.Get))
                     .DeserializeJson<Speciality>();
 
                 Speciality = result;

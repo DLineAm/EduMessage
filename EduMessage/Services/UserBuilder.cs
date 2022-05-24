@@ -1,4 +1,5 @@
-﻿using SignalIRServerTest;
+﻿using System.Collections.Generic;
+using SignalIRServerTest;
 using SignalIRServerTest.Models;
 
 namespace EduMessage.Services
@@ -6,6 +7,7 @@ namespace EduMessage.Services
     public class UserBuilder : IUserBuilder
     {
         private static User _user;
+        private static string _password;
 
         public UserBuilder()
         {
@@ -23,7 +25,7 @@ namespace EduMessage.Services
                     _user.Email = value;
                     break;
                 case "password":
-                    _user.Password = value;
+                    _password = value;
                     break;
                 case "person":
                     var names = value.Split(' ');
@@ -74,7 +76,7 @@ namespace EduMessage.Services
             {
                 if (string.IsNullOrWhiteSpace(_user.Login) ||
                     string.IsNullOrWhiteSpace(_user.Email) ||
-                    string.IsNullOrWhiteSpace(_user.Password) ||
+                    string.IsNullOrWhiteSpace(_password) ||
                     _user.IdRoleNavigation == null ||
                     _user.IdSchoolNavigation == null)
                 {
@@ -95,9 +97,9 @@ namespace EduMessage.Services
             }
         }
 
-        public User Build()
+        public KeyValuePair<User, string> Build()
         {
-            return _user;
+            return new KeyValuePair<User, string>(_user, _password);
         }
     }
 }

@@ -2,21 +2,13 @@
 using EduMessage.ViewModels;
 
 using MvvmGen.Events;
-using SignalIRServerTest.Models;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
 
-using Windows.Foundation;
-using Windows.Foundation.Collections;
+using SignalIRServerTest.Models;
+
+using System;
+
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 
 // Документацию по шаблону элемента "Пустая страница" см. по адресу https://go.microsoft.com/fwlink/?LinkId=234238
@@ -26,12 +18,14 @@ namespace EduMessage.Pages
     /// <summary>
     /// Пустая страница, которую можно использовать саму по себе или для перехода внутри фрейма.
     /// </summary>
-    public sealed partial class AccountInfoPage : Page
+    public sealed partial class AccountInfoPage : Page, IEventSubscriber<DialogResultChanged>
     {
         public AccountInfoPage()
         {
             this.InitializeComponent();
-            
+            var aggregator = ControlContainer.Get()
+                .Resolve<IEventAggregator>();
+            aggregator.RegisterSubscriber(this);
         }
 
         protected override async void OnNavigatedTo(NavigationEventArgs e)
@@ -52,6 +46,34 @@ namespace EduMessage.Pages
             this.DataContext = ViewModel;
         }
 
-        public AccountInfoViewModel ViewModel{ get; private set; }
+        public AccountInfoViewModel ViewModel { get; private set; }
+
+        private async void DeleteButton_OnClick(object sender, RoutedEventArgs e)
+        {
+            ContentDialog.Completed = false;
+            while (!ContentDialog.Completed)
+            {
+                await ContentDialog.ShowAsync();
+            }
+        }
+
+        private void ContentDialog_OnSecondaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
+        {
+            ContentDialog.Completed = true;
+        }
+
+        private void ContentDialog_OnPrimaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
+        {
+
+        }
+
+        public void OnEvent(DialogResultChanged eventData)
+        {
+            ContentDialog.Completed = eventData.Result;
+            if (eventData.Result)
+            {
+                ContentDialog.Hide();
+            }
+        }
     }
 }

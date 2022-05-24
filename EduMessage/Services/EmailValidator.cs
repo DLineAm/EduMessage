@@ -16,7 +16,7 @@ namespace EduMessage.Services
                 new MailAddress(value);
 
                 var response = ((App.Address + $"Login/Validate.email={value}")
-                    .SendRequestAsync("", HttpRequestType.Get).Result)
+                    .SendRequestAsync<string>(null, HttpRequestType.Get).Result)
                     .DeserializeJson<bool>();
 
                 if (!response)

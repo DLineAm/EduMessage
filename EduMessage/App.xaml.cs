@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Security.Cryptography;
 using System.Threading.Tasks;
 
 using Windows.ApplicationModel;
@@ -21,6 +22,7 @@ using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
+using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 
 namespace EduMessage
 {
@@ -104,7 +106,15 @@ namespace EduMessage
 
                         var chat = ControlContainer.Get()
                             .Resolve<IChat>();
-                        await chat.SendMessage("SendToUser", recipientId, list);
+
+                        var addResponse = (await (App.Address + "Message/AddMessage")
+                                .SendRequestAsync(list, HttpRequestType.Post, App.Account.GetJwt()))
+                            .DeserializeJson<int>();
+
+                        if (addResponse != -1)
+                        {
+                            await chat.SendMessage("SendToUser", addResponse, recipientId);
+                        }
 
                         var aggregator = ControlContainer.Get()
                             .Resolve<IEventAggregator>();
@@ -291,8 +301,10 @@ namespace EduMessage
         /// </summary>
         /// <param name="sender">Источник запроса приостановки.</param>
         /// <param name="e">Сведения о запросе приостановки.</param>
-        private void OnSuspending(object sender, SuspendingEventArgs e)
+        private async void OnSuspending(object sender, SuspendingEventArgs e)
         {
+            var chat = ControlContainer.Get().Resolve<IChat>();
+            await chat.CloseConnection();
             var deferral = e.SuspendingOperation.GetDeferral();
             //TODO: Сохранить состояние приложения и остановить все фоновые операции
             deferral.Complete();

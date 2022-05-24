@@ -34,6 +34,7 @@ namespace EduMessage.ViewModels
         [Property] private Visibility _noResultsFoundAnimationVisibility = Visibility.Collapsed;
         [Property] private Visibility _teacherInputVisibility;
         [Property] private GridLength _gridWidth;
+        [Property] private string _errorText;
 
         private bool _isCourseAddMode;
         private FormattedCourse _selectedCourse;
@@ -48,7 +49,7 @@ namespace EduMessage.ViewModels
             try
             {
                 var response = (await (App.Address + $"Education/Courses.SpecialityId={speciality.Id}")
-                    .SendRequestAsync("", HttpRequestType.Get, App.Account.GetJwt()))
+                    .SendRequestAsync<string>(null, HttpRequestType.Get, App.Account.GetJwt()))
                     .DeserializeJson<List<CourseAttachment>>();
 
                 Courses = new ObservableCollection<FormattedCourse>(await ConvertToFormattedCourse(response));
@@ -96,7 +97,7 @@ namespace EduMessage.ViewModels
                 {
                     Id = courseAttachment.Id,
                     Course = course,
-                    Attachments = attachments.ToList()
+                    Attachments = new ObservableCollection<Attachment>( attachments)
                 };
 
                 if (!attachments.Any())
@@ -146,7 +147,13 @@ namespace EduMessage.ViewModels
             _selectedCourse = course;
 
             Files.Clear();
-            course.Attachments?.ForEach(Files.Add);
+            if (course.Attachments != null)
+            {
+                foreach (var courseAttachment in course.Attachments)
+                {
+                    Files.Add(courseAttachment);
+                } 
+            }
 
             CourseTitle = educationCourse.Title;
             CourseDescription = educationCourse.Description;
@@ -157,9 +164,11 @@ namespace EduMessage.ViewModels
         [Command]
         private async void Apply()
         {
+            ErrorText = "";
             if (string.IsNullOrWhiteSpace(CourseTitle)
                 || string.IsNullOrWhiteSpace(CourseDescription))
             {
+                ErrorText = "Все поля должы быть заполнены!";
                 EventAggregator.Publish(new CourseAddedOrChangedEvent(false));
                 return;
             }
@@ -185,7 +194,6 @@ namespace EduMessage.ViewModels
             {
                 var courseToAdd = new CourseAttachment
                 {
-                    Id = _selectedCourse?.Id ?? 0,
                     IdCourse = course.Id,
                     IdCourseNavigation = course,
                     IdAttachmanentNavigation = attachment
@@ -224,16 +232,24 @@ namespace EduMessage.ViewModels
                     return;
                 }
 
-                var response = (await (App.Address + "Education/Courses.FromList")
+                var (courseId, attachmentIds) = (await (App.Address + "Education/Courses.FromList")
                         .SendRequestAsync(courses, HttpRequestType.Post, App.Account.GetJwt()))
-                    .DeserializeJson<KeyValuePair<int, List<CourseAttachment>>>();
+                    .DeserializeJson<KeyValuePair<int, List<int>>>();
 
-                if (response.Key != -1)
+                if (courseId != -1)
                 {
-                    course.Id = response.Key;
-
-                    List<FormattedCourse> formattedCourses = await ConvertToFormattedCourse(response.Value);
+                    course.Id = courseId;
+                    for (int i = 0; i < attachmentIds.Count; i++)
+                    {
+                        var attachmentId = attachmentIds[i];
+                        var courseAttachment = courses[i];
+                        courseAttachment.Id = attachmentId;
+                        courseAttachment.IdCourse = courseId;
+                    }
+                    List<FormattedCourse> formattedCourses = await ConvertToFormattedCourse(courses);
+#pragma warning disable HAA0603 // Delegate allocation from a method group
                     formattedCourses.ForEach(Courses.Add);
+#pragma warning restore HAA0603 // Delegate allocation from a method group
                 }
 
                 EventAggregator.Publish(new InAppNotificationShowing(Symbol.Accept, "Курс добавлен!"));
@@ -243,6 +259,7 @@ namespace EduMessage.ViewModels
             }
             catch (Exception e)
             {
+                ErrorText = "Не удалось добавить курс";
                 EventAggregator.Publish(new InAppNotificationShowing(Symbol.ClosePane, "Не удалось добавить курс!"));
                 EventAggregator.Publish(new CourseAddedOrChangedEvent(false));
                 EventAggregator.Publish(new LoaderVisibilityChanged(Visibility.Collapsed, string.Empty));
@@ -262,7 +279,7 @@ namespace EduMessage.ViewModels
                     {
                         _selectedCourse.Course.Title = CourseTitle;
                         _selectedCourse.Course.Description = CourseDescription;
-                        _selectedCourse.Attachments = Files.ToList();
+                        _selectedCourse.Attachments = new ObservableCollection<Attachment>(Files);
                     });
             }
         }
@@ -366,7 +383,7 @@ namespace EduMessage.ViewModels
             try
             {
                 var response = (await (App.Address + $"Education/Courses.id={course.Course.Id}")
-                        .SendRequestAsync("", HttpRequestType.Delete, App.Account.GetJwt()))
+                        .SendRequestAsync<string>(null, HttpRequestType.Delete, App.Account.GetJwt()))
                     .DeserializeJson<bool>();
 
                 if (response)

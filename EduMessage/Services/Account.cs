@@ -4,6 +4,7 @@ using SignalIRServerTest.Models;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
 using Windows.System.Profile;
@@ -43,7 +44,7 @@ namespace EduMessage.Services
                 _jwt = jwt as string;
 
                 var user = (await (App.Address + "Login/GetUser.ByToken")
-                    .SendRequestAsync("", HttpRequestType.Get, _jwt))
+                    .SendRequestAsync<string>(null, HttpRequestType.Get, _jwt))
                     .DeserializeJson<User>();
 
                 if (user == null)
@@ -112,7 +113,7 @@ namespace EduMessage.Services
 
 
                 var (user, token) = (await (App.Address + $"Login/Users.login={loginEmail}.password={password}")
-                        .SendRequestAsync("", HttpRequestType.Get))
+                        .SendRequestAsync<string>(null, HttpRequestType.Get))
                     .DeserializeJson<KeyValuePair<User, string>>();
                 if (user == null)
                 {
@@ -126,7 +127,7 @@ namespace EduMessage.Services
                 if (isDeviceNotExists)
                 {
                     var responseString = (await (App.Address + $"Login/Send.email={user.Email}")
-                        .SendRequestAsync("", HttpRequestType.Get))
+                        .SendRequestAsync<string>(null, HttpRequestType.Get))
                         .DeserializeJson<bool>();
                     if (!responseString)
                     {
@@ -164,13 +165,13 @@ namespace EduMessage.Services
                 throw new InvalidOperationException("Все поля пользователя должны быть заполнены");
             }
 
-            var user = builder.Build();
-            _user = user;
+            var pair = builder.Build();
+            _user = pair.Key;
 
             
 
             var (savedUserId, token) = (await (App.Address + "Login/Register")
-                    .SendRequestAsync(_user, HttpRequestType.Post))
+                    .SendRequestAsync(pair, HttpRequestType.Post))
                 .DeserializeJson<KeyValuePair<int, string>>();
 
             

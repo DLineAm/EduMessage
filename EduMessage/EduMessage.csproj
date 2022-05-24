@@ -289,6 +289,7 @@
     <Compile Include="Properties\XamlOneWayBindingModeByDefaultAttribute.cs" />
     <Compile Include="Properties\XamlTwoWayBindingModeByDefaultAttribute.cs" />
     <Compile Include="Models\Events\ReplySentEvent.cs" />
+    <Compile Include="Resources\BaseContentDialog.cs" />
     <Compile Include="Resources\LinkUserControl.xaml.cs">
       <DependentUpon>LinkUserControl.xaml</DependentUpon>
     </Compile>
@@ -521,6 +522,9 @@
     </PackageReference>
     <PackageReference Include="HtmlAgilityPack">
       <Version>1.11.42</Version>
+    </PackageReference>
+    <PackageReference Include="Microsoft.AspNetCore.Cryptography.KeyDerivation">
+      <Version>6.0.5</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.AspNetCore.SignalR.Client">
       <Version>6.0.3</Version>

@@ -2,22 +2,24 @@
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using Windows.Storage;
 using Windows.System;
 using EduMessage.Annotations;
 using EduMessage.Services;
 using Microsoft.Toolkit.Uwp.Helpers;
+using Newtonsoft.Json;
 
 namespace SignalIRServerTest.Models
 {
     public partial class Attachment : INotifyPropertyChanged
     {
         [JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         private object _imagePath;
 
         [JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public object ImagePath
         {
             get => _imagePath;
@@ -71,18 +73,6 @@ namespace SignalIRServerTest.Models
             ".docx" or ".doc" => 4,
             _ => 5
         };
-
-        //private async Task<object> SplitAndGetImage(string type, byte[] data)
-        //{
-        //    var list = type.Split(".");
-
-        //    if (list.Length == 1)
-        //    {
-        //        return await GetImage(type, data);
-        //    }
-
-        //    return await GetImage("." + list.Last(), data);
-        //}
 
         private async Task<object> GetImage(string type, byte[] data) => type switch
         {

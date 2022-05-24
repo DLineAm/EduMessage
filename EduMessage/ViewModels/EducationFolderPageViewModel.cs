@@ -26,7 +26,7 @@ namespace EduMessage.ViewModels
             try
             {
                 var response = (await (App.Address + "Login/Specialities")
-                    .SendRequestAsync("", HttpRequestType.Get))
+                    .SendRequestAsync<string>(null, HttpRequestType.Get))
                     .DeserializeJson<List<Speciality>>();
 
                 Specialities = response;

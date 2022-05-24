@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Threading.Channels;
 using System.Threading.Tasks;
 using Windows.UI.ViewManagement;
 using Microsoft.AspNetCore.SignalR.Client;
@@ -53,7 +56,7 @@ namespace EduMessage.Services
             await _connection.SendAsync(methodName, message);
         }
 
-        public async Task SendMessage<TMessage>(string methodName, int recipientId, TMessage message)
+        public async Task SendMessage<TMessage>(string methodName, TMessage message, int recipientId)
         {
             if (_connection.State != HubConnectionState.Connected)
             {
@@ -61,5 +64,52 @@ namespace EduMessage.Services
             }
             await _connection.SendAsync(methodName, message, recipientId);
         }
+
+        public async Task StreamAsync<TMessage>(string methodName, TMessage message, int recipientId)
+        {
+            var stream = _connection.StreamAsync<TMessage>(methodName, message, recipientId);
+        }
+
+        public async Task StreamAsChannelAsync(string methodName, string message, int recipientId)
+        {
+
+            //var list = ReadString(message);
+
+            //await _connection.SendAsync(methodName, list);
+            //var channel = Channel.CreateUnbounded<char>();
+            //var writer = channel.Writer;
+            //try
+            //{
+                
+            //    foreach (var ch in message)
+            //    {
+            //        var result = writer.WriteAsync(ch);
+            //    }
+
+            //    writer.Complete();
+
+            //    var reader = channel.Reader;
+
+                
+            //}
+            //catch (Exception e)
+            //{
+            //    Debug.WriteLine(e.Message);
+            //    writer.TryComplete(e);
+            //}
+            //var channel = await _connection.StreamAsChannelAsync<TMessage>(methodName, message, recipientId);
+            //while (channel.TryRead(out TMessage data))
+            //{
+            //    Debug.WriteLine("Received = " + data);
+            //}
+        }
+
+        //private async IAsyncEnumerable<char> ReadString(string value)
+        //{
+        //    foreach (var ch in value)
+        //    {
+        //        yield return ch;
+        //    }
+        //}
     }
 }

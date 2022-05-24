@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 
 using System.Globalization;
@@ -128,8 +129,24 @@ namespace EduMessage.Pages
         {
             base.OnNavigatedTo(e);
 
-            var parameter = e.Parameter as UserConversation;
-            var user = parameter.IdUserNavigation;
+            User user = null;
+            UserConversation conversation = null;
+
+            if (e.Parameter is UserConversation {IdUserNavigation: { } userFromConversation} userConversation)
+            {
+                conversation = userConversation;
+                user = userFromConversation;
+            }
+            else if (e.Parameter is List<UserConversation> conversations)
+            {
+                var firstConversation = conversations.FirstOrDefault();
+                conversation = firstConversation;
+                user = firstConversation?.IdUserNavigation;
+                //user = userFromParameter;
+            }
+
+            //var parameter = e.Parameter as UserConversation;
+            //var user = parameter.IdUserNavigation;
 
             if (user?.Login == _userLogin)
             {
@@ -142,7 +159,7 @@ namespace EduMessage.Pages
             var notificator = ControlContainer.Get().Resolve<INotificator>("Dialog");
             ViewModel = new ChatPageViewModel(notificator, aggregator);
             var chat = ControlContainer.Get().Resolve<IChat>();
-            await ViewModel.Initialize(parameter, chat);
+            await ViewModel.Initialize(conversation, chat);
             this.DataContext = ViewModel;
         }
 

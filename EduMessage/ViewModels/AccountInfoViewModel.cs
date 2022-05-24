@@ -32,6 +32,9 @@ namespace EduMessage.ViewModels
         [Property] private Visibility _studentInfoVisibility;
         [Property] private Visibility _otherUserInputVisibility = Visibility.Visible;
         [Property] private Visibility _backButtonVisibility = Visibility.Collapsed;
+        [Property] private string _password;
+        [Property] private string _repeatPassword;
+        [Property] private string _errorText;
 
         public async Task Initialize()
         {
@@ -80,6 +83,48 @@ namespace EduMessage.ViewModels
         }
 
         [Command]
+        private void Logout()
+        {
+            App.Account.UpdateToken(false);
+            EventAggregator.Publish(new UserExitedEvent());
+        }
+
+        [Command]
+        private async void DeleteAccount()
+        {
+            ErrorText = "";
+            if (string.IsNullOrWhiteSpace(Password) ||
+                string.IsNullOrWhiteSpace(RepeatPassword))
+            {
+                ErrorText = "Все поля должны быть заполнены!";
+                return;
+            }
+
+            if (Password != RepeatPassword)
+            {
+                ErrorText = "Пароли должны совпадать";
+                return;
+            }
+
+            var response = await (App.Address + $"User/id={App.Account.GetUser().Id}.password={Password}")
+                    .SendRequestAsync<string>(null, HttpRequestType.Delete, App.Account.GetJwt());
+            switch (response)
+            {
+                case "Exception":
+                    ErrorText = "При удалении пользователя произошла ошибка 500";
+                    break;
+                case "Not found by password" or "Not found by id":
+                    ErrorText = "Неверное имя пользователя и/или пароль";
+                    break;
+                default:
+                    EventAggregator.Publish(new DialogResultChanged(true));
+                    App.Account.UpdateToken(false);
+                    EventAggregator.Publish(new UserExitedEvent());
+                    break;
+            }
+        }
+
+        [Command]
         private async void PickImage()
         {
             StorageFile pickedFile = await PickSingleImageAsync();
@@ -119,4 +164,5 @@ namespace EduMessage.ViewModels
         }
     }
 
+    public record DialogResultChanged(bool Result);
 }

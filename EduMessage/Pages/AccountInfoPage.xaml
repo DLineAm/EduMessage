@@ -5,7 +5,8 @@
     xmlns:local="using:EduMessage.Pages"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:controls="using:Microsoft.UI.Xaml.Controls" xmlns:interactivity="using:Microsoft.Xaml.Interactivity" xmlns:core="using:Microsoft.Xaml.Interactions.Core" xmlns:services="using:EduMessage.Services"
-    xmlns:viewModels="using:EduMessage.ViewModels"
+    xmlns:viewModels="using:EduMessage.ViewModels" 
+    xmlns:resources="using:EduMessage.Resources"
     mc:Ignorable="d"
     d:DataContext="{d:DesignInstance Type=viewModels:AccountInfoViewModel}">
 
@@ -23,7 +24,7 @@
             <TextBlock Style="{StaticResource 26TitleTextBlock}"
                        Text="Аккаунт"/>
         </StackPanel>
-        
+
         <ScrollViewer Grid.Row="1">
             <Grid>
                 <Grid.RowDefinitions>
@@ -134,7 +135,7 @@
                                     <TextBlock Margin="12,0,0,0"
                                                Text="Личная информация"/>
                                 </StackPanel>
-                                
+
                                 <TextBlock Grid.Column="1"
                                     Text="Номер телефона, адрес"
                                    Margin="12,0,0,0"
@@ -244,15 +245,40 @@
                     </controls:Expander>
                 </StackPanel>
 
+                <Grid Grid.Row="2"
+      Margin="0,12,0,0"
+      Visibility="{Binding OtherUserInputVisibility}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition></ColumnDefinition>
+                        <ColumnDefinition></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="Вы можете удалить свой аккаунт"
+                   VerticalAlignment="Center"/>
+                        <HyperlinkButton Content="Удалить"
+                         Margin="0,0,0,-3">
+                            <interactivity:Interaction.Behaviors>
+                                <core:EventTriggerBehavior EventName="Tapped">
+                                    <services:OpenFlyoutAction/>
+                                </core:EventTriggerBehavior>
+                            </interactivity:Interaction.Behaviors>
+                            <FlyoutBase.AttachedFlyout>
+                                <Flyout>
+                                    <StackPanel>
+                                        <TextBlock Text="Вы действительно хотите удалить аккаунт?"
+                                   Style="{ThemeResource BaseTextBlockStyle}"/>
+                                        <Button Content="Да, удалить"
+                                                Click="DeleteButton_OnClick"
+                                Margin="0,12,0,0"/>
+                                    </StackPanel>
+                                </Flyout>
+                            </FlyoutBase.AttachedFlyout>
+                        </HyperlinkButton>
+                    </StackPanel>
 
-                <StackPanel Grid.Row="2"
-                    Orientation="Horizontal"
-                            Margin="0,12,0,0"
-                    Visibility="{Binding OtherUserInputVisibility}">
-                    <TextBlock Text="Вы можете удалить свой аккаунт"
-                       VerticalAlignment="Center"/>
-                    <HyperlinkButton Content="Удалить"
-                             Margin="0,0,0,-3">
+                    <HyperlinkButton HorizontalAlignment="Right"
+                                     Grid.Column="1"
+                                     Content="Выйти">
                         <interactivity:Interaction.Behaviors>
                             <core:EventTriggerBehavior EventName="Tapped">
                                 <services:OpenFlyoutAction/>
@@ -261,19 +287,37 @@
                         <FlyoutBase.AttachedFlyout>
                             <Flyout>
                                 <StackPanel>
-                                    <TextBlock Text="Вы действительно хотите удалить аккаунт?"
+                                    <TextBlock Text="Вы действительно хотите выйти из аккаунта?"
                                                Style="{ThemeResource BaseTextBlockStyle}"/>
-                                    <Button Content="Да, удалить"
-                                            Margin="0,12,0,0"/>
+                                    <Button Content="Да, выйти"
+                                            Margin="0,12,0,0"
+                                            Command="{Binding LogoutCommand}"/>
                                 </StackPanel>
                             </Flyout>
                         </FlyoutBase.AttachedFlyout>
                     </HyperlinkButton>
-                </StackPanel>
+                </Grid>
+
             </Grid>
         </ScrollViewer>
-        
-        
-        
+
+        <resources:BaseContentDialog x:Name="ContentDialog"
+                       Title="Подтверждение удаления аккаунта"
+                       PrimaryButtonText="Подтвердить"
+                       SecondaryButtonText="Отмена"
+                       SecondaryButtonClick="ContentDialog_OnSecondaryButtonClick"
+                       PrimaryButtonClick="ContentDialog_OnPrimaryButtonClick"
+                       PrimaryButtonCommand="{Binding DeleteAccountCommand}">
+            <StackPanel>
+                <PasswordBox Header="Пароль"
+                         Password="{Binding Password, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"></PasswordBox>
+                <PasswordBox Header="Повтор пароля"
+                         Margin="0 12"
+                         Password="{Binding RepeatPassword, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"></PasswordBox>
+                <TextBlock Text="{Binding ErrorText}"
+                           Foreground="Red"></TextBlock>
+            </StackPanel>
+        </resources:BaseContentDialog>
+
     </Grid>
 </Page>

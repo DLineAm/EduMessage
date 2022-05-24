@@ -174,7 +174,7 @@ namespace EduMessage.Pages
             await ViewModel.Initialize();
 
             var response = (await (App.Address + "Message/All")
-                    .SendRequestAsync("", HttpRequestType.Get, App.Account.GetJwt()))
+                    .SendRequestAsync<string>(null, HttpRequestType.Get, App.Account.GetJwt()))
                 .DeserializeJson<List<UserConversation>>();
             await GenerateNavItems(response);
         }

@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using System.Text.Json.Serialization;
 using EduMessage.Annotations;
+using Newtonsoft.Json;
 
 #nullable disable
 
@@ -35,13 +35,15 @@ namespace SignalIRServerTest.Models
         public int? IdAttachments { get; set; }
         public int IdUser { get; set; }
         public int? IdRecipient { get; set; }
-        public bool IsChanged { get; set; }
         public int? IdConversation { get; set; }
+        public bool IsChanged { get; set; }
 
         public virtual Conversation IdConversationNavigation { get; set; }
         public virtual User IdRecipientNavigation { get; set; }
         public virtual User IdUserNavigation { get; set; }
+
         [JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public virtual ICollection<MessageAttachment> MessageAttachments { get; set; }
 
         public event PropertyChangedEventHandler PropertyChanged;

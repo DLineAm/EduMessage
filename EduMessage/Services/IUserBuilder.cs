@@ -1,4 +1,5 @@
-﻿using SignalIRServerTest;
+﻿using System.Collections.Generic;
+using SignalIRServerTest;
 using SignalIRServerTest.Models;
 
 namespace EduMessage.Services
@@ -8,6 +9,6 @@ namespace EduMessage.Services
         IUserBuilder AddString(string propName, string value);
         IUserBuilder AddObject(object value);
         bool UserInvalidate();
-        User Build();
+        KeyValuePair<User, string> Build();
     }
 }

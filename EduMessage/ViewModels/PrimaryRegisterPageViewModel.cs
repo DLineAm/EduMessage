@@ -120,7 +120,7 @@ namespace EduMessage.ViewModels
             try
             {
                 var responseString = await (App.Address + $"Login/Send.email={Email}")
-                    .SendRequestAsync("", HttpRequestType.Get);
+                    .SendRequestAsync<string>(null, HttpRequestType.Get);
 
                 if (string.IsNullOrEmpty(responseString) ||
                     !bool.TryParse(responseString, out var response) ||

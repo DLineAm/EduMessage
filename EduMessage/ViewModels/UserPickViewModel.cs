@@ -31,19 +31,19 @@ namespace EduMessage.ViewModels
         {
             try
             {
-                var userResponse = (await (App.Address + "User/All").SendRequestAsync("", HttpRequestType.Get, App.Account.GetJwt()))
+                var userResponse = (await (App.Address + "User/All").SendRequestAsync<string>(null, HttpRequestType.Get, App.Account.GetJwt()))
                     .DeserializeJson<List<User>>();
 
                 Users = userResponse;
 
                 UpdateNoResultsVisibility(Users.Count);
 
-                var schoolResponse = (await (App.Address + "Login/Schools").SendRequestAsync("", HttpRequestType.Get, App.Account.GetJwt()))
+                var schoolResponse = (await (App.Address + "Login/Schools").SendRequestAsync<string>(null, HttpRequestType.Get, App.Account.GetJwt()))
                     .DeserializeJson<List<School>>();
 
                 Schools = schoolResponse;
 
-                var roleResponse = (await (App.Address + "Login/Roles").SendRequestAsync("", HttpRequestType.Get))
+                var roleResponse = (await (App.Address + "Login/Roles").SendRequestAsync<string>(null, HttpRequestType.Get))
                     .DeserializeJson<List<Role>>();
 
                 roleResponse.Insert(0, new Role { Id = -1, Title = "Все роли" });
@@ -70,7 +70,7 @@ namespace EduMessage.ViewModels
             try
             {
                 var response =
-                    (await (App.Address + $"Login/Schools.searchText={SchoolSearchText}").SendRequestAsync("",
+                    (await (App.Address + $"Login/Schools.searchText={SchoolSearchText}").SendRequestAsync<string>(null,
                         HttpRequestType.Get)).DeserializeJson<List<School>>();
 
                 Schools = response;
@@ -96,7 +96,7 @@ namespace EduMessage.ViewModels
             try
             {
                 var fullName = FullName ?? @"""";
-                var userResponse = (await (App.Address + $"User/All.schoolId={school.Id}.roleId={Role.Id}.fullName={fullName}").SendRequestAsync("", HttpRequestType.Get, App.Account.GetJwt()))
+                var userResponse = (await (App.Address + $"User/All.schoolId={school.Id}.roleId={Role.Id}.fullName={fullName}").SendRequestAsync<string>(null, HttpRequestType.Get, App.Account.GetJwt()))
                         .DeserializeJson<List<User>>();
 
                 Users = userResponse;
@@ -132,18 +132,18 @@ namespace EduMessage.ViewModels
 
             try
             {
-                var foundConversations = (await (App.Address + @$"FormattedMessageContent/idUser={selectedUser.Id}&title=""")
-                        .SendRequestAsync("", HttpRequestType.Get, App.Account.GetJwt()))
+                var foundConversations = (await (App.Address + @$"Message/idUser={selectedUser.Id}&title=""")
+                        .SendRequestAsync<string>(null, HttpRequestType.Get, App.Account.GetJwt()))
                     .DeserializeJson<List<UserConversation>>();
 
-                if (foundConversations != null)
+                if (foundConversations != null && foundConversations.Count != 0)
                 {
-                    StartChatNavigation(foundConversations, selectedUser, false);
+                    StartChatNavigation(foundConversations, false);
                     return;
                 }
 
                 var response =
-                    (await (App.Address + "FormattedMessageContent/Add").SendRequestAsync(conversations, HttpRequestType.Post,
+                    (await (App.Address + "Message/Add").SendRequestAsync(conversations, HttpRequestType.Post,
                         App.Account.GetJwt(), isLoopHandleIgnore: true))
                     .DeserializeJson<KeyValuePair<int, List<int>>>();
                 if (response.Key == -1)
@@ -170,7 +170,7 @@ namespace EduMessage.ViewModels
 
                 conversations.Remove(toRemove);
 
-                StartChatNavigation(conversations, selectedUser);
+                StartChatNavigation(conversations);
             }
 #pragma warning disable CS0168 // Переменная "e" объявлена, но ни разу не использована.
             catch (Exception e)
@@ -180,13 +180,13 @@ namespace EduMessage.ViewModels
             }
         }
 
-        private void StartChatNavigation(List<UserConversation> conversations, User selectedUser, bool notificateNewConversations = true)
+        private void StartChatNavigation(List<UserConversation> conversations,bool notificateNewConversations = true)
         {
             if (notificateNewConversations)
             {
                 EventAggregator.Publish(new ConversationGot(conversations));
             }
-            new Navigator().Navigate(typeof(ChatPage), selectedUser, new DrillInNavigationTransitionInfo(), FrameType.MenuFrame);
+            new Navigator().Navigate(typeof(ChatPage), conversations, new DrillInNavigationTransitionInfo(), FrameType.MenuFrame);
         }
     }
 }

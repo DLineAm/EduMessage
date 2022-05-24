@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -14,7 +15,7 @@ namespace EduMessage.ViewModels
         public int Id { get; set; }
         public Course Course { get; set; }
 
-        public List<Attachment> Attachments
+        public ObservableCollection<Attachment> Attachments
         {
             get => _attachments;
             set
@@ -26,7 +27,7 @@ namespace EduMessage.ViewModels
         }
 
         private Visibility _filesInfoVisibility;
-        private List<Attachment> _attachments;
+        private ObservableCollection<Attachment> _attachments;
 
         private void ChangeFileInfoVisibility()
         {

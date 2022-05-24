@@ -364,7 +364,7 @@
 
 
                 <ListView Grid.Row="1"
-                          ItemsSource="{Binding Messages, Converter={StaticResource MessageConverter}}"
+                          ItemsSource="{Binding Messages, Converter={StaticResource MessageConverter}, UpdateSourceTrigger=PropertyChanged}"
                           Margin="0 12">
                     <ListView.ItemsPanel>
                         <ItemsPanelTemplate>

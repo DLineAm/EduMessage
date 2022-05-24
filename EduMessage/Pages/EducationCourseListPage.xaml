@@ -15,6 +15,7 @@
     xmlns:services="using:EduMessage.Services"
     xmlns:models="using:SignalIRServerTest.Models"
     xmlns:utils="using:EduMessage.Utils" 
+    xmlns:resources="using:EduMessage.Resources"
     x:Name="window"
     Loaded="Page_Loaded">
     <Page.Resources>
@@ -221,16 +222,19 @@
             </Grid>
         </Border>
 
-        <ContentDialog Grid.ColumnSpan="2"
-                       Title="Добавление курса"
-                       PrimaryButtonText="Применить"
-                       Closing="CourseAddDialog_OnClosing"
-                       PrimaryButtonCommand="{Binding ApplyCommand}"
-                       PrimaryButtonClick="CourseAddDialog_OnPrimaryButtonClick"
-                       SecondaryButtonClick="CourseAddDialog_OnSecondaryButtonClick"
-                       SecondaryButtonText="Отмена"
-                       x:Name="CourseAddDialog">
+        <resources:BaseContentDialog Grid.ColumnSpan="2"
+                           Title="Добавление курса"
+                           PrimaryButtonText="Применить"
+                           Closing="CourseAddDialog_OnClosing"
+                           PrimaryButtonCommand="{Binding ApplyCommand}"
+                           PrimaryButtonClick="CourseAddDialog_OnPrimaryButtonClick"
+                           SecondaryButtonClick="CourseAddDialog_OnSecondaryButtonClick"
+                           SecondaryButtonText="Отмена"
+                           x:Name="CourseAddDialog">
             <StackPanel Margin="0,12,0,0">
+                <TextBlock Text="{Binding ErrorText}"
+                           Foreground="Red"
+                           Margin="0 0 0 12"></TextBlock>
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Text="Название"/>
                     <TextBox Width="400"
@@ -314,7 +318,7 @@
                 </Grid>
 
             </StackPanel>
-        </ContentDialog>
+        </resources:BaseContentDialog>
 
     </Grid>
 </Page>
