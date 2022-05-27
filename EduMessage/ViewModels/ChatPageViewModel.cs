@@ -20,6 +20,8 @@ using Windows.Storage.Pickers;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media.Animation;
+using Mapster;
+using MapsterMapper;
 using Newtonsoft.Json;
 
 
@@ -28,6 +30,7 @@ namespace EduMessage.ViewModels
     [ViewModel]
     [Inject(typeof(IEventAggregator))]
     [Inject(typeof(INotificator))]
+    [Inject(typeof(IMapper))]
     public partial class ChatPageViewModel : IEventSubscriber<ReplySentEvent>
     {
         [Property] private User _user;
@@ -60,27 +63,42 @@ namespace EduMessage.ViewModels
                     .DeserializeJson<HashSet<MessageAttachment>>()
                     .OrderBy(ma => ma.IdMessageNavigation.SendDate);
 
-                var alreadyExistedMessageIds = new List<int>();
-                var messages = response.Select(messageAttachment => messageAttachment.IdMessageNavigation).ToList();
+                var config = ControlContainer.Get().Resolve<TypeAdapterConfig>();
 
-                foreach (var message in messages)
+                var groupedMessages = response.GroupBy(m => m.IdMessage);
+
+                foreach (var messageAttachment in groupedMessages)
                 {
-                    if (alreadyExistedMessageIds.Any(m => m == message.Id))
-                    {
-                        continue;
-                    }
-                    var attachments = response.Where(m => m.IdMessage == message.Id)
-                        .Select(m => m.IdAttachmentNavigation);
-
-                    var enumerable = attachments as Attachment[] ?? attachments.ToArray();
-                    await enumerable.WriteAttachmentImagePath();
-
-                    var formattedMessage = new FormattedMessage { Message = message, Attachments = new HashSet<Attachment>(enumerable) };
-                    alreadyExistedMessageIds.Add(message.Id);
-
-                    _context = SynchronizationContext.Current;
+                    var key = messageAttachment.Key;
+                    var messages = response.Where(m => m.IdMessage == key).ToList();
+                    var formattedMessage = messages.Adapt<FormattedMessage>(config);
+                    await formattedMessage.Attachments.WriteAttachmentImagePath();
                     AddToMessagesWithGrouping(formattedMessage);
                 }
+
+                //var formattedMessages = response.Adapt<FormattedMessage>(config);
+
+                //var alreadyExistedMessageIds = new List<int>();
+                //var messages = response.Select(messageAttachment => messageAttachment.IdMessageNavigation).ToList();
+
+                //foreach (var message in messages)
+                //{
+                //    if (alreadyExistedMessageIds.Any(m => m == message.Id))
+                //    {
+                //        continue;
+                //    }
+                //    var attachments = response.Where(m => m.IdMessage == message.Id)
+                //        .Select(m => m.IdAttachmentNavigation);
+
+                //    var enumerable = attachments as Attachment[] ?? attachments.ToArray();
+                //    await enumerable.WriteAttachmentImagePath();
+
+                //    var formattedMessage = new FormattedMessage { Message = message, Attachments = new HashSet<Attachment>(enumerable) };
+                //    alreadyExistedMessageIds.Add(message.Id);
+
+                //    _context = SynchronizationContext.Current;
+                //    AddToMessagesWithGrouping(formattedMessage);
+                //}
 
 
             }
@@ -120,14 +138,20 @@ namespace EduMessage.ViewModels
 
             _chat.SetOnMethod<int>("ReceiveDeletedMessage", messageId =>
             {
+                var messagesToDelete = new List<MessageList>();
                 foreach (var messageList in Messages)
                 {
                     var formattedMessage = messageList.FirstOrDefault(m => m.Message.Id == messageId);
                     messageList.Remove(formattedMessage);
                     if (!messageList.Any())
                     {
-                        Messages.Remove(messageList);
+                        messagesToDelete.Add(messageList);
                     }
+                }
+
+                if (messagesToDelete.Count != 0)
+                {
+                    messagesToDelete.ForEach(m => Messages.Remove(m));
                 }
             });
 
@@ -172,33 +196,11 @@ namespace EduMessage.ViewModels
                 return;
             }
 
-            var result = new List<Attachment>();
-
-            for (int i = 0; i < files.Count; i++)
-            {
-                StorageFile file = files[i];
-                var data = await FileIO.ReadBufferAsync(file);
-                var title = file.Name;
-
-                await Task.Delay(TimeSpan.FromMilliseconds(1));
-
-                var attachment = new Attachment
-                {
-                    Title = title,
-                    Data = data.ToArray()
-                };
-
-                attachment.IdType = attachment.ConvertFileType(file.FileType);
-
-                result.Add(attachment);
-            }
-
-            await result.WriteAttachmentImagePath();
+            var result = await files.CreateAttachments();
 
             result.ForEach(MessageAttachments.Add);
             UpdateAttachmentsListVisibility();
         }
-
 
         private void AddToMessagesWithGrouping(FormattedMessage formattedMessage, bool checkForExist = false)
         {

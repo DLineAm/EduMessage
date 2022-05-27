@@ -367,16 +367,18 @@ namespace EduMessage.ViewModels
         [Command]
         private void InitializeAddCourseDialog()
         {
-            _selectedCourse = null;
-            _isCourseAddMode = true;
+            //_selectedCourse = null;
+            //_isCourseAddMode = true;
 
-            Files.Clear();
-            CourseTitle = string.Empty;
-            CourseDescription = string.Empty;
+            //Files.Clear();
+            //CourseTitle = string.Empty;
+            //CourseDescription = string.Empty;
 
-            IsClearButtonEnabled = false;
+            //IsClearButtonEnabled = false;
 
-            EventAggregator.Publish(new CourseDialogStartShowing(_isCourseAddMode));
+            //EventAggregator.Publish(new CourseDialogStartShowing(_isCourseAddMode));
+
+            new Navigator().Navigate(typeof(ThemeConstructorPage), FrameType.EducationFrame);
         }
 
         [Command]

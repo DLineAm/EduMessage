@@ -21,6 +21,16 @@ namespace EduMessage.Services
             _types[component.ImplementationName] = component;
         }
 
+        public void RegisterSingleton(object singleton)
+        {
+            var type = singleton.GetType();
+            var component = Component.For(type)
+                .ImplementedBy(type)
+                .Singleton();
+            _types[component.ImplementationName] = component;
+            _singletonComponents.Add(singleton);
+        }
+
         private object Resolve(Type type)
         {
             var name = type.FullName;

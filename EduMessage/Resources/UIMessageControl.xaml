@@ -54,8 +54,11 @@
               SelectionMode="None">
                 <ListView.ItemTemplate>
                     <DataTemplate x:DataType="models:Attachment">
-                        <StackPanel Orientation="Horizontal"
-                            ui:FrameworkElementExtensions.Cursor="Hand">
+                        <Grid ui:FrameworkElementExtensions.Cursor="Hand">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="auto"/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
                             <interactivity:Interaction.Behaviors >
                                 <core:EventTriggerBehavior EventName="Tapped">
                                     <core:InvokeCommandAction Command="{Binding OpenFileCommand, ElementName=MessageUserControl}"
@@ -70,12 +73,12 @@
                            Source="{Binding ImagePath}">
                             </Image>
                             <TextBlock Text="{Binding Title}"
-                               HorizontalAlignment="Center"
-                               VerticalAlignment="Center"
+                                       Grid.Column="1"
+                                       VerticalAlignment="Center"
                                Foreground="{StaticResource PrimaryMessageForeground}"
                                Margin="5,0,0,0"
                                TextTrimming="CharacterEllipsis"></TextBlock>
-                        </StackPanel>
+                        </Grid>
                     </DataTemplate>
                 </ListView.ItemTemplate>
             </ListView>

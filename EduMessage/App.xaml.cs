@@ -9,6 +9,7 @@ using SignalIRServerTest.Models;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
@@ -22,6 +23,9 @@ using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
+using EduMessage.ViewModels;
+using Mapster;
+using MapsterMapper;
 using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 
 namespace EduMessage
@@ -138,6 +142,8 @@ namespace EduMessage
         {
             OpenedWindows++;
             var container = CreateContainerAndRegisterTypes();
+
+            var featureCollection = container.ResolveConstructor<FeatureCollection>();
 
             var notificator = container.Resolve<INotificator>("Toast");
             var userBuilder = container.Resolve<IUserBuilder>();
@@ -256,6 +262,10 @@ namespace EduMessage
                 .ImplementedBy<EventAggregator>()
                 .Singleton());
 
+            container.Register(Component.For<IChat>()
+                .ImplementedBy<Chat>()
+                .Singleton());
+
             container.Register(Component.For<IUserBuilder>()
                 .ImplementedBy<UserBuilder>());
 
@@ -265,11 +275,38 @@ namespace EduMessage
             container.Register(Component.For<INotificator>()
                 .ImplementedBy<ToastNotificator>().Named("Toast"));
 
-            container.Register(Component.For<IChat>()
-                .ImplementedBy<Chat>()
+            container.Register(Component.For<IFactory>()
+                .ImplementedBy<FeatureFactory>());
+
+            container.Register(Component.For<IMapper>()
+                .ImplementedBy<Mapper>());
+
+            container.Register(Component.For<IStorage<MessageAttachment>>()
+                .ImplementedBy<MessageStorage>()
                 .Singleton());
 
+            var config = new TypeAdapterConfig();
+
+            config.NewConfig<List<MessageAttachment>, FormattedMessage>()
+                .Map(dest => dest.Message, src => src.FirstOrDefault().IdMessageNavigation)
+                .Map(dest => dest.Attachments, src => src.Select(a => a.IdAttachmentNavigation));
+
+            container.RegisterSingleton(config);
+
+            TypeAdapterConfig.GlobalSettings.RequireExplicitMapping = true;
+            TypeAdapterConfig.GlobalSettings.RequireDestinationMemberSource = true;
+            TypeAdapterConfig.GlobalSettings.Compile();
+
             return container;
+        }
+
+        private Attachment GetAttachment()
+        {
+            var random = new Random();
+            return new Attachment()
+            {
+                Title = random.Next(1000, 10000).ToString()
+            };
         }
 
         private void Current_Activated(object sender, Windows.UI.Core.WindowActivatedEventArgs e)

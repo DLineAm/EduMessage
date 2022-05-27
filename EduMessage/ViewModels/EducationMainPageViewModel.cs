@@ -10,8 +10,6 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 using Windows.UI.Xaml.Media.Animation;
 
@@ -23,7 +21,7 @@ namespace EduMessage.ViewModels
         [Property]
         private ObservableCollection<Crumb> _crumbs = new()
         {
-            new ("Главная", new EducationFolderPage())
+            new Crumb("Главная", new EducationFolderPage())
         };
 
         public void Initialize()

@@ -11,6 +11,7 @@ using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.Foundation;
+using Windows.Storage;
 using Windows.Storage.Streams;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -189,6 +190,33 @@ namespace EduMessage.Services
 
             sb.Children.Add(db);
             sb.Begin();
+        }
+
+        public static async Task<List<Attachment>> CreateAttachments(this IReadOnlyList<StorageFile> files)
+        {
+            var result = new List<Attachment>();
+
+            for (int i = 0; i < files.Count; i++)
+            {
+                StorageFile file = files[i];
+                var data = await FileIO.ReadBufferAsync(file);
+                var title = file.Name;
+
+                await Task.Delay(TimeSpan.FromMilliseconds(1));
+
+                var attachment = new Attachment
+                {
+                    Title = title,
+                    Data = data.ToArray()
+                };
+
+                attachment.IdType = attachment.ConvertFileType(file.FileType);
+
+                result.Add(attachment);
+            }
+
+            await result.WriteAttachmentImagePath();
+            return result;
         }
     }
 }

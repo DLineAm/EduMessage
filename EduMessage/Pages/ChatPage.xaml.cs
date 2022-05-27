@@ -20,6 +20,7 @@ using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Animation;
 using Windows.UI.Xaml.Navigation;
 using EduMessage.Resources;
+using MapsterMapper;
 using MvvmGen.Events;
 
 // Документацию по шаблону элемента "Пустая страница" см. по адресу https://go.microsoft.com/fwlink/?LinkId=234238
@@ -157,7 +158,8 @@ namespace EduMessage.Pages
 
             var aggregator = ControlContainer.Get().Resolve<IEventAggregator>();
             var notificator = ControlContainer.Get().Resolve<INotificator>("Dialog");
-            ViewModel = new ChatPageViewModel(notificator, aggregator);
+            var mapper = ControlContainer.Get().Resolve<IMapper>();
+            ViewModel = new ChatPageViewModel(mapper, notificator, aggregator);
             var chat = ControlContainer.Get().Resolve<IChat>();
             await ViewModel.Initialize(conversation, chat);
             this.DataContext = ViewModel;
