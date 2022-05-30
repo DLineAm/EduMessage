@@ -18,9 +18,9 @@ namespace EduMessage.ViewModels
     [Inject(typeof(IEventAggregator))]
     public partial class PrimaryRegisterPageViewModel
     {
-        private IValidator _passwordValidator;
-        private IValidator _loginValidator;
-        private IValidator _emailValidator;
+        private IValidator<string> _passwordValidator;
+        private IValidator<string> _loginValidator;
+        private IValidator<string> _emailValidator;
 
         [Property] private string _email;
         [Property] private string _login;
@@ -29,7 +29,7 @@ namespace EduMessage.ViewModels
         [Property] private string _errorText;
         [Property] private bool _isLoginEnabled = true;
 
-        public void SetValidator(IValidator validator)
+        public void SetValidator(IValidator<string> validator)
         {
             if (validator is PasswordValidator)
             {

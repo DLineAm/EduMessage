@@ -15,7 +15,8 @@
     xmlns:models="using:SignalIRServerTest.Models"
     mc:Ignorable="d"
     NavigationCacheMode="Required"
-    x:Name="Parent">
+    x:Name="Parent"
+    d:DataContext="{d:DesignInstance Type=viewModels:ChatPageViewModel}">
 
     <Page.Resources>
         <utils:ByteToImageConverter x:Key="ImageConverter"></utils:ByteToImageConverter>
@@ -92,15 +93,23 @@
             </Grid>
 
 
-            <StackPanel Grid.Column="1">
-                <TextBlock FontSize="26"
-                           FontWeight="SemiBold">
-                    <Run Text="{Binding User.FirstName}"></Run>
-                    <Run Text="{Binding User.LastName}"></Run>
-                </TextBlock>
+                <StackPanel Grid.Column="1">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Style="{StaticResource 26TitleTextBlock}">
+                            <Run Text="{Binding User.FirstName}"></Run>
+                            <Run Text="{Binding User.LastName}"></Run>
+                        </TextBlock>
+                        <TextBlock VerticalAlignment="Center"
+                                   Style="{StaticResource 26TitleTextBlock}"
+                                   Margin="12 0 0 0">
+                            (<Run Text="{Binding User.IdRoleNavigation.Title}"></Run>)
+                        </TextBlock>
+                    </StackPanel>
+                    
 
-                <TextBlock Text="Онлайн"></TextBlock>
-            </StackPanel>
+                    <TextBlock Text="Онлайн"></TextBlock>
+                </StackPanel>
+                
 
             <controls:TeachingTip Grid.Column="2"
                                   Target="{x:Bind ActionsButton}"

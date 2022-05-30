@@ -146,6 +146,7 @@
     <Compile Include="Models\EducationType.cs" />
     <Compile Include="Models\Faculty.cs" />
     <Compile Include="Models\Group.cs" />
+    <Compile Include="Models\MainCourse.cs" />
     <Compile Include="Models\Message.cs" />
     <Compile Include="Models\MessageAttachment.cs" />
     <Compile Include="Models\Partials\Attachment.cs" />
@@ -307,6 +308,7 @@
     <Compile Include="Services\IFeature.cs" />
     <Compile Include="Services\MapsterConfig.cs" />
     <Compile Include="Services\MessageStorage.cs" />
+    <Compile Include="Services\NullOrWhiteSpaceStringValidator.cs" />
     <Compile Include="Utils\BoolToVisibilityConverter.cs" />
     <Compile Include="Services\Chat.cs" />
     <Compile Include="Services\ColorManager.cs" />
@@ -325,6 +327,7 @@
     <Compile Include="Services\PasswordValidator.cs" />
     <Compile Include="Services\PersonNameValidator.cs" />
     <Compile Include="Services\Settings.cs" />
+    <Compile Include="Utils\ItemToNumberConverter.cs" />
     <Compile Include="Utils\MessageToAttachmentConverter.cs" />
     <Compile Include="Utils\TextBlockVisibilityConverter.cs" />
     <Compile Include="Services\ToastNotificator.cs" />

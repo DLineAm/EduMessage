@@ -27,10 +27,10 @@ namespace EduMessage.Services
     public static class Extensions
     {
 
-        public static async Task WriteAttachmentImagePath(this IEnumerable<Attachment> attachments)
+        public static async Task WriteAttachmentImagePath(this IEnumerable<Attachment> attachments, int decodedHeight = 0)
         {
             var tasks = attachments.Where(a => a != null)
-                .Select(attachment => attachment.SplitAndGetImage());
+                .Select(attachment => attachment.SplitAndGetImage(decodedHeight));
 
             await Task.WhenAll(tasks);
         }

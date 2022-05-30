@@ -1,6 +1,6 @@
 ﻿namespace EduMessage.Services
 {
-    public class PasswordValidator : IValidator
+    public class PasswordValidator : IValidator<string>
     {
         public ValidationResponse Validate(string value)
         {

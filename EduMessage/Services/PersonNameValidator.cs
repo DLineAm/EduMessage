@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace EduMessage.Services
 {
-    public class PersonNameValidator : IValidator
+    public class PersonNameValidator : IValidator<string>
     {
         public ValidationResponse Validate(string value)
         {
@@ -22,7 +22,7 @@ namespace EduMessage.Services
                 return ValidationResponse.FormatResponse;
             }
 
-           return ValidationResponse.OkResponse;
+            return ValidationResponse.OkResponse;
         }
     }
 }

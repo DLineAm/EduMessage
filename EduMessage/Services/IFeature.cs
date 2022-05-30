@@ -1,9 +1,15 @@
-﻿using System;
+﻿using EduMessage.ViewModels;
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+
+using Windows.UI.Text;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Documents;
+using Windows.UI.Xaml.Media.Imaging;
 
 namespace EduMessage.Services
 {
@@ -75,7 +81,7 @@ namespace EduMessage.Services
 
         string Description { get; }
 
-        UIElement Realise(object parameter);
+        UIElement Realise(object parameter, ref UIElement lastElement);
         string GetString();
     }
 
@@ -88,9 +94,27 @@ namespace EduMessage.Services
         public IconElement Icon { get; set; }
         public string Description { get; }
 
-        public UIElement Realise(object parameter)
+        public UIElement Realise(object parameter, ref UIElement lastElement)
         {
-            return null;
+            if (parameter is not (string part, FormattedCourse course))
+            {
+                return null;
+            }
+
+            if (lastElement is TextBlock textBlock)
+            {
+                var run = new Run {Text = part, FontWeight = FontWeights.Normal};
+                textBlock.Inlines.Add(run);
+                return null;
+            }
+
+            var element = new TextBlock
+            {
+                TextWrapping = TextWrapping.Wrap,
+                Text = part
+            };
+
+            return element;
         }
 
         public string GetString()
@@ -109,9 +133,39 @@ namespace EduMessage.Services
         public IconElement Icon => new SymbolIcon(Symbol.Pictures);
         public string Description => "Добавить изображение в текст";
 
-        public UIElement Realise(object parameter)
+        public UIElement Realise(object parameter, ref UIElement lastElement)
         {
-            throw new NotImplementedException();
+            if (parameter is not (string part, FormattedCourse course))
+            {
+                return new Image();
+            }
+
+            var attachment = course.Attachments.FirstOrDefault(a => a.Title == part);
+            var imagePath = attachment.ImagePath;
+            BitmapImage source = null;
+            if (imagePath is BitmapImage bitmap)
+            {
+                source = bitmap;
+            }
+            else if (imagePath is string stringPath)
+            {
+                source = new BitmapImage(new Uri(stringPath));
+            }
+
+            var image = new Image
+            {
+                Source = source,
+                HorizontalAlignment = HorizontalAlignment.Center,
+                MaxWidth = 700,
+                Margin = new Thickness(0,0,0,12)
+            };
+
+            if (lastElement is TextBlock textBlock)
+            {
+               textBlock.Inlines.Add(new LineBreak());
+            }
+
+            return image;
         }
 
         public string GetString()
@@ -129,9 +183,23 @@ namespace EduMessage.Services
         public IconElement Icon => new SymbolIcon(Symbol.Bold);
         public string Description => "Жирный шрифт";
 
-        public UIElement Realise(object parameter)
+        public UIElement Realise(object parameter, ref UIElement lastElement)
         {
-            throw new NotImplementedException();
+            if (parameter is not (string part, FormattedCourse course))
+            {
+                return new Image();
+            }
+            var run = new Run {Text = " " +  part, FontWeight = FontWeights.Bold};
+
+            if (lastElement is TextBlock textBlock)
+            {
+                textBlock.Inlines.Add(run);
+                return null;
+            }
+
+            textBlock = new TextBlock{TextWrapping = TextWrapping.Wrap, FontWeight = FontWeights.Bold};
+            textBlock.Inlines.Add(run);
+            return textBlock;
         }
 
         public string GetString()
@@ -142,16 +210,60 @@ namespace EduMessage.Services
 
     public class ItalicTextFeature : IFeature
     {
-        public string Prefix => "italic";
+        public string Prefix => "ital";
         public bool IsDefaultPattern => true;
         public bool ShowInBar => true;
         public Type FeatureType => typeof(TextBlock);
         public IconElement Icon => new SymbolIcon(Symbol.Italic);
         public string Description => "Курсивный шрифт";
 
-        public UIElement Realise(object parameter)
+        public UIElement Realise(object parameter,ref UIElement lastElement)
         {
-            throw new NotImplementedException();
+            if (parameter is not (string part, FormattedCourse course))
+            {
+                return null;
+            }
+            var run = new Run {Text = " " + part, FontStyle = FontStyle.Italic};
+
+            if (lastElement is TextBlock textBlock)
+            {
+                textBlock.Inlines.Add(run);
+                return null;
+            }
+
+            textBlock = new TextBlock{TextWrapping = TextWrapping.Wrap};
+            textBlock.Inlines.Add(run);
+            return textBlock;
+        }
+
+        public string GetString()
+        {
+            return FeatureFormatter.GetFormattedString(Prefix);
+        }
+    }
+    public class TitleFeature : IFeature
+    {
+        public string Prefix => "titl";
+        public bool IsDefaultPattern => true;
+        public bool ShowInBar => true;
+        public Type FeatureType => typeof(TextBlock);
+        public IconElement Icon => new SymbolIcon(Symbol.Font);
+        public string Description => "Заголовок";
+
+        public UIElement Realise(object parameter,ref UIElement lastElement)
+        {
+            if (parameter is not (string part, FormattedCourse course))
+            {
+                return null;
+            }
+
+            var textBlock = new TextBlock
+            {
+                TextWrapping = TextWrapping.Wrap, FontSize = 26, FontWeight = FontWeights.Bold,
+                Text = "\n" + part + "\n"
+            };
+            var border = new Border {Child = textBlock};
+            return border;
         }
 
         public string GetString()

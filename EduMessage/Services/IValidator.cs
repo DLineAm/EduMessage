@@ -1,7 +1,7 @@
 ﻿namespace EduMessage.Services
 {
-    public interface IValidator
+    public interface IValidator<T>
     {
-        ValidationResponse Validate(string value);
+        ValidationResponse Validate(T value);
     }
 }

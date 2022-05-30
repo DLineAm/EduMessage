@@ -7,7 +7,9 @@ using SignalIRServerTest;
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using EduMessage.Models;
 
 namespace EduMessage.ViewModels
 {
@@ -15,19 +17,34 @@ namespace EduMessage.ViewModels
     [Inject(typeof(IEventAggregator))]
     public partial class EducationFolderPageViewModel
     {
-        [Property] private List<Speciality> _specialities;
+        [Property] private List<dynamic> _educationFolders;
         [PropertyCallMethod(nameof(Navigate))]        
-        [Property] private Speciality _speciality;
+        [Property] private dynamic _educationFolder;
 
-        public async Task Initialize()
+        public async Task Initialize(object item)
         {
             try
             {
-                var response = (await (App.Address + "Login/Specialities")
-                    .SendRequestAsync<string>(null, HttpRequestType.Get))
-                    .DeserializeJson<List<Speciality>>();
+                var speciality = item as Speciality;
+                if (speciality == null)
+                {
+                    var response = (await (App.Address + "Login/Specialities")
+                            .SendRequestAsync<string>(null, HttpRequestType.Get))
+                        .DeserializeJson<List<Speciality>>()
+                        .Cast<dynamic>()
+                        .ToList();
 
-                Specialities = response;
+                    EducationFolders = response;
+                    return;
+                }
+               
+                var courses = (await (App.Address + $"Education/Courses.IdSpeciality={speciality.Id}")
+                        .SendRequestAsync<string>(null, HttpRequestType.Get, App.Account.GetJwt()))
+                    .DeserializeJson<List<MainCourse>>()
+                    .Cast<dynamic>()
+                    .ToList();
+
+                EducationFolders = courses;
             }
 #pragma warning disable CS0168 // Переменная "e" объявлена, но ни разу не использована.
             catch (Exception e)
@@ -40,7 +57,7 @@ namespace EduMessage.ViewModels
 
         private void Navigate()
         {
-            EventAggregator.Publish(new SelectedSpecialityChangedeEvent(Speciality));
+            EventAggregator.Publish(new SelectedSpecialityChangedeEvent(EducationFolder));
         }
     }
 }

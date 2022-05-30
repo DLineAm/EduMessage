@@ -41,6 +41,7 @@ namespace EduMessage.ViewModels
         [Property] private bool _isFilesBorderCollapsed = true;
         [Property] private bool _isRefactorBorderCollapsed = true;
         [Property] private Visibility _flyoutMenuItemsVisibility;
+        [Property] private string _roleTitle;
 
         private UserConversation _conversation;
         private FormattedMessage _selectedFormattedMessage;
@@ -55,6 +56,11 @@ namespace EduMessage.ViewModels
             _conversation = conversation;
             _user = user;
             _chat = chat;
+
+            if (_conversation.IdConversationNavigation is {Title: null})
+            {
+                RoleTitle = user.IdRoleNavigation.Title;
+            }
 
             try
             {
@@ -123,7 +129,7 @@ namespace EduMessage.ViewModels
                     var attachment = messageAttachment.IdAttachmentNavigation;
                     if (attachment != null)
                     {
-                        await attachment.SplitAndGetImage();
+                        await attachment.SplitAndGetImage(0);
                         formattedMessage.Attachments.Add(attachment);
                     }
                 }
@@ -453,7 +459,7 @@ namespace EduMessage.ViewModels
         {
             messageAttachments.Where(ma => ma.IdAttachmentNavigation != null)
                 .ToList()
-                .ForEach(async ma => await ma.IdAttachmentNavigation.SplitAndGetImage());
+                .ForEach(async ma => await ma.IdAttachmentNavigation.SplitAndGetImage(0));
 
             foreach (var formattedMessages in Messages)
             {

@@ -95,7 +95,7 @@ namespace EduMessage.ViewModels
 
                 Groups = groups;
 
-                var specialities = (await (App.Address + "Login/Specialities")
+                var specialities = (await (App.Address + "Login/EducationFolders")
                     .SendRequestAsync<string>(null, HttpRequestType.Get))
                     .DeserializeJson<List<Speciality>>();
 
@@ -128,7 +128,7 @@ namespace EduMessage.ViewModels
 
             try
             {
-                var result = (await (App.Address + $"Login/Specialities.idGroup={Group.Id}")
+                var result = (await (App.Address + $"Login/EducationFolders.idGroup={Group.Id}")
                     .SendRequestAsync<string>(null, HttpRequestType.Get))
                     .DeserializeJson<Speciality>();
 

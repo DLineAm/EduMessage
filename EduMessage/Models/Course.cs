@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Text.Json.Serialization;
+using EduMessage.Models;
 
 #nullable disable
 
@@ -15,9 +16,9 @@ namespace SignalIRServerTest
         public int Id { get; set; }
         public string Title { get => _title; set { _title = value; OnPropertyChanged(); } }
         public string Description { get => _description; set { _description = value; OnPropertyChanged(); } }
-        public int? IdSpeciality { get; set; }
+        public int? IdMainCourse { get; set; }
 
-        public virtual Speciality IdSpecialityNavigation { get; set; }
+        public virtual MainCourse IdMainCourseNavigation { get; set; }
 
         public event PropertyChangedEventHandler PropertyChanged;
         private void OnPropertyChanged([CallerMemberName] string s = null)

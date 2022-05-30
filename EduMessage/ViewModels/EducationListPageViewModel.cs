@@ -19,12 +19,16 @@ using Windows.Storage;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Media.Animation;
+using EduMessage.Models;
+using Mapster;
 
 namespace EduMessage.ViewModels
 {
     [ViewModel]
     [Inject(typeof(IEventAggregator))]
-    public partial class EducationListPageViewModel : IEventSubscriber<DropCompletedEvent>
+    [Inject(typeof(TypeAdapterConfig))]
+    public partial class EducationListPageViewModel : IEventSubscriber<DropCompletedEvent>, IEventSubscriber<CourseRequestCompleted>
     {
         [Property] private ObservableCollection<FormattedCourse> _courses = new();
         [Property] private ObservableCollection<Attachment> _files = new();
@@ -38,21 +42,37 @@ namespace EduMessage.ViewModels
 
         private bool _isCourseAddMode;
         private FormattedCourse _selectedCourse;
-        private Speciality _speciality;
+        private MainCourse _mainCourse;
 
-        public async Task Initialize(Speciality speciality)
+        public async Task Initialize(object parameter)
         {
-            _speciality = speciality;
+            if (parameter is not MainCourse mainCourse)
+            {
+                return;
+            }
+            _mainCourse = mainCourse;
 
             UpdateTeacherInputVisibility(App.Account.GetUser().IdRole == 2 ? Visibility.Visible : Visibility.Collapsed);
 
             try
             {
-                var response = (await (App.Address + $"Education/Courses.SpecialityId={speciality.Id}")
+                var response = (await (App.Address + $"Education/Courses.IdMainCourse={mainCourse.Id}")
                     .SendRequestAsync<string>(null, HttpRequestType.Get, App.Account.GetJwt()))
-                    .DeserializeJson<List<CourseAttachment>>();
+                    .DeserializeJson<HashSet<CourseAttachment>>();
 
-                Courses = new ObservableCollection<FormattedCourse>(await ConvertToFormattedCourse(response));
+                Courses = new ObservableCollection<FormattedCourse>();
+
+                var groupedCourseAttachments = response.GroupBy(ca => ca.IdCourse);
+
+                foreach (var groupedCourseAttachment in groupedCourseAttachments)
+                {
+                    var key = groupedCourseAttachment.Key;
+                    var courses = response.Where(c => c.IdCourse == key);
+                    var formattedCourse = courses.Adapt<FormattedCourse>(TypeAdapterConfig);
+                    await formattedCourse.Attachments.WriteAttachmentImagePath(700);
+                    Courses.Add(formattedCourse);
+                }
+
 
                 if (Courses.Count == 0)
                 {
@@ -91,7 +111,7 @@ namespace EduMessage.ViewModels
                 var attachments = response.Where(c => c.IdCourse == course.Id && c.IdAttachmanentNavigation != null)
                     .Select(c => c.IdAttachmanentNavigation).ToList();
 
-                attachments.ForEach(async a => await a.SplitAndGetImage());
+                attachments.ForEach(async a => await a.SplitAndGetImage(0));
 
                 var formattedCourse = new FormattedCourse
                 {
@@ -178,12 +198,13 @@ namespace EduMessage.ViewModels
             EventAggregator.Publish(new LoaderVisibilityChanged(Visibility.Visible, "Сохранение курса"));
 
             var selectedCourse = _selectedCourse?.Course;
+            //TODO: _speciality
             Course course = new Course
                 {
                     Id = selectedCourse?.Id ?? 0,
                     Title = CourseTitle,
                     Description = CourseDescription,
-                    IdSpeciality = _speciality.Id
+                    IdMainCourse = _mainCourse.Id
                 };
 
             List<Attachment> attachments = Files.ToList();
@@ -248,9 +269,14 @@ namespace EduMessage.ViewModels
                         courseAttachment.Id = attachmentId;
                         courseAttachment.IdCourse = courseId;
                     }
-                    List<FormattedCourse> formattedCourses = await ConvertToFormattedCourse(courses);
-#pragma warning disable HAA0603 // Delegate allocation from a method group
-                    formattedCourses.ForEach(Courses.Add);
+
+                    var formattedCourse = courses.Adapt<FormattedCourse>(TypeAdapterConfig);
+
+                    Courses.Add(formattedCourse);
+
+//                    List<FormattedCourse> formattedCourses = await ConvertToFormattedCourse(courses);
+//#pragma warning disable HAA0603 // Delegate allocation from a method group
+//                    formattedCourses.ForEach(Courses.Add);
 #pragma warning restore HAA0603 // Delegate allocation from a method group
                 }
 
@@ -378,7 +404,8 @@ namespace EduMessage.ViewModels
 
             //EventAggregator.Publish(new CourseDialogStartShowing(_isCourseAddMode));
 
-            new Navigator().Navigate(typeof(ThemeConstructorPage), FrameType.EducationFrame);
+            EventAggregator.Publish(new SelectedSpecialityChangedeEvent(_mainCourse.Id));
+            //new Navigator().Navigate(typeof(ThemeConstructorPage), _mainCourse.Id, new DrillInNavigationTransitionInfo(), FrameType.EducationFrame);
         }
 
         [Command]
@@ -432,6 +459,14 @@ namespace EduMessage.ViewModels
             {
 
             }
+        }
+
+        public void OnEvent(CourseRequestCompleted eventData)
+        {
+            var courses = eventData.CourseAttachments
+                .Adapt<FormattedCourse>(TypeAdapterConfig);
+
+            Courses.Add(courses);
         }
     }
 }

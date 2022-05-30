@@ -1,17 +1,19 @@
-﻿using System;
-using EduMessage.Services;
+﻿using EduMessage.Services;
 
 using MvvmGen;
 using MvvmGen.Events;
 
+using SignalIRServerTest;
+using SignalIRServerTest.Models;
+
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
-using System.Threading.Tasks;
-using Windows.Storage;
+
 using Windows.Storage.Pickers;
-using SignalIRServerTest.Models;
+using Windows.UI.Xaml;
+using Windows.UI.Xaml.Controls;
 
 namespace EduMessage.ViewModels
 {
@@ -27,18 +29,104 @@ namespace EduMessage.ViewModels
         [Property] private ObservableCollection<Attachment> _images = new();
         [Property] private ObservableCollection<Attachment> _otherFiles = new();
         [Property] private int _selectedPivotIndex;
+        [Property] private string _errorText;
+
+        private IValidator<string[]> _validator;
 
         private FormattedCourse _formattedCourse;
 
-        public void Initialize()
+        private int _mainCourseId;
+
+        public void Initialize(int specialityId)
         {
             _features = FeatureCollection.Features.Where(f => f.ShowInBar).ToList();
+            _validator = ControlContainer.Get().Resolve<IValidator<string[]>>();
+            _mainCourseId = specialityId;
+        }
+
+        [Command]
+        private async void Apply()
+        {
+            ErrorText = "";
+            EventAggregator.Publish(new LoaderVisibilityChanged(Visibility.Visible, "Сохранение курса"));
+
+            var validatorResponse = _validator.Validate(new []{Title, Description});
+
+            if (!validatorResponse)
+            {
+                ErrorText = "Все поля дожны быть заполнены!";
+                return;
+            }
+
+            var attachments = Images.ToList();
+            attachments.AddRange(OtherFiles);
+
+            var course = new Course
+            {
+                Title = Title,
+                Description = Description,
+                IdMainCourse = _mainCourseId
+            };
+
+            var courseAttachments = new List<CourseAttachment>();
+
+            foreach (var attachment in attachments)
+            {
+                courseAttachments.Add(new CourseAttachment
+                {
+                    IdCourseNavigation = course,
+                    IdAttachmanentNavigation = attachment
+                });
+            }
+
+            if (courseAttachments.Count == 0)
+            {
+                courseAttachments.Add(new CourseAttachment
+                {
+                    IdCourseNavigation = course
+                });
+            }
+
+            try
+            {
+                var (courseId, attachmentIds) = (await (App.Address + "Education/Courses.FromList")
+                           .SendRequestAsync(courseAttachments, HttpRequestType.Post, App.Account.GetJwt()))
+                       .DeserializeJson<KeyValuePair<int, List<int>>>();
+
+                if (courseId != -1)
+                {
+                    course.Id = courseId;
+                    for (int i = 0; i < attachmentIds.Count; i++)
+                    {
+                        var attachmentId = attachmentIds[i];
+                        var courseAttachment = courseAttachments[i];
+                        courseAttachment.Id = attachmentId;
+                        courseAttachment.IdCourse = courseId;
+                    }
+                }
+                else
+                {
+                    throw new Exception();
+                }
+
+                EventAggregator.Publish(new CourseRequestCompleted(courseAttachments));
+
+                EventAggregator.Publish(new InAppNotificationShowing(Symbol.Accept, "Курс добавлен!"));
+                EventAggregator.Publish(new LoaderVisibilityChanged(Visibility.Collapsed, string.Empty));
+
+                EventAggregator.Publish(new EducationPageBack());
+            }
+            catch (Exception e)
+            {
+                EventAggregator.Publish(new InAppNotificationShowing(Symbol.ClosePane, "Не удалось добавить курс!"));
+                EventAggregator.Publish(new LoaderVisibilityChanged(Visibility.Collapsed, string.Empty));
+            }
         }
 
         [Command]
         private void Back()
         {
-            new Navigator().GoBack(FrameType.EducationFrame);
+            EventAggregator.Publish(new EducationPageBack());
         }
 
         [Command]
@@ -122,4 +210,8 @@ namespace EduMessage.ViewModels
             OtherFiles.Remove(attachment);
         }
     }
+
+    public record EducationPageBack;
+
+    public record CourseRequestCompleted(IEnumerable<CourseAttachment> CourseAttachments);
 }

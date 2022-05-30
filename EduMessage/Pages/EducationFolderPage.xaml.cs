@@ -3,6 +3,7 @@ using EduMessage.ViewModels;
 
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Navigation;
 
 // Документацию по шаблону элемента "Пустая страница" см. по адресу https://go.microsoft.com/fwlink/?LinkId=234238
 
@@ -23,9 +24,17 @@ namespace EduMessage.Pages
 
         public EducationFolderPageViewModel ViewModel{ get;}
 
+        protected override async void OnNavigatedTo(NavigationEventArgs e)
+        {
+            base.OnNavigatedTo(e);
+
+            var item = e.Parameter;
+
+            await ViewModel?.Initialize(item);
+        }
+
         private async void Page_DataContextChanged(FrameworkElement sender, DataContextChangedEventArgs args)
         {
-            await ViewModel?.Initialize();
         }
     }
 }

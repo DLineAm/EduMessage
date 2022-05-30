@@ -6,15 +6,16 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:signalirservertest="using:SignalIRServerTest"
     mc:Ignorable="d"
-    DataContextChanged="Page_DataContextChanged">
+    DataContextChanged="Page_DataContextChanged"
+    d:DataContext="{d:DesignInstance Type=local:EducationFolderPage}">
 
     <Grid Margin="-48,0">
         <Grid.RowDefinitions>
             <RowDefinition/>
             <RowDefinition Height="auto"/>
         </Grid.RowDefinitions>
-        <ListView ItemsSource="{Binding Specialities}"
-                  SelectedItem="{Binding Speciality, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+        <ListView ItemsSource="{Binding EducationFolders}"
+                  SelectedItem="{Binding EducationFolder, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
             <ListView.ItemsPanel>
                 <ItemsPanelTemplate>
                     <ItemsWrapGrid Orientation="Horizontal"

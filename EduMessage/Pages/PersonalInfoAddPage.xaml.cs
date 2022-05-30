@@ -19,7 +19,7 @@ namespace EduMessage.Pages
             var notificator = ControlContainer.Get().Resolve<INotificator>("Dialog");
             var aggregator = ControlContainer.Get().Resolve<IEventAggregator>();
             ViewModel = new PersonalInfoAddPageViewModel(aggregator, notificator);
-            var validator = ControlContainer.Get().Resolve<IValidator>("person");
+            var validator = ControlContainer.Get().Resolve<IValidator<string>>("person");
             ViewModel.SetValidator(validator);
             ViewModel.LoadData();
             this.DataContext = ViewModel;

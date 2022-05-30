@@ -28,7 +28,7 @@ namespace EduMessage.ViewModels
         [Property] private List<City> _cities;
         [Property] private string _errorText;
         [Property] private bool _isLoginEnabled = true;
-        private IValidator _personValidator;
+        private IValidator<string> _personValidator;
 
         public async void LoadData()
         {
@@ -54,7 +54,7 @@ namespace EduMessage.ViewModels
 
         }
 
-        public void SetValidator(IValidator validator)
+        public void SetValidator(IValidator<string> validator)
         {
             _personValidator = validator;
         }

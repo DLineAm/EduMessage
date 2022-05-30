@@ -1,4 +1,5 @@
-﻿using EduMessage.Services;
+﻿using System.Linq;
+using EduMessage.Services;
 using EduMessage.ViewModels;
 
 using MvvmGen.Events;
@@ -13,7 +14,7 @@ namespace EduMessage.Pages
     /// <summary>
     /// Пустая страница, которую можно использовать саму по себе или для перехода внутри фрейма.
     /// </summary>
-    public sealed partial class EducationMainPage : Page
+    public sealed partial class EducationMainPage : Page, IEventSubscriber<EducationPageBack>
     {
         private IEventAggregator _eventAggregator;
         public EducationMainPage()
@@ -21,6 +22,7 @@ namespace EduMessage.Pages
             this.InitializeComponent();
             var eventAggregator = ControlContainer.Get().Resolve<IEventAggregator>();
             _eventAggregator = eventAggregator;
+            eventAggregator.RegisterSubscriber(this);
             ViewModel = new EducationMainPageViewModel(eventAggregator);
             this.DataContext = ViewModel;
             ContentFrame.Navigate(typeof(EducationFolderPage));
@@ -35,9 +37,48 @@ namespace EduMessage.Pages
 
         private void BreadcrumbBar_ItemClicked(Microsoft.UI.Xaml.Controls.BreadcrumbBar sender, Microsoft.UI.Xaml.Controls.BreadcrumbBarItemClickedEventArgs args)
         {
-            _eventAggregator.Publish(new SelectedSpecialityChangedeEvent(null));
-            //App.InvokeSelectedSpecialityChanged(null);
-            ContentFrame.Navigate(typeof(EducationFolderPage));           
+            var item = (Crumb)args.Item;
+            var index = args.Index;
+
+            GoBackUntil(item, index);
+        }
+
+        private void GoBackUntil(Crumb item, int index)
+        {
+            if (index == 0)
+            {
+                ViewModel.Crumbs.Clear();
+                ViewModel.Crumbs.Add(new Crumb {Title = "Главная"});
+                ContentFrame.Navigate(typeof(EducationFolderPage));
+                return;
+            }
+
+            GoBackTo(item, index);
+
+            while (ViewModel.Crumbs.Count > index + 1)
+            {
+                ViewModel.Crumbs.RemoveAt(ViewModel.Crumbs.Count - 1);
+            }
+        }
+
+        private void GoBackTo(Crumb item, int index)
+        {
+            if (!ContentFrame.CanGoBack)
+            {
+                return;
+            }
+
+            var stack = ContentFrame.BackStack.ToList();
+            ContentFrame.Navigate(stack[index].SourcePageType, item.Data);
+        }
+
+        public void OnEvent(EducationPageBack eventData)
+        {
+            var crumbs = ViewModel.Crumbs;
+            var index = crumbs.Count - 2;
+            var crumb = crumbs[index];
+
+            GoBackUntil(crumb, index);
         }
     }
 }

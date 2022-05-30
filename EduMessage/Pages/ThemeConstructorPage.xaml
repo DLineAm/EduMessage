@@ -16,22 +16,8 @@
     </Page.Resources>
 
     <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"></RowDefinition>
-            <RowDefinition></RowDefinition>
-        </Grid.RowDefinitions>
 
-        <StackPanel Orientation="Horizontal"
-                    Margin="0,12">
-            <Button Style="{StaticResource NavigationBackButtonNormalStyle}"
-                    Margin="0,0,12,0"
-                    Command="{Binding BackCommand}"></Button>
-            <TextBlock Style="{StaticResource 26TitleTextBlock}"
-                       Text="Создание темы"/>
-        </StackPanel>
-
-        <ScrollViewer Grid.Row="1"
-                      Margin="12 12 12 0">
+        <ScrollViewer>
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition></RowDefinition>
@@ -172,9 +158,11 @@
                 <StackPanel Grid.Row="2"
                             Orientation="Horizontal"
                             Margin="0 12 0 0">
-                    <HyperlinkButton Content="Применить"></HyperlinkButton>
+                    <HyperlinkButton Content="Применить"
+                                     Command="{Binding ApplyCommand}"></HyperlinkButton>
                     <HyperlinkButton Content="Отмена"
-                                     Margin="12 0 0 0"></HyperlinkButton>
+                                     Margin="12 0 0 0"
+                                     Command="{Binding BackCommand}"></HyperlinkButton>
                 </StackPanel>
             </Grid>
         </ScrollViewer>

@@ -12,6 +12,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 
 using Windows.UI.Xaml.Media.Animation;
+using EduMessage.Models;
 
 namespace EduMessage.ViewModels
 {
@@ -21,7 +22,7 @@ namespace EduMessage.ViewModels
         [Property]
         private ObservableCollection<Crumb> _crumbs = new()
         {
-            new Crumb("Главная", new EducationFolderPage())
+            new Crumb{Title = "Главная"}
         };
 
         public void Initialize()
@@ -31,34 +32,64 @@ namespace EduMessage.ViewModels
 
         public void OnEvent(SelectedSpecialityChangedeEvent eventData)
         {
-            var speciality = eventData.Speciality;
+            var parameter = eventData.Parameter;
 
-            try
+            if (parameter == null)
             {
-                if (speciality == null)
-                {
-                    if (Crumbs.Count != 1)
-                    {
-                        Crumbs.Remove(Crumbs.LastOrDefault());
-                    }
-                    return;
-                }
-                var lastCrumb = Crumbs.LastOrDefault();
-                var convertedTitle = speciality.Code + " " + speciality.Title;
-                if (!lastCrumb.Equals(default(Crumb)) && lastCrumb.Title == convertedTitle)
-                {
-                    return;
-                }
-
-                Crumbs.Add(new Crumb(convertedTitle, null));
-                new Navigator().Navigate(typeof(EducationCourseListPage), speciality, new DrillInNavigationTransitionInfo(), FrameType.EducationFrame);
+                return;
             }
-#pragma warning disable CS0168 // Переменная "e" объявлена, но ни разу не использована.
-            catch (Exception e)
-#pragma warning restore CS0168 // Переменная "e" объявлена, но ни разу не использована.
+
+            var crumb = new Crumb {Data = parameter};
+
+            if (parameter is int id)
             {
-
+                crumb.Title = (id == 0 ? "Создание " : "Изменение ") + "темы";
+                Crumbs.Add(crumb);
+                new Navigator().Navigate(typeof(ThemeConstructorPage), id, new DrillInNavigationTransitionInfo(), FrameType.EducationFrame);
+                return;
             }
+
+            var title = parameter.Title;
+            if (parameter is Speciality speciality)
+            {
+                title = speciality.Code + " " + speciality.Title;
+            }
+
+            crumb.Title = title;
+            Crumbs.Add(crumb);
+            if (parameter is MainCourse)
+            {
+                new Navigator().Navigate(typeof(EducationCourseListPage), parameter, new DrillInNavigationTransitionInfo(), FrameType.EducationFrame);
+                return;
+            }
+            new Navigator().Navigate(typeof(EducationFolderPage), parameter, new DrillInNavigationTransitionInfo(), FrameType.EducationFrame);
+
+//            try
+//            {
+//                if (parameter == null)
+//                {
+//                    if (Crumbs.Count != 1)
+//                    {
+//                        Crumbs.Remove(Crumbs.LastOrDefault());
+//                    }
+//                    return;
+//                }
+//                var lastCrumb = Crumbs.LastOrDefault();
+//                var convertedTitle = parameter.Code + " " + parameter.Title;
+//                if (!lastCrumb.Equals(default(Crumb)) && lastCrumb.Title == convertedTitle)
+//                {
+//                    return;
+//                }
+
+//                Crumbs.Add(new Crumb(convertedTitle, null));
+//                new Navigator().Navigate(typeof(EducationCourseListPage), parameter, new DrillInNavigationTransitionInfo(), FrameType.EducationFrame);
+//            }
+//#pragma warning disable CS0168 // Переменная "e" объявлена, но ни разу не использована.
+//            catch (Exception e)
+//#pragma warning restore CS0168 // Переменная "e" объявлена, но ни разу не использована.
+//            {
+
+//            }
         }
 
         private void App_SelectedSpeciallityChanged(Speciality speciality)

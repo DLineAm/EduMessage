@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace EduMessage.Services
 {
-    public class EmailValidator : IValidator
+    public class EmailValidator : IValidator<string>
     {
         public ValidationResponse Validate(string value)
         {

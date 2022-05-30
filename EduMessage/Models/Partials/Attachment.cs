@@ -30,21 +30,23 @@ namespace SignalIRServerTest.Models
             }
         }
 
-        public async Task SplitAndGetImage()
+        public async Task SplitAndGetImage(int decodedHeight)
         {
-            ImagePath = await SplitAndGetImage(Title, Data);
+            ImagePath = await SplitAndGetImage(Title, Data, decodedHeight);
         }
 
-        private async Task<object> SplitAndGetImage(string type, byte[] data)
+        private async Task<object> SplitAndGetImage(string type, byte[] data, int decodedHeight)
         {
             var list = type.Split(".");
 
+            var height = decodedHeight == 0 ? 48 : decodedHeight;
+
             if (list.Length == 1)
             {
-                return await GetImage(type, data);
+                return await GetImage(type, data, height);
             }
 
-            return await GetImage("." + list.Last(), data);
+            return await GetImage("." + list.Last(), data, height);
         }
 
         public async Task OpenFile()
@@ -74,12 +76,12 @@ namespace SignalIRServerTest.Models
             _ => 5
         };
 
-        private async Task<object> GetImage(string type, byte[] data) => type switch
+        private async Task<object> GetImage(string type, byte[] data, int decodedHeight) => type switch
         {
             ".docx" => "ms-appx:///Assets/word.png",
             ".pdf" => "ms-appx:///Assets/pdf.png",
             ".txt" => "ms-appx:///Assets/txt.png",
-            ".png" or ".jpg" or ".jpeg" => await data.CreateBitmap(48),
+            ".png" or ".jpg" or ".jpeg" => await data.CreateBitmap(decodedHeight),
             _ => "ms-appx:///Assets/file.png"
         };
 

@@ -27,6 +27,7 @@ using EduMessage.ViewModels;
 using Mapster;
 using MapsterMapper;
 using Microsoft.AspNetCore.Cryptography.KeyDerivation;
+using SignalIRServerTest;
 
 namespace EduMessage
 {
@@ -78,14 +79,14 @@ namespace EduMessage
             if (args is ToastNotificationActivatedEventArgs toastEventArgs)
             {
                 ToastArguments toastArgs = ToastArguments.Parse(toastEventArgs.Argument);
-                if (toastArgs.Contains("dnd"))
-                {
-                    IsDoNotDisturbEnabled = true;
-                    _dndTimer.Start();
-                }
 
                 if (toastArgs.TryGetValue("action", out var value))
                 {
+                    if (value.Contains("dnd"))
+                    {
+                        IsDoNotDisturbEnabled = true;
+                        _dndTimer.Start();
+                    }
                     if (value.Contains("reply") && toastArgs.TryGetValue("userId", out var recipientIdString))
                     {
                         toastArgs.TryGetValue("conversationId", out var conversationIdString);
@@ -242,21 +243,23 @@ namespace EduMessage
             var container = ControlContainer.Get();
 
             container.Register(Component
-                .For<IValidator>()
+                .For<IValidator<string>>()
                 .ImplementedBy<PasswordValidator>()
                 .Named("password"));
             container.Register(Component
-                .For<IValidator>()
+                .For<IValidator<string>>()
                 .ImplementedBy<LoginValidator>()
                 .Named("login"));
             container.Register(Component
-                .For<IValidator>()
+                .For<IValidator<string>>()
                 .ImplementedBy<PersonNameValidator>()
                 .Named("person"));
             container.Register(Component
-                .For<IValidator>()
+                .For<IValidator<string>>()
                 .ImplementedBy<EmailValidator>()
                 .Named("email"));
+            container.Register(Component.For<IValidator<string[]>>()
+                .ImplementedBy<NullOrWhiteSpaceStringValidator>());
 
             container.Register(Component.For<IEventAggregator>()
                 .ImplementedBy<EventAggregator>()
@@ -287,9 +290,13 @@ namespace EduMessage
 
             var config = new TypeAdapterConfig();
 
-            config.NewConfig<List<MessageAttachment>, FormattedMessage>()
+            config.NewConfig<IEnumerable<MessageAttachment>, FormattedMessage>()
                 .Map(dest => dest.Message, src => src.FirstOrDefault().IdMessageNavigation)
                 .Map(dest => dest.Attachments, src => src.Select(a => a.IdAttachmentNavigation));
+            config.NewConfig<IEnumerable<CourseAttachment>, FormattedCourse>()
+                .Map(dest => dest.Id, src => src.FirstOrDefault().Id)
+                .Map(dest => dest.Attachments, src => src.Select(ca => ca.IdAttachmanentNavigation))
+                .Map(dest => dest.Course, src => src.FirstOrDefault().IdCourseNavigation);
 
             container.RegisterSingleton(config);
 

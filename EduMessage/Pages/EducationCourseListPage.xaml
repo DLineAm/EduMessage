@@ -22,6 +22,7 @@
         <services:BoolToVisibilityConverter x:Key="TextBoxVisibilityConverter"/>
         <services:TextBlockVisibilityConverter x:Key="TextBlockVisibilityConverter"/>
         <utils:TaskToValueConverter x:Key="TaskToValueConverter"/>
+        <utils:ItemToNumberConverter x:Name="ItemToNumberConverter" ListView="{x:Bind ListView}"></utils:ItemToNumberConverter>
     </Page.Resources>
 
     <Grid Margin="-12,0">
@@ -47,7 +48,8 @@
                   HorizontalContentAlignment="Stretch"
                   ScrollViewer.VerticalScrollBarVisibility="Auto"
                          ScrollViewer.VerticalScrollMode="Enabled"
-                              SelectionMode="None">
+                              SelectionMode="None"
+                  x:Name="ListView">
             <ListView.ItemContainerStyle>
                 <Style TargetType="ListViewItem">
                     <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
@@ -82,9 +84,7 @@
                                         <ColumnDefinition></ColumnDefinition>
                                     </Grid.ColumnDefinitions>
                                     <TextBlock VerticalAlignment="Center">
-                                        <Run Text="Тема "/>
-                                        <Run Text="{Binding Course.Id}"/>
-                                        <Run Text=". "/>
+                                        <Run Text="Тема "/><Run Text="{Binding Converter={StaticResource ItemToNumberConverter}, ConverterParameter=ListView}"/><Run Text=". "/>
                                     </TextBlock>
                                     <TextBlock VerticalAlignment="Center"
                                                TextTrimming="CharacterEllipsis"
@@ -99,8 +99,14 @@
                                         <RowDefinition></RowDefinition>
                                         <RowDefinition Height="Auto"></RowDefinition>
                                     </Grid.RowDefinitions>
-                                    <TextBlock Text="{Binding Course.Description}"
-                                               TextWrapping="Wrap"/>
+
+                                    <StackPanel DataContext="{Binding }"
+                                                DataContextChanged="FrameworkElement_OnDataContextChanged">
+
+                                    </StackPanel>
+                                    <!--<TextBlock Text="{Binding Course.Description}"
+                                               TextWrapping="Wrap"
+                                               DataContextChanged="FrameworkElement_OnDataContextChanged"/>-->
 
                                     <Grid Grid.Row="1">
                                         <Grid.ColumnDefinitions>
@@ -181,9 +187,7 @@
                                     <Flyout>
                                         <StackPanel>
                                             <TextBlock Style="{ThemeResource BaseTextBlockStyle}">
-                                            <Run Text="Вы действительно хотите удалить курс "/>
-                                            <Run Text="{Binding Course.Id}"/>
-                                            <Run Text="?"/>
+                                            <Run Text="Вы действительно хотите удалить тему №"/><Run Text="{Binding Course.Id}"/><Run Text="?"/>
                                             </TextBlock>
                                             <StackPanel Orientation="Horizontal"
                                                     Margin="0,12,0,0">
