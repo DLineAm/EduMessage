@@ -134,6 +134,7 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Models\CourseTask.cs" />
     <Compile Include="Models\Events\ColorChangedEvent.cs" />
     <Compile Include="Models\Attachment.cs" />
     <Compile Include="Models\AttachmentType.cs" />
@@ -153,6 +154,7 @@
     <Compile Include="Models\Role.cs" />
     <Compile Include="Models\School.cs" />
     <Compile Include="Models\Speciality.cs" />
+    <Compile Include="Models\TaskStatus.cs" />
     <Compile Include="Models\User.cs" />
     <Compile Include="Models\UserConversation.cs" />
     <Compile Include="Pages\AccountInfoPage.xaml.cs">
@@ -327,8 +329,13 @@
     <Compile Include="Services\PasswordValidator.cs" />
     <Compile Include="Services\PersonNameValidator.cs" />
     <Compile Include="Services\Settings.cs" />
+    <Compile Include="Utils\DateToDateConverter.cs" />
+    <Compile Include="Utils\InverseNullToVisibilityConverter.cs" />
     <Compile Include="Utils\ItemToNumberConverter.cs" />
     <Compile Include="Utils\MessageToAttachmentConverter.cs" />
+    <Compile Include="Utils\NullToVisibilityConverter.cs" />
+    <Compile Include="Utils\RichTextBoxExtension.cs" />
+    <Compile Include="Utils\StringFormatConverter.cs" />
     <Compile Include="Utils\TextBlockVisibilityConverter.cs" />
     <Compile Include="Services\ToastNotificator.cs" />
     <Compile Include="Services\UserBuilder.cs" />
@@ -374,7 +381,7 @@
     <Compile Include="ViewModels\PersonalInfoAddPageViewModel.cs" />
     <Compile Include="ViewModels\PrimaryRegisterPageViewModel.cs" />
     <Compile Include="ViewModels\SchoolChoosePageViewModel.cs" />
-    <Compile Include="Models\Events\SelectedSpecialityChangedeEvent.cs" />
+    <Compile Include="Models\Events\SelectedSpecialityChangedEvent.cs" />
     <Compile Include="Models\Events\UserExitedEvent.cs" />
     <Compile Include="ViewModels\ThemeConstructorPageViewModel.cs" />
     <Compile Include="ViewModels\UserPickViewModel.cs" />

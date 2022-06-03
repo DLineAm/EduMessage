@@ -81,32 +81,6 @@ namespace EduMessage.ViewModels
                     await formattedMessage.Attachments.WriteAttachmentImagePath();
                     AddToMessagesWithGrouping(formattedMessage);
                 }
-
-                //var formattedMessages = response.Adapt<FormattedMessage>(config);
-
-                //var alreadyExistedMessageIds = new List<int>();
-                //var messages = response.Select(messageAttachment => messageAttachment.IdMessageNavigation).ToList();
-
-                //foreach (var message in messages)
-                //{
-                //    if (alreadyExistedMessageIds.Any(m => m == message.Id))
-                //    {
-                //        continue;
-                //    }
-                //    var attachments = response.Where(m => m.IdMessage == message.Id)
-                //        .Select(m => m.IdAttachmentNavigation);
-
-                //    var enumerable = attachments as Attachment[] ?? attachments.ToArray();
-                //    await enumerable.WriteAttachmentImagePath();
-
-                //    var formattedMessage = new FormattedMessage { Message = message, Attachments = new HashSet<Attachment>(enumerable) };
-                //    alreadyExistedMessageIds.Add(message.Id);
-
-                //    _context = SynchronizationContext.Current;
-                //    AddToMessagesWithGrouping(formattedMessage);
-                //}
-
-
             }
 #pragma warning disable CS0168 // Переменная "e" объявлена, но ни разу не использована.
             catch (Exception e)

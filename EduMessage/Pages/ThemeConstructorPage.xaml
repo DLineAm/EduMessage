@@ -7,12 +7,19 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:services="using:EduMessage.Services"
     xmlns:viewModels="using:EduMessage.ViewModels"
+    xmlns:utils="using:EduMessage.Utils"
+    xmlns:controls="using:Microsoft.UI.Xaml.Controls"
     mc:Ignorable="d"
     d:DataContext="{d:DesignInstance Type=viewModels:ThemeConstructorPageViewModel}"
     x:Name="Page">
 
     <Page.Resources>
         <services:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"></services:BoolToVisibilityConverter>
+        <utils:SystemAccentColorSetting x:Key="AccentColorSetting"></utils:SystemAccentColorSetting>
+        <utils:DateToDateConverter x:Key="DateToDateConverter"></utils:DateToDateConverter>
+        <utils:StringFormatConverter x:Key="StringFormatConverter"></utils:StringFormatConverter>
+        <utils:NullToVisibilityConverter x:Key="NullToVisibilityConverter"></utils:NullToVisibilityConverter>
+        <utils:InverseNullToVisibilityConverter x:Key="InverseNullToVisibilityConverter"></utils:InverseNullToVisibilityConverter>
     </Page.Resources>
 
     <Grid>
@@ -23,8 +30,11 @@
                     <RowDefinition></RowDefinition>
                     <RowDefinition Height="Auto"></RowDefinition>
                     <RowDefinition Height="Auto"></RowDefinition>
+                    <RowDefinition Height="Auto"></RowDefinition>
                 </Grid.RowDefinitions>
                 <StackPanel>
+                    <TextBlock Text="{Binding ErrorText}"
+                               Foreground="Red"></TextBlock>
                     <TextBox Header="Название"
                              Text="{Binding Title, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"></TextBox>
 
@@ -34,49 +44,8 @@
                     <Border Height="40"
                             Margin="0 12 0 0"
                             Style="{StaticResource CardBorder}">
-                        <ListView ItemsSource="{Binding Features}"
-                                  SelectionMode="None">
-                            <ListView.ItemsPanel>
-                                <ItemsPanelTemplate>
-                                    <ItemsStackPanel Orientation="Horizontal"></ItemsStackPanel>
-                                </ItemsPanelTemplate>
-                            </ListView.ItemsPanel>
-                            <ListView.ItemTemplate>
-                                <DataTemplate x:DataType="services:IFeature">
-                                    <AppBarButton Icon="{Binding Icon}"
-                                                  Visibility="{Binding ShowInBar, Converter={StaticResource BoolToVisibilityConverter}}"
-                                                  IsCompact="True"
-                                                  Margin="0 0"
-                                                  Command="{Binding DataContext.AddStringCommand, ElementName=Page}"
-                                                  CommandParameter="{Binding }"
-                                                  ToolTipService.ToolTip="{Binding Description}"></AppBarButton>
-                                </DataTemplate>
-                            </ListView.ItemTemplate>
-                        </ListView>
-                    </Border>
-                    <TextBox MaxHeight="600"
-                             MinHeight="100"
-                             TextWrapping="Wrap"
-                             Text="{Binding Description, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                             x:Name="DescriptionBox"></TextBox>
-                </StackPanel>
-
-                <StackPanel Grid.Row="1"
-                            Orientation="Horizontal"
-                            Margin="0 12">
-
-                    <StackPanel>
-                        <AppBarButton Icon="OpenFile"
-                                      Label="Добавить файлы"
-                                      Command="{Binding AddFilesCommand}"></AppBarButton>
-                        <AppBarButton Icon="Clear"
-                                      Label="Очистить"
-                                      Command="{Binding ClearFilesCommand}"></AppBarButton>
-                    </StackPanel>
-                    <Pivot SelectedIndex="{Binding SelectedPivotIndex, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
-                        <PivotItem Header="Изображения"
-                                   Height="100">
-                            <ListView ItemsSource="{Binding Images}"
+                        <StackPanel Orientation="Horizontal">
+                            <ListView ItemsSource="{Binding Features}"
                                       SelectionMode="None">
                                 <ListView.ItemsPanel>
                                     <ItemsPanelTemplate>
@@ -84,78 +53,196 @@
                                     </ItemsPanelTemplate>
                                 </ListView.ItemsPanel>
                                 <ListView.ItemTemplate>
-                                    <DataTemplate>
-                                        <Grid Width="150">
-                                            <StackPanel>
-                                                <Image Height="48"
+                                    <DataTemplate x:DataType="services:IFeature">
+                                        <AppBarButton Icon="{Binding Icon}"
+                                                      Visibility="{Binding ShowInBar, Converter={StaticResource BoolToVisibilityConverter}}"
+                                                      IsCompact="True"
+                                                      Margin="0 -4 0 0"
+                                                      Command="{Binding DataContext.AddStringCommand, ElementName=Page}"
+                                                      CommandParameter="{Binding }"
+                                                      ToolTipService.ToolTip="{Binding Description}"></AppBarButton>
+                                    </DataTemplate>
+                                </ListView.ItemTemplate>
+                            </ListView>
+
+                            <ToggleButton Click="ButtonBase_OnClick"
+                                          Background="Transparent"
+                                          BorderThickness="0"
+                                          Margin="20 0 0 0">
+                                <ToggleButton.Content>
+                                    <SymbolIcon Symbol="List"></SymbolIcon>
+                                </ToggleButton.Content>
+                            </ToggleButton>
+                        </StackPanel>
+                    </Border>
+                    <RichEditBox MaxHeight="600"
+                             MinHeight="100"
+                             TextWrapping="Wrap"
+                             utils:RichTextBoxExtension.PlainText="{Binding Description, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                             ContextMenuOpening="DescriptionBox_OnContextMenuOpening"
+                             x:Name="DescriptionBox"></RichEditBox>
+                </StackPanel>
+
+                <StackPanel Grid.Row="1">
+                    <TextBlock Text="Задание"
+                               Margin="0 12"></TextBlock>
+
+                    <Border Style="{StaticResource AcrylicCardBorder}"
+                            Height="100">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"></ColumnDefinition>
+                                <ColumnDefinition></ColumnDefinition>
+                                <ColumnDefinition Width="Auto"></ColumnDefinition>
+                            </Grid.ColumnDefinitions>
+
+                            <TextBlock Text="Нет активного задания"
+                                       Style="{StaticResource 26TitleTextBlock}"
+                                       FontSize="20"
+                                       Grid.ColumnSpan="2"
+                                       VerticalAlignment="Center"
+                                       Margin="12 0 0 0"
+                                       Visibility="{Binding Task, Converter={StaticResource InverseNullToVisibilityConverter}}"></TextBlock>
+
+                            <Viewbox Margin="12 20"
+                                     Visibility="{Binding Task, Converter={StaticResource NullToVisibilityConverter}}">
+                                <SymbolIcon Symbol="Clock"></SymbolIcon>
+                            </Viewbox>
+
+                            <StackPanel Grid.Column="1"
+                                        VerticalAlignment="Center"
+                                        Visibility="{Binding Task, Converter={StaticResource NullToVisibilityConverter}}">
+                                <TextBlock Grid.Column="1"
+                                           Style="{StaticResource 26TitleTextBlock}"
+                                           FontSize="20"
+                                           Text="{Binding Task.Description, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                           TextTrimming="CharacterEllipsis"></TextBlock>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock>
+                                        <TextBlock.Text>
+                                            <Binding Path="Task.EndTime"
+                                                     Mode="TwoWay"
+                                                     UpdateSourceTrigger="PropertyChanged"
+                                                     Converter="{StaticResource StringFormatConverter}"
+                                                     ConverterParameter="{}Выполнить до {0:dd/MM/yyy HH:mm (ddd)}"></Binding>
+                                        </TextBlock.Text>
+                                    </TextBlock>
+                                </StackPanel>
+                            </StackPanel>
+
+                            <HyperlinkButton Content="Изменить"
+                                    Grid.Column="2"
+                                    Margin="12 0"
+                                    Command="{Binding ChangeTaskCommand}"></HyperlinkButton>
+
+
+                        </Grid>
+                    </Border>
+                </StackPanel>
+
+                <StackPanel Grid.Row="2"
+                            Margin="0 12">
+
+                    <TextBlock Margin="0 12 0 0">
+                        Прикрепленные файлы <Run Text="(всего файлов:" Foreground="{ThemeResource TextBoxButtonForegroundThemeBrush}"></Run> <Run Text="{Binding FilesCount}" Foreground="{ThemeResource TextBoxButtonForegroundThemeBrush}"></Run><Run Text=")" Foreground="{ThemeResource TextBoxButtonForegroundThemeBrush}"></Run>
+                    </TextBlock>
+
+                    <StackPanel Orientation="Horizontal"
+                                Margin="0 12">
+
+                        <StackPanel VerticalAlignment="Bottom">
+                            <AppBarButton Icon="OpenFile"
+                                      Label="Добавить файлы"
+                                      Command="{Binding AddFilesCommand}"></AppBarButton>
+                            <AppBarButton Icon="Clear"
+                                      Label="Очистить"
+                                      Command="{Binding ClearFilesCommand}"></AppBarButton>
+                        </StackPanel>
+                        <Pivot SelectedIndex="{Binding SelectedPivotIndex, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                            <PivotItem Header="Изображения"
+                                   Height="100">
+                                <ListView ItemsSource="{Binding Images}"
+                                      SelectionMode="None">
+                                    <ListView.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <ItemsStackPanel Orientation="Horizontal"></ItemsStackPanel>
+                                        </ItemsPanelTemplate>
+                                    </ListView.ItemsPanel>
+                                    <ListView.ItemTemplate>
+                                        <DataTemplate>
+                                            <Grid Width="150">
+                                                <StackPanel>
+                                                    <Image Height="48"
                                                        Width="48"
                                                        HorizontalAlignment="Center"
                                                        Source="{Binding ImagePath}"></Image>
-                                                <TextBlock Text="{Binding Title}"
+                                                    <TextBlock Text="{Binding Title}"
                                                            TextTrimming="CharacterEllipsis"
                                                            TextAlignment="Center"></TextBlock>
-                                            </StackPanel>
-                                            <Button HorizontalAlignment="Right"
+                                                </StackPanel>
+                                                <Button HorizontalAlignment="Right"
                                                     VerticalAlignment="Top"
                                                     Background="{ThemeResource SystemControlAcrylicElementBrush}"
                                                     Command="{Binding DataContext.DeleteFileCommand, ElementName=Page}"
                                                     CommandParameter="{Binding }">
-                                                <Button.Content>
-                                                    <Viewbox Height="15">
-                                                        <SymbolIcon Symbol="Delete"/>
-                                                    </Viewbox>
-                                                </Button.Content>
-                                            </Button>
-                                        </Grid>
-                                    </DataTemplate>
-                                </ListView.ItemTemplate>
-                            </ListView>
-                        </PivotItem>
-                        <PivotItem Header="Прочие файлы"
+                                                    <Button.Content>
+                                                        <Viewbox Height="15">
+                                                            <SymbolIcon Symbol="Delete"/>
+                                                        </Viewbox>
+                                                    </Button.Content>
+                                                </Button>
+                                            </Grid>
+                                        </DataTemplate>
+                                    </ListView.ItemTemplate>
+                                </ListView>
+                            </PivotItem>
+                            <PivotItem Header="Прочие файлы"
                                    Height="100">
-                            <ListView ItemsSource="{Binding OtherFiles}"
+                                <ListView ItemsSource="{Binding OtherFiles}"
                                       SelectionMode="None">
-                                <ListView.ItemsPanel>
-                                    <ItemsPanelTemplate>
-                                        <ItemsStackPanel Orientation="Horizontal"></ItemsStackPanel>
-                                    </ItemsPanelTemplate>
-                                </ListView.ItemsPanel>
-                                <ListView.ItemTemplate>
-                                    <DataTemplate>
-                                        <Grid Width="150">
-                                            <StackPanel>
-                                                <Image Height="48"
+                                    <ListView.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <ItemsStackPanel Orientation="Horizontal"></ItemsStackPanel>
+                                        </ItemsPanelTemplate>
+                                    </ListView.ItemsPanel>
+                                    <ListView.ItemTemplate>
+                                        <DataTemplate>
+                                            <Grid Width="150">
+                                                <StackPanel>
+                                                    <Image Height="48"
                                                        Width="48"
                                                        HorizontalAlignment="Center"
                                                        Source="{Binding ImagePath}"></Image>
-                                                <TextBlock Text="{Binding Title}"
+                                                    <TextBlock Text="{Binding Title}"
                                                            TextTrimming="CharacterEllipsis"
                                                            MaxWidth="150"
                                                            TextAlignment="Center"></TextBlock>
-                                            </StackPanel>
-                                            <Button HorizontalAlignment="Right"
+                                                </StackPanel>
+                                                <Button HorizontalAlignment="Right"
                                                     VerticalAlignment="Top"
                                                     Background="{ThemeResource SystemControlAcrylicElementBrush}"
                                                     Command="{Binding DataContext.DeleteFileCommand, ElementName=Page}"
                                                     CommandParameter="{Binding }">
-                                                <Button.Content>
-                                                    <Viewbox Height="15">
-                                                        <SymbolIcon Symbol="Delete"/>
-                                                    </Viewbox>
-                                                </Button.Content>
-                                            </Button>
-                                        </Grid>
-                                        
-                                    </DataTemplate>
-                                </ListView.ItemTemplate>
-                            </ListView>
-                        </PivotItem>
-                    </Pivot>
-                   
+                                                    <Button.Content>
+                                                        <Viewbox Height="15">
+                                                            <SymbolIcon Symbol="Delete"/>
+                                                        </Viewbox>
+                                                    </Button.Content>
+                                                </Button>
+                                            </Grid>
+
+                                        </DataTemplate>
+                                    </ListView.ItemTemplate>
+                                </ListView>
+                            </PivotItem>
+                        </Pivot>
+
+                    </StackPanel>
                 </StackPanel>
 
 
-                <StackPanel Grid.Row="2"
+
+                <StackPanel Grid.Row="3"
                             Orientation="Horizontal"
                             Margin="0 12 0 0">
                     <HyperlinkButton Content="Применить"
@@ -166,6 +253,41 @@
                 </StackPanel>
             </Grid>
         </ScrollViewer>
-       
+
+        <ContentDialog Title="Редактирование задания"
+                       PrimaryButtonText="Применить"
+                       PrimaryButtonCommand="{Binding AddOrChangeTaskCommand}"
+                       SecondaryButtonText="Отмена"
+                       SecondaryButtonClick="TaskDialog_OnSecondaryButtonClick"
+                       DefaultButton="Primary"
+                       x:Name="TaskDialog">
+            <StackPanel>
+                <controls:InfoBar IsOpen="True"
+                                  IsClosable="False"
+                                  Severity="{Binding Severity}"
+                                  Title="{Binding InfoBarTitle}"
+                                  Message="{Binding InfoBarMessage}"/>
+                <TextBlock Text="{Binding DialogErrorText}"
+                           Foreground="Red"></TextBlock>
+                <TextBox Header="Описание"
+                         Text="{Binding TaskDescription, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                         Margin="0 12 0 0"></TextBox>
+
+                <StackPanel Orientation="Horizontal"
+                            Margin="0 12 0 0">
+                    <TextBlock Text="Выполнить до "
+                               VerticalAlignment="Center"></TextBlock>
+                    <CalendarDatePicker Date="{Binding TaskDate, Converter={StaticResource DateToDateConverter}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                        Language="ru"
+                                        IsGroupLabelVisible="True"
+                                        Margin="12 0 0 0"></CalendarDatePicker>
+                    <TimePicker ClockIdentifier="24HourClock"
+                                Margin="12 0 0 0"
+                                SelectedTime="{Binding TaskTime, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                MinuteIncrement="10"></TimePicker>
+                </StackPanel>
+            </StackPanel>
+        </ContentDialog>
+
     </Grid>
 </Page>

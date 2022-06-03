@@ -20,7 +20,7 @@ namespace EduMessage.Pages
     /// <summary>
     /// Пустая страница, которую можно использовать саму по себе или для перехода внутри фрейма.
     /// </summary>
-    public sealed partial class EducationCourseListPage : Page, IEventSubscriber<CourseDialogStartShowing>, IEventSubscriber<CourseAddedOrChangedEvent>
+    public sealed partial class EducationCourseListPage : Page
     {
         private bool _isPageLoaded;
         private bool _contentDialogCompleted;
@@ -32,12 +32,12 @@ namespace EduMessage.Pages
             ViewModel = ControlContainer.Get().ResolveConstructor<EducationListPageViewModel>();
             _featureCollection = ControlContainer.Get().ResolveConstructor<FeatureCollection>();
 
-            ContentFrame.Navigate(typeof(ItemsPickPage));
+            //ContentFrame.Navigate(typeof(ItemsPickPage));
 
-            var page = ContentFrame.Content as ItemsPickPage;
+            //var page = ContentFrame.Content as ItemsPickPage;
 
             var eventAggregator = ControlContainer.Get().Resolve<IEventAggregator>();
-            page.Initialize(eventAggregator);
+            //page.Initialize(eventAggregator);
         }
 
         protected override async void OnNavigatedTo(NavigationEventArgs e)
@@ -54,62 +54,62 @@ namespace EduMessage.Pages
 
         public EducationListPageViewModel ViewModel { get; }
 
-        public async void OnEvent(CourseDialogStartShowing eventData)
-        {
-            if (!_isPageLoaded)
-            {
-                return;
-            }
+//        public async void OnEvent(CourseDialogStartShowing eventData)
+//        {
+//            if (!_isPageLoaded)
+//            {
+//                return;
+//            }
 
-            var parameter = eventData.IsAddMode;
+//            var parameter = eventData.IsAddMode;
 
-            CourseAddDialog.Title = parameter ? "Добавление курса" : "Изменение курса";
+//            //CourseAddDialog.Title = parameter ? "Добавление курса" : "Изменение курса";
 
-            try
-            {
-                _contentDialogCompleted = false;
-                while (!_contentDialogCompleted)
-                {
-                    await CourseAddDialog.ShowAsync();
-                }
-            }
-#pragma warning disable CS0168 // Переменная "e" объявлена, но ни разу не использована.
-            catch (Exception e)
-#pragma warning restore CS0168 // Переменная "e" объявлена, но ни разу не использована.
-            {
+//            try
+//            {
+//                _contentDialogCompleted = false;
+//                while (!_contentDialogCompleted)
+//                {
+//                    //await CourseAddDialog.ShowAsync();
+//                }
+//            }
+//#pragma warning disable CS0168 // Переменная "e" объявлена, но ни разу не использована.
+//            catch (Exception e)
+//#pragma warning restore CS0168 // Переменная "e" объявлена, но ни разу не использована.
+//            {
 
-            }
+//            }
 
-        }
+//        }
 
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
             _isPageLoaded = true;
         }
 
-        private void CourseAddDialog_OnClosing(ContentDialog sender, ContentDialogClosingEventArgs args)
-        {
+        //private void CourseAddDialog_OnClosing(ContentDialog sender, ContentDialogClosingEventArgs args)
+        //{
 
-        }
+        //}
 
-        private void CourseAddDialog_OnPrimaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
-        {
+        //private void CourseAddDialog_OnPrimaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
+        //{
 
-        }
+        //}
 
-        private void CourseAddDialog_OnSecondaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
-        {
-            _contentDialogCompleted = true;
-        }
+        //private void CourseAddDialog_OnSecondaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
+        //{
+        //    _contentDialogCompleted = true;
+        //}
 
-        public void OnEvent(CourseAddedOrChangedEvent eventData)
-        {
-            _contentDialogCompleted = eventData.IsSuccess;
-            if (eventData.IsSuccess)
-            {
-                CourseAddDialog.Hide();
-            }
-        }
+        //public void OnEvent(CourseAddedOrChangedEvent eventData)
+        //{
+        //    _contentDialogCompleted = eventData.IsSuccess;
+        //    if (eventData.IsSuccess)
+        //    {
+        //        CourseAddDialog.Hide();
+        //    }
+        //}
 
         private void FrameworkElement_OnDataContextChanged(FrameworkElement sender, DataContextChangedEventArgs args)
         {
@@ -207,20 +207,6 @@ namespace EduMessage.Pages
 
             UIElement dummyElement = new TextBlock();
             return baseFeature.Realise((text, formattedCourse), ref dummyElement);
-        }
-
-        private UIElement GetBaseUiElement(string description, int index)
-        {
-            string firstPart = "";
-
-            firstPart = index == -1 
-                ? description 
-                : description.Substring(0, index);
-
-            var baseFeature = _featureCollection.Features.FirstOrDefault(f =>
-                f.IsDefaultPattern == false && f.ShowInBar == false && f.FeatureType == typeof(TextBlock));
-            UIElement textBlock = new TextBlock();
-            return  baseFeature.Realise(firstPart, ref textBlock);
         }
     }
 }

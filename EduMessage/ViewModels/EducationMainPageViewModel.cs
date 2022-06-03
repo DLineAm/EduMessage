@@ -1,4 +1,5 @@
-﻿using EduMessage.Pages;
+﻿using EduMessage.Models;
+using EduMessage.Pages;
 using EduMessage.Services;
 
 using MvvmGen;
@@ -7,17 +8,14 @@ using MvvmGen.Events;
 using SignalIRServerTest;
 
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
 
 using Windows.UI.Xaml.Media.Animation;
-using EduMessage.Models;
 
 namespace EduMessage.ViewModels
 {
     [ViewModel]
-    public partial class EducationMainPageViewModel : IEventSubscriber<SelectedSpecialityChangedeEvent>
+    public partial class EducationMainPageViewModel : IEventSubscriber<SelectedSpecialityChangedEvent>
     {
         [Property]
         private ObservableCollection<Crumb> _crumbs = new()
@@ -30,22 +28,22 @@ namespace EduMessage.ViewModels
             //App.SelectedSpeciallityChanged += App_SelectedSpeciallityChanged;
         }
 
-        public void OnEvent(SelectedSpecialityChangedeEvent eventData)
+        public void OnEvent(SelectedSpecialityChangedEvent eventData)
         {
             var parameter = eventData.Parameter;
 
-            if (parameter == null)
+            var crumb = new Crumb {Data = parameter};
+
+            if (parameter is (int mainCourseId, FormattedCourse course))
             {
+                crumb.Title = (course.Course == null ? "Создание " : "Изменение ") + "темы";
+                Crumbs.Add(crumb);
+                new Navigator().Navigate(typeof(ThemeConstructorPage), (mainCourseId, course), new DrillInNavigationTransitionInfo(), FrameType.EducationFrame);
                 return;
             }
 
-            var crumb = new Crumb {Data = parameter};
-
-            if (parameter is int id)
+            if (parameter == null)
             {
-                crumb.Title = (id == 0 ? "Создание " : "Изменение ") + "темы";
-                Crumbs.Add(crumb);
-                new Navigator().Navigate(typeof(ThemeConstructorPage), id, new DrillInNavigationTransitionInfo(), FrameType.EducationFrame);
                 return;
             }
 

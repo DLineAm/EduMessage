@@ -57,7 +57,7 @@ namespace EduMessage.ViewModels
 
         private void Navigate()
         {
-            EventAggregator.Publish(new SelectedSpecialityChangedeEvent(EducationFolder));
+            EventAggregator.Publish(new SelectedSpecialityChangedEvent(EducationFolder));
         }
     }
 }

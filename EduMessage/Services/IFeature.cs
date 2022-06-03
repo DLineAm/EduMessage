@@ -140,7 +140,12 @@ namespace EduMessage.Services
                 return new Image();
             }
 
-            var attachment = course.Attachments.FirstOrDefault(a => a.Title == part);
+            var attachment = course.Attachments.Where(a => a != null)
+                .FirstOrDefault(a => a.Title == part);
+            if (attachment == null)
+            {
+                return new Image();
+            }
             var imagePath = attachment.ImagePath;
             BitmapImage source = null;
             if (imagePath is BitmapImage bitmap)

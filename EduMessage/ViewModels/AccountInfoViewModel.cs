@@ -3,22 +3,18 @@
 using MvvmGen;
 using MvvmGen.Events;
 
-using Newtonsoft.Json.Converters;
-
-using SignalIRServerTest;
+using SignalIRServerTest.Models;
 
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
-using System.Text;
 using System.Threading.Tasks;
 
 using Windows.Storage;
 using Windows.Storage.Pickers;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using SignalIRServerTest.Models;
 
 namespace EduMessage.ViewModels
 {
@@ -34,12 +30,20 @@ namespace EduMessage.ViewModels
         [Property] private Visibility _backButtonVisibility = Visibility.Collapsed;
         [Property] private string _password;
         [Property] private string _repeatPassword;
-        [Property] private string _errorText;
+        //[Property] private string _errorText;
+        [Property] private bool _isInfoBarOpen;
+        [Property] private string _infoBarMessage;
 
         public async Task Initialize()
         {
             User = App.Account.GetUser();
             await BaseInitialize();
+        }
+
+        private void ChangeInfoBarMessage(string message = null)
+        {
+            InfoBarMessage = message;
+            IsInfoBarOpen = message != null;
         }
 
         public async Task Initialize(User user)
@@ -77,6 +81,12 @@ namespace EduMessage.ViewModels
         }
 
         [Command]
+        private void InitializeAccountDeleteDialog()
+        {
+            ChangeInfoBarMessage();
+        }
+
+        [Command]
         private void Back()
         {
             new Navigator().GoBack(FrameType.MenuFrame);
@@ -92,17 +102,17 @@ namespace EduMessage.ViewModels
         [Command]
         private async void DeleteAccount()
         {
-            ErrorText = "";
+            ChangeInfoBarMessage();
             if (string.IsNullOrWhiteSpace(Password) ||
                 string.IsNullOrWhiteSpace(RepeatPassword))
             {
-                ErrorText = "Все поля должны быть заполнены!";
+                ChangeInfoBarMessage("Все поля должны быть заполнены!");
                 return;
             }
 
             if (Password != RepeatPassword)
             {
-                ErrorText = "Пароли должны совпадать";
+                ChangeInfoBarMessage("Пароли должны совпадать!");
                 return;
             }
 
@@ -111,10 +121,10 @@ namespace EduMessage.ViewModels
             switch (response)
             {
                 case "Exception":
-                    ErrorText = "При удалении пользователя произошла ошибка 500";
+                    ChangeInfoBarMessage("Не удалось удалить пользователя, повторите попытку позже");
                     break;
                 case "Not found by password" or "Not found by id":
-                    ErrorText = "Неверное имя пользователя и/или пароль";
+                    ChangeInfoBarMessage("Неверное имя пользователя и/или пароль");
                     break;
                 default:
                     EventAggregator.Publish(new DialogResultChanged(true));

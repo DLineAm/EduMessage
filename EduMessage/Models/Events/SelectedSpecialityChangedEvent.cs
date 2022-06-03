@@ -3,5 +3,5 @@ using SignalIRServerTest;
 
 namespace EduMessage.ViewModels
 {
-    public record SelectedSpecialityChangedeEvent(dynamic Parameter);
+    public record SelectedSpecialityChangedEvent(dynamic Parameter);
 }

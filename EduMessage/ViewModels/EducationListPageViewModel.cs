@@ -1,5 +1,7 @@
-﻿using EduMessage.Pages;
+﻿using EduMessage.Models;
 using EduMessage.Services;
+
+using Mapster;
 
 using MvvmGen;
 using MvvmGen.Events;
@@ -11,24 +13,19 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
 
 using Windows.ApplicationModel.Core;
-using Windows.Storage;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Media.Animation;
-using EduMessage.Models;
-using Mapster;
 
 namespace EduMessage.ViewModels
 {
     [ViewModel]
     [Inject(typeof(IEventAggregator))]
     [Inject(typeof(TypeAdapterConfig))]
-    public partial class EducationListPageViewModel : IEventSubscriber<DropCompletedEvent>, IEventSubscriber<CourseRequestCompleted>
+    public partial class EducationListPageViewModel : IEventSubscriber<CourseRequestCompleted>
     {
         [Property] private ObservableCollection<FormattedCourse> _courses = new();
         [Property] private ObservableCollection<Attachment> _files = new();
@@ -148,39 +145,18 @@ namespace EduMessage.ViewModels
             NoResultsFoundAnimationVisibility = visibility;
         }
 
-        [Command]
-        private void CleanFilesList()
-        {
-            Files.Clear();
-            UpdateAccessibility();
-        }
+        //[Command]
+        //private void CleanFilesList()
+        //{
+        //    Files.Clear();
+        //    UpdateAccessibility();
+        //}
 
         [Command]
         private void InitializeChangeCourseDialog(object courseObj)
         {
-            if (courseObj is not FormattedCourse course) return;
-
-            _isCourseAddMode = false;
-
-            var educationCourse = course.Course;
-
-            _selectedCourse = course;
-
-            Files.Clear();
-            if (course.Attachments != null)
-            {
-                foreach (var courseAttachment in course.Attachments)
-                {
-                    Files.Add(courseAttachment);
-                } 
-            }
-
-            CourseTitle = educationCourse.Title;
-            CourseDescription = educationCourse.Description;
-
-            IsClearButtonEnabled = Files.Count > 0;
-
-            EventAggregator.Publish(new CourseDialogStartShowing(_isCourseAddMode));
+            var course = courseObj as FormattedCourse;
+            EventAggregator.Publish(new SelectedSpecialityChangedEvent((_mainCourse.Id, course)));
         }
 
         [Command]
@@ -204,7 +180,8 @@ namespace EduMessage.ViewModels
                     Id = selectedCourse?.Id ?? 0,
                     Title = CourseTitle,
                     Description = CourseDescription,
-                    IdMainCourse = _mainCourse.Id
+                    IdMainCourse = _mainCourse.Id,
+                    IdTeacher = selectedCourse?.IdTeacher
                 };
 
             List<Attachment> attachments = Files.ToList();
@@ -322,73 +299,73 @@ namespace EduMessage.ViewModels
 
         
 
-        [Command]
-        private void Cancel()
-        {
-            CourseTitle = string.Empty;
-            CourseDescription = string.Empty;
-            Files.Clear();
-        }
+        //[Command]
+        //private void Cancel()
+        //{
+        //    CourseTitle = string.Empty;
+        //    CourseDescription = string.Empty;
+        //    Files.Clear();
+        //}
 
-        [Command]
-        private void DeleteFile(object file)
-        {
-            var convertedFile = file as Attachment;
-            Files.Remove(convertedFile);
-            UpdateAccessibility();
-        }
+        //[Command]
+        //private void DeleteFile(object file)
+        //{
+        //    var convertedFile = file as Attachment;
+        //    Files.Remove(convertedFile);
+        //    UpdateAccessibility();
+        //}
 
-        private void UpdateAccessibility()
-        {
-            IsClearButtonEnabled = Files.Count > 0;
-        }
+        //private void UpdateAccessibility()
+        //{
+        //    IsClearButtonEnabled = Files.Count > 0;
+        //}
 
 
-        private async Task<List<Attachment>> ReadFiles(IReadOnlyList<Windows.Storage.IStorageItem> items)
-        {
-            var result = new List<Attachment>();
-            var tasks = new List<Task>();
-            for (int i = 0; i < items.Count; i++)
-            {
-                IStorageItem item = items[i];
-                if (item is StorageFolder folder)
-                {
-                    var filesInFolder = await ReadFiles(await folder.GetFilesAsync());
-                    var filesInFolders = await ReadFiles(await folder.GetFoldersAsync());
+        //private async Task<List<Attachment>> ReadFiles(IReadOnlyList<Windows.Storage.IStorageItem> items)
+        //{
+        //    var result = new List<Attachment>();
+        //    var tasks = new List<Task>();
+        //    for (int i = 0; i < items.Count; i++)
+        //    {
+        //        IStorageItem item = items[i];
+        //        if (item is StorageFolder folder)
+        //        {
+        //            var filesInFolder = await ReadFiles(await folder.GetFilesAsync());
+        //            var filesInFolders = await ReadFiles(await folder.GetFoldersAsync());
 
-                    result.AddRange(filesInFolder);
-                    result.AddRange(filesInFolders);
-                }
-                else if (item is StorageFile file)
-                {
-                    var fileProps = await file.GetBasicPropertiesAsync();
-                    if (fileProps.Size == 0 && fileProps.Size >= 250 * 1024 * 1024)
-                    {
-                        continue;
-                    }
+        //            result.AddRange(filesInFolder);
+        //            result.AddRange(filesInFolders);
+        //        }
+        //        else if (item is StorageFile file)
+        //        {
+        //            var fileProps = await file.GetBasicPropertiesAsync();
+        //            if (fileProps.Size == 0 && fileProps.Size >= 250 * 1024 * 1024)
+        //            {
+        //                continue;
+        //            }
 
-                    var buffer = await FileIO.ReadBufferAsync(file);
-                    var data = buffer.ToArray();
-                    await Task.Delay(TimeSpan.FromMilliseconds(1));
+        //            var buffer = await FileIO.ReadBufferAsync(file);
+        //            var data = buffer.ToArray();
+        //            await Task.Delay(TimeSpan.FromMilliseconds(1));
 
-                    var attachment = new Attachment
-                    {
-                        Title = file.Name,
-                        Data = data
-                    };
+        //            var attachment = new Attachment
+        //            {
+        //                Title = file.Name,
+        //                Data = data
+        //            };
 
-                    attachment.IdType = attachment.ConvertFileType(file.FileType);
+        //            attachment.IdType = attachment.ConvertFileType(file.FileType);
 
-                    result.Add(attachment);
+        //            result.Add(attachment);
 
-                    await Task.Delay(TimeSpan.FromMilliseconds(10));
-                }
-            }
+        //            await Task.Delay(TimeSpan.FromMilliseconds(10));
+        //        }
+        //    }
 
-            await result.WriteAttachmentImagePath();
+        //    await result.WriteAttachmentImagePath();
 
-            return result;
-        }
+        //    return result;
+        //}
 
         [Command]
         private void InitializeAddCourseDialog()
@@ -404,7 +381,7 @@ namespace EduMessage.ViewModels
 
             //EventAggregator.Publish(new CourseDialogStartShowing(_isCourseAddMode));
 
-            EventAggregator.Publish(new SelectedSpecialityChangedeEvent(_mainCourse.Id));
+            EventAggregator.Publish(new SelectedSpecialityChangedEvent((_mainCourse.Id, new FormattedCourse())));
             //new Navigator().Navigate(typeof(ThemeConstructorPage), _mainCourse.Id, new DrillInNavigationTransitionInfo(), FrameType.EducationFrame);
         }
 
@@ -438,28 +415,28 @@ namespace EduMessage.ViewModels
             }
         }
 
-        public async void OnEvent(DropCompletedEvent eventData)
-        {
-            var items = eventData.Items;
+//        public async void OnEvent(DropCompletedEvent eventData)
+//        {
+//            var items = eventData.Items;
 
-            try
-            {
-                var files = await ReadFiles(items);
+//            try
+//            {
+//                var files = await ReadFiles(items);
 
-                foreach (var file in files)
-                {
-                    Files.Add(file);
-                }
+//                foreach (var file in files)
+//                {
+//                    Files.Add(file);
+//                }
 
-                UpdateAccessibility();
-            }
-#pragma warning disable CS0168 // Переменная "e" объявлена, но ни разу не использована.
-            catch (Exception e)
-#pragma warning restore CS0168 // Переменная "e" объявлена, но ни разу не использована.
-            {
+//                UpdateAccessibility();
+//            }
+//#pragma warning disable CS0168 // Переменная "e" объявлена, но ни разу не использована.
+//            catch (Exception e)
+//#pragma warning restore CS0168 // Переменная "e" объявлена, но ни разу не использована.
+//            {
 
-            }
-        }
+//            }
+//        }
 
         public void OnEvent(CourseRequestCompleted eventData)
         {

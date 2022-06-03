@@ -25,6 +25,12 @@
                        Grid.RowSpan="2"
                        PrimaryButtonCommand="{Binding DeleteAccountCommand}">
             <StackPanel>
+                <controls:InfoBar IsOpen="{Binding IsInfoBarOpen}"
+                                  IsClosable="False"
+                                  Severity="Error"
+                                  Title="Ошибка"
+                                  Message="{Binding InfoBarMessage}"
+                                  Margin="0 0 0 12"/>
                 <PasswordBox Header="Пароль"
                              Password="{Binding Password, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"></PasswordBox>
                 <PasswordBox Header="Повтор пароля"
@@ -289,6 +295,7 @@
                                    Style="{ThemeResource BaseTextBlockStyle}"/>
                                         <Button Content="Да, удалить"
                                                 Click="DeleteButton_OnClick"
+                                                Command="{Binding InitializeAccountDeleteDialogCommand}"
                                 Margin="0,12,0,0"/>
                                     </StackPanel>
                                 </Flyout>
