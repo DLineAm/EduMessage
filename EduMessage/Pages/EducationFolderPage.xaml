@@ -5,15 +5,28 @@
     xmlns:local="using:EduMessage.Pages"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:signalirservertest="using:SignalIRServerTest"
+    xmlns:utils="using:EduMessage.Utils" 
+    xmlns:interactivity="using:Microsoft.Xaml.Interactivity" 
+    xmlns:core="using:Microsoft.Xaml.Interactions.Core" 
+    xmlns:viewModels="using:EduMessage.ViewModels" 
+    xmlns:controls="using:Microsoft.UI.Xaml.Controls"
     mc:Ignorable="d"
     DataContextChanged="Page_DataContextChanged"
-    d:DataContext="{d:DesignInstance Type=local:EducationFolderPage}">
+    d:DataContext="{d:DesignInstance Type=viewModels:EducationFolderPageViewModel}"
+    x:Name="Page">
+    <Page.Resources>
+        <utils:TypeToNameConverter x:Key="NameConverter"></utils:TypeToNameConverter>
+    </Page.Resources>
 
     <Grid Margin="-48,0">
         <Grid.RowDefinitions>
             <RowDefinition/>
             <RowDefinition Height="auto"/>
         </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition></ColumnDefinition>
+            <ColumnDefinition Width="Auto"></ColumnDefinition>
+        </Grid.ColumnDefinitions>
         <ListView ItemsSource="{Binding EducationFolders}"
                   SelectedItem="{Binding EducationFolder, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
             <ListView.ItemsPanel>
@@ -28,10 +41,10 @@
                     <Border Padding="12">
                         <StackPanel>
                             <FontIcon Height="64"
-                                  Width="64"
+                                      Width="64"
                                       FontSize="56"
-                                  FontFamily="Segoe MDL2 Assets"
-                                  Glyph="&#xE838;"
+                                      FontFamily="Segoe MDL2 Assets"
+                                      Glyph="&#xE838;"
                                       HorizontalAlignment="Center"/>
                             <RichTextBlock HorizontalAlignment="Center"
                                            IsHitTestVisible="False"
@@ -48,10 +61,100 @@
                                     <Run Text="{Binding Title}"/>
                                 </Paragraph>
                             </RichTextBlock>
+                            <StackPanel Orientation="Horizontal"
+                                        HorizontalAlignment="Center"
+                                        Visibility="{Binding ElementName=Page, Path=DataContext.AdminInputVisibility}">
+                                <AppBarButton Label="Изменить"
+                                          Icon="Edit"
+                                          Click="ChangeRecordButton_OnClick"
+                                          Command="{Binding ElementName=Page, Path=DataContext.SetItemToChangeCommand}"
+                                          CommandParameter="{Binding }">
+
+                                </AppBarButton>
+
+                                <AppBarButton Label="Удалить"
+                                              Icon="Delete">
+                                    <AppBarButton.Flyout>
+                                        <Flyout>
+                                            <StackPanel>
+                                                <TextBlock Style="{ThemeResource BaseTextBlockStyle}"
+                                                           TextWrapping="Wrap"
+                                                           Width="400">
+                                                    <Run Text="Вы действительно хотите удалить "/><Run Text="{Binding Converter={StaticResource NameConverter}}"/>&#x00AB;<Run Text="{Binding Title}"/><Run Text="?"/>&#x00BB;
+                                                </TextBlock>
+                                                <Button Content="Да, удалить"
+                                                        Margin="0 12 0 0"
+                                                        Command="{Binding DataContext.DeleteItemCommand, ElementName=Page}"
+                                                        CommandParameter="{Binding }"></Button>
+                                            </StackPanel>
+                                            
+                                        </Flyout>
+                                    </AppBarButton.Flyout>
+
+                                </AppBarButton>
+
+                            </StackPanel>
                         </StackPanel>
                     </Border>
                 </DataTemplate>
             </ListView.ItemTemplate>
         </ListView>
+
+        <Border Grid.Column="1"
+                Padding="12"
+                Visibility="{Binding AdminInputVisibility}">
+            <Grid >
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition />
+                </Grid.RowDefinitions>
+
+                <TextBlock Text="Действия"
+                           Style="{StaticResource 26TitleTextBlock}"/>
+
+                <StackPanel Grid.Row="1"
+                            Margin="0,12,0,0">
+                    <HyperlinkButton Command="{Binding OpenTreeChangePageCommand}">
+                        <HyperlinkButton.Content>
+                            <TextBlock Text="Изменить иерархию специальностей и курсов"
+                                       TextWrapping="WrapWholeWords"
+                                       TextAlignment="Center"
+                                       MaxWidth="150"></TextBlock>
+                        </HyperlinkButton.Content>
+                    </HyperlinkButton>
+                    <HyperlinkButton Click="ChangeRecordButton_OnClick"
+                                     Margin="0 12 0 0"
+                                     Command="{Binding SetItemToChangeCommand}">
+                        <HyperlinkButton.Content>
+                            <TextBlock Text="Добавить запись"
+                                       TextAlignment="Center"></TextBlock>
+                        </HyperlinkButton.Content>
+                    </HyperlinkButton>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <ContentDialog Title="Изменение записи"
+                       PrimaryButtonText="Принять"
+                       SecondaryButtonText="Отмена"
+                       PrimaryButtonCommand="{Binding ApplyCommand}"
+                       SecondaryButtonClick="RecordEditDialog_OnSecondaryButtonClick"
+                       DefaultButton="Primary"
+                       x:Name="RecordEditDialog">
+            <StackPanel>
+                <controls:InfoBar Severity="Error"
+                                  Title="Ошибка"
+                                  IsClosable="False"
+                                  Message="{Binding ErrorText}"
+                                  IsOpen="{Binding InfoBarIsOpen}"
+                                  Margin="0 0 0 12"></controls:InfoBar>
+                <TextBox Text="{Binding Code, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                         Visibility="{Binding CodeInputVisibility}"
+                         Header="Код"></TextBox>
+                <TextBox Text="{Binding Title, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                         Margin="0 12 0 0"
+                         Header="Название"></TextBox>
+            </StackPanel>
+        </ContentDialog>
     </Grid>
 </Page>

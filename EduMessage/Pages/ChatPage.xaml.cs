@@ -161,7 +161,15 @@ namespace EduMessage.Pages
             var mapper = ControlContainer.Get().Resolve<IMapper>();
             ViewModel = new ChatPageViewModel(mapper, notificator, aggregator);
             var chat = ControlContainer.Get().Resolve<IChat>();
-            await ViewModel.Initialize(conversation, chat);
+            try
+            {
+                await ViewModel.Initialize(conversation, chat);
+            }
+            catch (Exception ex)
+            {
+
+                throw;
+            }
             this.DataContext = ViewModel;
         }
 

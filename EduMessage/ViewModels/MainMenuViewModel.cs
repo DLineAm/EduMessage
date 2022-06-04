@@ -53,13 +53,11 @@ namespace EduMessage.ViewModels
             
         }
 
-        private async void ChangeProfilePicture(byte[] imageBytes) 
+        private async void ChangeProfilePicture(byte[] imageBytes)
         {
-            if (imageBytes != null)
-            {
-                var bitmap = await imageBytes.CreateBitmap(36);
-                AccountImage = bitmap;
-            }
+            if (imageBytes == null) return;
+            var bitmap = await imageBytes.CreateBitmap(36);
+            AccountImage = bitmap;
         }
     }
 }

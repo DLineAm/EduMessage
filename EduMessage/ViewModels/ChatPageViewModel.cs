@@ -23,7 +23,7 @@ using Windows.UI.Xaml.Media.Animation;
 using Mapster;
 using MapsterMapper;
 using Newtonsoft.Json;
-
+using Windows.UI.Core;
 
 namespace EduMessage.ViewModels
 {
@@ -212,7 +212,7 @@ namespace EduMessage.ViewModels
             AddMessageBase(formattedMessage);
         }
 
-        private void AddMessageBase(FormattedMessage formattedMessage)
+        private async void AddMessageBase(FormattedMessage formattedMessage)
         {
             var groupParameter = formattedMessage.Message.SendDate.Date;
             if (Messages.Count == 0)
@@ -234,9 +234,14 @@ namespace EduMessage.ViewModels
 
             if (foundMessageGroup == null)
             {
-                Messages.Add(new(new[] {formattedMessage}) {Key = groupParameter});
-                NoResultsVisualVisibility = Visibility.Collapsed;
-                return;
+                await Windows.UI.Core.CoreWindow.GetForCurrentThread().Dispatcher.RunAsync(CoreDispatcherPriority.Normal,
+                () =>
+                {
+                    Messages.Add(new(new[] { formattedMessage }) { Key = groupParameter });
+                    NoResultsVisualVisibility = Visibility.Collapsed;
+                });
+                    return;
+                   
             }
 
             foundMessageGroup.Add(formattedMessage);

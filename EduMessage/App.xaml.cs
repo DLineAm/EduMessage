@@ -9,6 +9,7 @@ using SignalIRServerTest.Models;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Security.Cryptography;
@@ -49,6 +50,7 @@ namespace EduMessage
         public static string Address = "https://192.168.1.6:5001/";
         //public static string Address = "https://localhost:44347/";
 
+        //public static string Address = "https://169.254.74.100:5001/";
         //public static string Address = "https://169.254.77.140:5001/";
         //public static string Address = "https://169.254.74.121:5001/";
 
@@ -70,6 +72,28 @@ namespace EduMessage
                 Interval = TimeSpan.FromHours(1)
             };
             _dndTimer.Tick += delegate { IsDoNotDisturbEnabled = false; _dndTimer.Stop(); };
+
+            UnhandledException += App_UnhandledException;
+
+            CoreApplication.UnhandledErrorDetected += CoreApplication_UnhandledErrorDetected;
+        }
+
+        private void CoreApplication_UnhandledErrorDetected(object sender, UnhandledErrorDetectedEventArgs e)
+        {
+            try
+            {
+                e.UnhandledError.Propagate();
+            }
+            catch (Exception exception)
+            {
+                Trace.WriteLine($"Error: {exception}");
+                //throw;
+            }
+        }
+
+        private void App_UnhandledException(object sender, Windows.UI.Xaml.UnhandledExceptionEventArgs e)
+        {
+            e.Handled = true;
         }
 
         protected override async void OnActivated(IActivatedEventArgs args)

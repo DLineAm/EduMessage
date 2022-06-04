@@ -22,9 +22,8 @@ namespace EduMessage.Pages
     /// </summary>
     public sealed partial class EducationCourseListPage : Page
     {
-        private bool _isPageLoaded;
-        private bool _contentDialogCompleted;
         private FeatureCollection _featureCollection;
+        private bool _isPageLoaded;
 
         public EducationCourseListPage()
         {
