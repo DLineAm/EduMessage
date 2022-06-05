@@ -19,7 +19,7 @@
         <StackPanel>
             <TextBlock Text="Обучение"
                        Style="{StaticResource 26TitleTextBlock}"/>
-            <muxc:BreadcrumbBar ItemsSource="{Binding Crumbs}"
+            <muxc:BreadcrumbBar ItemsSource="{x:Bind Crumbs, Mode=OneWay}"
                                 Margin="0,12,0,0"
                                 ItemClicked="BreadcrumbBar_ItemClicked">
                 <muxc:BreadcrumbBar.ItemTemplate>

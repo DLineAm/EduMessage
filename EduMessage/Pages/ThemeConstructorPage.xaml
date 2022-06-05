@@ -267,8 +267,6 @@
                                   Severity="{Binding Severity}"
                                   Title="{Binding InfoBarTitle}"
                                   Message="{Binding InfoBarMessage}"/>
-                <TextBlock Text="{Binding DialogErrorText}"
-                           Foreground="Red"></TextBlock>
                 <TextBox Header="Описание"
                          Text="{Binding TaskDescription, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                          Margin="0 12 0 0"></TextBox>

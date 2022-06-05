@@ -87,7 +87,7 @@ namespace EduMessage
             catch (Exception exception)
             {
                 Trace.WriteLine($"Error: {exception}");
-                //throw;
+                throw;
             }
         }
 

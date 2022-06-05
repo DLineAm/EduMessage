@@ -204,7 +204,14 @@ namespace EduMessage.ViewModels
                 EventAggregator.Publish(new InAppNotificationShowing(Symbol.Accept, "Курс добавлен!"));
                 EventAggregator.Publish(new LoaderVisibilityChanged(Visibility.Collapsed, string.Empty));
 
-                EventAggregator.Publish(new EducationPageBack());
+                try
+                {
+                    EventAggregator.Publish(new EducationPageBack());
+                }
+                catch (Exception e)
+                {
+
+                }
             }
             catch (Exception e)
             {

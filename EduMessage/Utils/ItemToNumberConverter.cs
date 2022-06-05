@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Linq;
+
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Data;
-using EduMessage.ViewModels;
+using Windows.UI.Xaml.Media;
 
 namespace EduMessage.Utils
 {
@@ -16,16 +19,20 @@ namespace EduMessage.Utils
                 return 0;
             }
 
-            var index = ListView.Items.ToList().FindIndex(i => ((dynamic)i).Id == ((dynamic)value).Id);
+            int index;
 
-            //var listViewItem = ListView.ContainerFromItem(value) as ListView;
+            if (value is ListViewItemPresenter presenter)
+            {
+                var item = VisualTreeHelper.GetParent(presenter) as ListViewItem;
+                var listView = ItemsControl.ItemsControlFromItemContainer(item);
 
-            //if (listViewItem == null)
-            //{
-            //    return 0;
-            //}
+                index = listView.IndexFromContainer(item);
 
-            //var index = ListView.IndexFromContainer(listViewItem);
+                return index + 1;
+            }
+
+            index = ListView.Items.ToList().FindIndex(i => ((dynamic)i).Id == ((dynamic)value).Id);
+
             return index + 1;
         }
 

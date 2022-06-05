@@ -154,7 +154,6 @@
     <Compile Include="Models\Role.cs" />
     <Compile Include="Models\School.cs" />
     <Compile Include="Models\Speciality.cs" />
-    <Compile Include="Models\TaskStatus.cs" />
     <Compile Include="Models\User.cs" />
     <Compile Include="Models\UserConversation.cs" />
     <Compile Include="Pages\AccountInfoPage.xaml.cs">

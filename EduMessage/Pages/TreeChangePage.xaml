@@ -8,11 +8,17 @@
     xmlns:controls="using:Microsoft.UI.Xaml.Controls"
     xmlns:ui="using:Microsoft.Toolkit.Uwp.UI"
     xmlns:viewModels="using:EduMessage.ViewModels"
+    xmlns:interactivity="using:Microsoft.Xaml.Interactivity"
+    xmlns:core="using:Microsoft.Xaml.Interactions.Core"
+    xmlns:utils="using:EduMessage.Utils"
     mc:Ignorable="d"
-    d:DataContext="{d:DesignInstance Type=viewModels:TreeChangePageViewModel}">
+    d:DataContext="{d:DesignInstance Type=viewModels:TreeChangePageViewModel}"
+    x:Name="Page">
+    <Page.Resources>
+    </Page.Resources>
 
     <Grid>
-<Grid.RowDefinitions>
+        <Grid.RowDefinitions>
             <RowDefinition Height="Auto"></RowDefinition>
             <RowDefinition></RowDefinition>
             <RowDefinition Height="Auto"></RowDefinition>
@@ -39,146 +45,187 @@
                     </ListView.ItemContainerStyle>
                     <ListView.ItemTemplate>
                         <DataTemplate>
-                            <!--<Border Style="{StaticResource CardBorder}"
-                            Padding="12">
-                        <StackPanel>
-                            <TextBlock Text="{Binding Title}"
-                                       FontSize="20"
-                                       FontWeight="SemiBold">
-                            </TextBlock>
-                            <ListView ItemsSource="{Binding MainCourseTrees}"
-                                      Margin="0 12"
-                                      SelectionMode="None">
-                        <ListView.ItemContainerStyle>
-                            <Style TargetType="ListViewItem">
-                                <Setter Property="HorizontalContentAlignment"  Value="Stretch"></Setter>
-                            </Style>
-                        </ListView.ItemContainerStyle>
-                        <ListView.ItemTemplate>
-                            <DataTemplate>
-                                <StackPanel AllowDrop="True"
-                                            DragOver="UIElement_OnDragOver">
-                                    <Border >
-                                        <TextBlock FontSize="20">
-                                            &#x27A4; <Run Text="{Binding Title}"></Run>
-                                        </TextBlock>
-                                    </Border>
-                                    <Border AllowDrop="True"
-                                                DragOver="UIElement_OnDragOver"
-                                                MinHeight="100">
-                                        <ListView ItemsSource="{Binding CourseTrees}"
-                                                                  SelectionMode="None">
-                                            <ListView.ItemContainerStyle>
-                                                <Style TargetType="ListViewItem">
-                                                    <Setter Property="HorizontalContentAlignment"  Value="Stretch"></Setter>
-                                                </Style>
-                                            </ListView.ItemContainerStyle>
-                                            <ListView.ItemTemplate>
-                                                <DataTemplate>
+                            <Grid>
+                                <interactivity:Interaction.Behaviors>
+                                    <core:EventTriggerBehavior EventName="PointerEntered">
+                                        <core:ChangePropertyAction TargetObject="{Binding ElementName=SpecialityBarButton}" PropertyName="Visibility" Value="Visible"/>
+                                    </core:EventTriggerBehavior>
+                                    <core:EventTriggerBehavior EventName="PointerExited">
+                                        <core:ChangePropertyAction TargetObject="{Binding ElementName=SpecialityBarButton}" PropertyName="Visibility" Value="Collapsed"/>
+                                    </core:EventTriggerBehavior>
+                                </interactivity:Interaction.Behaviors>
 
-                                                    <Border Style="{StaticResource CardBorder}"
-                                                                            Padding="12"
-                                                                            Margin="0 12"
-                                                                            CanDrag="True"
-                                                                            ui:FrameworkElementExtensions.Cursor="Cross">
-                                                        <TextBlock TextTrimming="CharacterEllipsis">
-                                                                            Тема №<Run Text="{Binding Id}"></Run>. <Run Text="{Binding Title}"></Run>
-                                                        </TextBlock>
-                                                    </Border>
-                                                </DataTemplate>
-                                            </ListView.ItemTemplate>
-                                        </ListView>
-                                    </Border>
-                                </StackPanel>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition></ColumnDefinition>
+                                    <ColumnDefinition Width="80"></ColumnDefinition>
+                                </Grid.ColumnDefinitions>
 
-
-                            </DataTemplate>
-                        </ListView.ItemTemplate>
-                    </ListView>
-                        </StackPanel>
-                        
-                    </Border>-->
-
-                            <controls:Expander HorizontalAlignment="Stretch"
-                                       HorizontalContentAlignment="Stretch">
+                                <controls:Expander HorizontalAlignment="Stretch"
+                                               HorizontalContentAlignment="Stretch"
+                                               AllowDrop="True"
+                                               Drop="Expander_OnDrop"
+                                               DragOver="Expander_OnDragOver"
+                                               Margin="0 8">
                                 <controls:Expander.HeaderTemplate>
                                     <DataTemplate>
-                                        <TextBlock>
-                                    <Run Text="{Binding Code}"></Run> <Run Text="{Binding Title}"></Run>
-                                        </TextBlock>
+                                        <Border >
+                                            <TextBlock>
+                                                <Run Text="{Binding Code}"></Run> <Run Text="{Binding Title}"></Run>
+                                            </TextBlock>
+                                        </Border>
                                     </DataTemplate>
                                 </controls:Expander.HeaderTemplate>
                                 <controls:Expander.Content>
-                                    <StackPanel>
-                                        <TextBlock Text="Цисциплины"></TextBlock>
-                                    <ListView ItemsSource="{Binding MainCourseTrees}"
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition></ColumnDefinition>
+                                            <ColumnDefinition Width="Auto"></ColumnDefinition>
+                                        </Grid.ColumnDefinitions>
+                                        <StackPanel>
+                                            <TextBlock Text="Дисциплины"></TextBlock>
+                                            <ListView ItemsSource="{Binding MainCourseTrees}"
                                               SelectionMode="None"
-                                              Margin="0 12 0 0">
-                                        <ListView.ItemContainerStyle>
-                                            <Style TargetType="ListViewItem">
-                                                <Setter Property="HorizontalContentAlignment"  Value="Stretch"></Setter>
-                                            </Style>
-                                        </ListView.ItemContainerStyle>
-                                        <ListView.ItemTemplate>
-                                            <DataTemplate>
-                                                <controls:Expander HorizontalAlignment="Stretch"
-                                                           HorizontalContentAlignment="Stretch"
-                                                           >
-                                                    <controls:Expander.HeaderTemplate>
-                                                        <DataTemplate>
-                                                            <Border AllowDrop="True"
+                                              Margin="0 12 0 0"
+                                              DragItemsStarting="ListViewBase_OnDragItemsStarting">
+                                                <ListView.ItemContainerStyle>
+                                                    <Style TargetType="ListViewItem">
+                                                        <Setter Property="HorizontalContentAlignment"  Value="Stretch"></Setter>
+                                                    </Style>
+                                                </ListView.ItemContainerStyle>
+                                                <ListView.ItemTemplate>
+                                                    <DataTemplate>
+                                                        <Grid>
+                                                            <interactivity:Interaction.Behaviors>
+                                                                <core:EventTriggerBehavior EventName="PointerEntered">
+                                                                    <core:ChangePropertyAction TargetObject="{Binding ElementName=MainCourseBarButton}" PropertyName="Visibility" Value="Visible"/>
+                                                                </core:EventTriggerBehavior>
+                                                                <core:EventTriggerBehavior EventName="PointerExited">
+                                                                    <core:ChangePropertyAction TargetObject="{Binding ElementName=MainCourseBarButton}" PropertyName="Visibility" Value="Collapsed"/>
+                                                                </core:EventTriggerBehavior>
+                                                            </interactivity:Interaction.Behaviors>
+                                                            <Grid.ColumnDefinitions>
+                                                                <ColumnDefinition ></ColumnDefinition>
+                                                                <ColumnDefinition Width="80"></ColumnDefinition>
+                                                            </Grid.ColumnDefinitions>
+
+                                                            <controls:Expander HorizontalAlignment="Stretch"
+                                                                   HorizontalContentAlignment="Stretch"
+                                                                   CanDrag="True"
+                                                                   DragStarting="Expandert_OnDragStarting"
+                                                                   Margin="0 8"
+                                                                   ui:FrameworkElementExtensions.Cursor="Cross">
+                                                                <controls:Expander.HeaderTemplate>
+                                                                    <DataTemplate>
+                                                                        <Border AllowDrop="True"
                                                                 DragOver="UIElement_OnDragOver"
                                                                 Drop="UIElement_OnDrop">
-                                                                <TextBlock Text="{Binding Title}"></TextBlock>
-                                                            </Border>
-                                                        </DataTemplate>
-                                                    </controls:Expander.HeaderTemplate>
-                                                    <controls:Expander.Content>
-                                                        <Border AllowDrop="True"
+                                                                            <TextBlock Text="{Binding Title}"></TextBlock>
+                                                                        </Border>
+                                                                    </DataTemplate>
+                                                                </controls:Expander.HeaderTemplate>
+                                                                <controls:Expander.Content>
+                                                                    <Border AllowDrop="True"
                                                             DragOver="UIElement_OnDragOver"
                                                             MinHeight="100"
                                                             Drop="UIElement_OnDrop">
-                                                            <StackPanel >
-                                                                <TextBlock Text="Темы"></TextBlock>
-                                                                <ListView ItemsSource="{Binding CourseTrees}"
+                                                                        <StackPanel >
+                                                                            <StackPanel.Resources>
+                                                                                <utils:ItemToNumberConverter x:Key="ItemToNumberConverter"></utils:ItemToNumberConverter>
+                                                                            </StackPanel.Resources>
+                                                                            <TextBlock Text="Темы"></TextBlock>
+                                                                            <ListView ItemsSource="{Binding CourseTrees}"
                                                                   SelectionMode="None"
                                                                   Margin="0 12 0 0">
-                                                                    <ListView.ItemContainerStyle>
-                                                                        <Style TargetType="ListViewItem">
-                                                                            <Setter Property="HorizontalContentAlignment"  Value="Stretch"></Setter>
-                                                                        </Style>
-                                                                    </ListView.ItemContainerStyle>
-                                                                    <ListView.ItemTemplate>
-                                                                        <DataTemplate>
-
-                                                                            <Border Style="{StaticResource AcrylicCardBorder}"
+                                                                                <ListView.ItemContainerStyle>
+                                                                                    <Style TargetType="ListViewItem">
+                                                                                        <Setter Property="HorizontalContentAlignment"  Value="Stretch"></Setter>
+                                                                                    </Style>
+                                                                                </ListView.ItemContainerStyle>
+                                                                                <ListView.ItemTemplate>
+                                                                                    <DataTemplate x:Name="DataTemplate">
+                                                                                        <Border Style="{StaticResource AcrylicCardBorder}"
                                                                                 DragStarting="UIElement_OnDragStarting"
                                                                             Padding="12"
                                                                             Margin="0 12"
                                                                             CanDrag="True"
                                                                             ui:FrameworkElementExtensions.Cursor="Cross">
-                                                                                <TextBlock FontWeight="SemiBold"
-                                                                            TextTrimming="CharacterEllipsis">
-                                                                            Тема №<Run Text="{Binding Id}"></Run>. <Run Text="{Binding Title}"></Run>
-                                                                                </TextBlock>
-                                                                            </Border>
-                                                                        </DataTemplate>
-                                                                    </ListView.ItemTemplate>
-                                                                </ListView>
-                                                            </StackPanel>
+                                                                                            <!--<Border.Resources>
+                                                                                    <utils:ItemToNumberConverter x:Key="ItemToNumberConverter" ListView="{Binding ElementName=}"></utils:ItemToNumberConverter>
+                                                                                </Border.Resources>-->
+                                                                                            <Grid>
+                                                                                                <TextBlock FontWeight="SemiBold"
+                                                                                        TextTrimming="CharacterEllipsis">
+                                                                                        Тема №<Run Text="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Converter={StaticResource ItemToNumberConverter}}"></Run>. <Run Text="{Binding Title}"></Run>
+                                                                                                </TextBlock>
+                                                                                            </Grid>
 
-                                                        </Border>
+                                                                                        </Border>
+                                                                                    </DataTemplate>
+                                                                                </ListView.ItemTemplate>
+                                                                            </ListView>
+                                                                        </StackPanel>
 
-                                                    </controls:Expander.Content>
-                                                </controls:Expander>
+                                                                    </Border>
 
-                                            </DataTemplate>
-                                        </ListView.ItemTemplate>
-                                    </ListView>
-                                    </StackPanel>
-                                    
+                                                                </controls:Expander.Content>
+                                                            </controls:Expander>
+
+                                                            <AppBarButton Label="Удалить"
+                                                                  Icon="Delete"
+                                                                  Grid.Column="1"
+                                                                  x:Name="MainCourseBarButton"
+                                                                  Visibility="Collapsed">
+                                                                <AppBarButton.Flyout>
+                                                                    <Flyout>
+                                                                        <StackPanel>
+                                                                            <TextBlock Style="{ThemeResource BaseTextBlockStyle}"
+                                                                               TextWrapping="Wrap"
+                                                                               Width="400">
+                                                                        <Run Text="Вы действительно хотите удалить дисциплину "/>&#x00AB;<Run Text="{Binding Title}"/>&#x00BB;?
+                                                                            </TextBlock>
+                                                                            <Button Margin="0 12 0 0"
+                                                                            Content="Да, удалить"
+                                                                            Command="{Binding DataContext.DeleteItemCommand, ElementName=Page}"
+                                                                            CommandParameter="{Binding }"></Button>
+                                                                        </StackPanel>
+
+                                                                    </Flyout>
+                                                                </AppBarButton.Flyout>
+                                                            </AppBarButton>
+                                                        </Grid>
+                                                    </DataTemplate>
+                                                </ListView.ItemTemplate>
+                                            </ListView>
+                                        </StackPanel>
+                                    </Grid>
+
+
                                 </controls:Expander.Content>
                             </controls:Expander>
+
+                            <AppBarButton Label="Удалить"
+                                          Icon="Delete"
+                                          Grid.Column="1"
+                                          x:Name="SpecialityBarButton">
+                                <AppBarButton.Flyout>
+                                    <Flyout>
+                                        <StackPanel>
+                                            <TextBlock Style="{ThemeResource BaseTextBlockStyle}"
+                                                       TextWrapping="Wrap"
+                                                       Width="400">
+                                                <Run Text="Вы действительно хотите удалить специальность "/>&#x00AB;<Run Text="{Binding Code}"></Run> <Run Text="{Binding Title}"/>&#x00BB;?
+                                            </TextBlock>
+                                            <Button Margin="0 12 0 0"
+                                                    Content="Да, удалить"
+                                                    Command="{Binding DataContext.DeleteItemCommand, ElementName=Page}"
+                                                    CommandParameter="{Binding }"></Button>
+                                        </StackPanel>
+                                    </Flyout>
+                                </AppBarButton.Flyout>
+                            </AppBarButton>
+
+                            </Grid>
+                            
                         </DataTemplate>
                     </ListView.ItemTemplate>
                 </ListView>
@@ -190,6 +237,7 @@
 
         <HyperlinkButton Content="Применить"
                          Grid.Row="2"
-                         Command="{Binding ApplyCommand}"></HyperlinkButton>
+                         Command="{Binding ApplyCommand}"
+                         Margin="0 12 0 0"></HyperlinkButton>
     </Grid>
 </Page>

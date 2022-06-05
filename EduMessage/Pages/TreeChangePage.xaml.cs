@@ -8,6 +8,7 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
 using EduMessage.Services;
+using Microsoft.UI.Xaml.Controls;
 using MvvmGen.Events;
 
 // Документацию по шаблону элемента "Пустая страница" см. по адресу https://go.microsoft.com/fwlink/?LinkId=234238
@@ -31,8 +32,9 @@ namespace EduMessage.Pages
             base.OnNavigatedTo(e);
 
             if (e.Parameter is not User user) return;
-
-            ViewModel = ControlContainer.Get().ResolveConstructor<TreeChangePageViewModel>();
+            var notificator = ControlContainer.Get().Resolve<INotificator>("Dialog");
+            var aggregator = ControlContainer.Get().Resolve<IEventAggregator>();
+            ViewModel = new TreeChangePageViewModel(notificator, aggregator);
             await ViewModel.Initialize();
             DataContext = ViewModel;
         }
@@ -45,10 +47,10 @@ namespace EduMessage.Pages
             {
                 return;
             }
-            if ( await e.DataView.GetDataAsync("CourseId") is int courseId &&
+            if ( await e.DataView.GetDataAsync("RecordId") is int courseId &&
                  await e.DataView.GetDataAsync("MainCourseId") is int mainCourseId)
             {
-                _aggregator.Publish(new UiElementDropCompletedEvent(courseId, mainCourseId, mainCourse.Id));
+                _aggregator.Publish(new UiElementDropCompletedEvent(courseId, mainCourseId, mainCourse.Id, typeof(CourseTree)));
             }
             //var data = await e.Data.GetView().GetDataAsync("UiElement");
         }
@@ -62,11 +64,43 @@ namespace EduMessage.Pages
         {
             args.AllowedOperations = DataPackageOperation.Move;
             var context = ((Border) sender).DataContext as CourseTree;
-            args.Data.SetData("CourseId", context.Id);
+            args.Data.SetData("RecordId", context.Id);
             args.Data.SetData("MainCourseId", context.MainCourseId);
             //args.Data.SetData("SpecialityCourseId", context.Id);
         }
+
+        private void ListViewBase_OnDragItemsStarting(object sender, DragItemsStartingEventArgs e)
+        {
+            e.Data.RequestedOperation = DataPackageOperation.Move;
+        }
+
+        private void Expandert_OnDragStarting(UIElement sender, DragStartingEventArgs args)
+        {
+            args.Data.RequestedOperation = DataPackageOperation.Move;
+            var context = ((Expander) sender).DataContext as MainCourseTree;
+            args.Data.SetData("MainCourseId", context.Id);
+            args.Data.SetData("SpecialityId", context.SpecialityId);
+        }
+
+        private void Expander_OnDragOver(object sender, DragEventArgs e)
+        {
+            e.AcceptedOperation = DataPackageOperation.Move;
+        }
+
+        private async void Expander_OnDrop(object sender, DragEventArgs e)
+        {
+            if ((sender as Expander)?.DataContext is not SpecialityTree speciality)
+            {
+                return;
+            }
+            if ( await e.DataView.GetDataAsync("MainCourseId") is int mainCourseId &&
+                 await e.DataView.GetDataAsync("SpecialityId") is int specialityId &&
+                 specialityId != speciality.Id)
+            {
+                _aggregator.Publish(new UiElementDropCompletedEvent(mainCourseId, specialityId, speciality.Id, typeof(MainCourseTree)));
+            }
+        }
     }
 
-    public record UiElementDropCompletedEvent(int CourseId, int OldMainCourseId, int NewMainCourse);
+    public record UiElementDropCompletedEvent(int RecordId, int OldParentId, int NewParentId, Type DataType);
 }

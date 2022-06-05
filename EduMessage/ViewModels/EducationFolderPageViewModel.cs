@@ -108,6 +108,7 @@ namespace EduMessage.ViewModels
             if (!response)
             {
                 Notificator.Notificate("Не удалось удалить запись", "Запись имеет внешние ключи, из-за которых удалить эту запись невозможно");
+                EventAggregator.Publish(new LoaderVisibilityChanged(Visibility.Collapsed, string.Empty));
                 return;
             }
 

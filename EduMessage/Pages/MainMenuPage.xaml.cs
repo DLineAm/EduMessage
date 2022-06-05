@@ -1,26 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Security.Cryptography;
-using System.Threading.Tasks;
-using Windows.Security.Cryptography;
-using Windows.Security.Cryptography.Core;
-using Windows.Storage.Streams;
-using Windows.UI.Core;
-using EduMessage.Services;
+﻿using EduMessage.Services;
 using EduMessage.ViewModels;
 
-using SignalIRServerTest;
+using Microsoft.UI.Xaml.Controls;
 
+using MvvmGen.Events;
+
+using SignalIRServerTest.Models;
+
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+
+using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Navigation;
-using Microsoft.UI.Xaml.Controls;
-using MvvmGen;
-using MvvmGen.Events;
-using SignalIRServerTest.Models;
+
 using NavigationView = Microsoft.UI.Xaml.Controls.NavigationView;
 using NavigationViewDisplayModeChangedEventArgs = Microsoft.UI.Xaml.Controls.NavigationViewDisplayModeChangedEventArgs;
 using NavigationViewItem = Microsoft.UI.Xaml.Controls.NavigationViewItem;

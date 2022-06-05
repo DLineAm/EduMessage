@@ -16,6 +16,7 @@ using System.Linq;
 using System.Threading.Tasks;
 
 using Windows.ApplicationModel.Core;
+using Windows.Storage.Pickers;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -34,8 +35,15 @@ namespace EduMessage.ViewModels
         [Property] private string _courseDescription;
         [Property] private Visibility _noResultsFoundAnimationVisibility = Visibility.Collapsed;
         [Property] private Visibility _teacherInputVisibility;
+        [Property] private Visibility _userInputVisibility = Visibility.Collapsed;
         [Property] private GridLength _gridWidth;
         [Property] private string _errorText;
+        [Property] private bool _isInfoBarOpen;
+        [Property] private ObservableCollection<CourseAttachment> _taskAttachments = new();
+        [Property] private CourseTask _currentCourseTask;
+        [Property] private int? _mark;
+        [Property] private string _taskStatus;
+        [Property] private string _dialogActionText;
 
         private bool _isCourseAddMode;
         private FormattedCourse _selectedCourse;
@@ -50,6 +58,7 @@ namespace EduMessage.ViewModels
             _mainCourse = mainCourse;
 
             UpdateTeacherInputVisibility(App.Account.GetUser().IdRole == 2 ? Visibility.Visible : Visibility.Collapsed);
+            UserInputVisibility = App.Account.GetUser().IdRole == 1 ? Visibility.Visible : Visibility.Collapsed;
 
             try
             {
@@ -84,54 +93,6 @@ namespace EduMessage.ViewModels
             }
         }
 
-        private async Task<List<FormattedCourse>> ConvertToFormattedCourse(List<CourseAttachment> response)
-        {
-            var formattedCourses = new List<FormattedCourse>();
-            foreach (var courseAttachment in response)
-            {
-                var course = courseAttachment.IdCourseNavigation;
-                var any = false;
-                foreach (var c in formattedCourses)
-                {
-                    if (c.Course.Id == course.Id)
-                    {
-                        any = true;
-                        break;
-                    }
-                }
-
-                if (any)
-                {
-                    continue;
-                }
-
-                var attachments = response.Where(c => c.IdCourse == course.Id && c.IdAttachmanentNavigation != null)
-                    .Select(c => c.IdAttachmanentNavigation).ToList();
-
-                attachments.ForEach(async a => await a.SplitAndGetImage(0));
-
-                var formattedCourse = new FormattedCourse
-                {
-                    Id = courseAttachment.Id,
-                    Course = course,
-                    Attachments = new ObservableCollection<Attachment>( attachments)
-                };
-
-                if (!attachments.Any())
-                {
-                    formattedCourse.Attachments = null;
-                }
-
-                formattedCourses.Add(formattedCourse);
-
-                
-            }
-
-            return formattedCourses;
-        }
-
-       
-
         private void UpdateTeacherInputVisibility(Visibility visibility)
         {
             TeacherInputVisibility = visibility;
@@ -145,12 +106,69 @@ namespace EduMessage.ViewModels
             NoResultsFoundAnimationVisibility = visibility;
         }
 
-        //[Command]
-        //private void CleanFilesList()
-        //{
-        //    Files.Clear();
-        //    UpdateAccessibility();
-        //}
+        [Command]
+        private async void GetUserTask(object parameter)
+        {
+            if (parameter is not int id || id == 0)
+            {
+                return;
+            }
+
+            SetErrorText();
+
+            var userId = App.Account.GetUser().Id;
+
+            var currentCourse = Courses.FirstOrDefault(c => c.Course.Id == id);
+
+            _selectedCourse = currentCourse;
+
+            CurrentCourseTask = currentCourse.Course.IdCourseTaskNavigation;
+
+            TaskAttachments.Clear();
+
+            try
+            {
+                var response = (await (App.Address + $"Education/Courses/Tasks.IdUser={userId}&IdCourse={id}")
+                        .SendRequestAsync<string>(null, HttpRequestType.Get, App.Account.GetJwt()))
+                    .DeserializeJson<IEnumerable<CourseAttachment>>();
+
+                foreach (var courseAttachment in response)
+                {
+                    await courseAttachment.IdAttachmanentNavigation.SplitAndGetImage(64);
+                    courseAttachment.IdCourseNavigation = null;
+                    TaskAttachments.Add(courseAttachment);
+                }
+
+                var firstCourseAttachment = response.FirstOrDefault();
+                if (firstCourseAttachment == null)
+                {
+                    DialogActionText = "Выполнить";
+                    TaskStatus = "Не выполнено";
+                    return;
+                }
+
+                Mark = firstCourseAttachment.Mark;
+                TaskStatus = Mark == null ? "Не проверено" : $"Проверено ({Mark})";
+                DialogActionText = "Изменить";
+            }
+            catch (Exception e)
+            {
+                
+            }
+        }
+
+
+        private void SetErrorText(string text = null)
+        {
+            ErrorText = text;
+            if (text == null)
+            {
+                IsInfoBarOpen = false;
+                return;
+            }
+
+            IsInfoBarOpen = true;
+        }
 
         [Command]
         private void InitializeChangeCourseDialog(object courseObj)
@@ -162,130 +180,36 @@ namespace EduMessage.ViewModels
         [Command]
         private async void Apply()
         {
-            ErrorText = "";
-            if (string.IsNullOrWhiteSpace(CourseTitle)
-                || string.IsNullOrWhiteSpace(CourseDescription))
+            if (TaskAttachments.Count == 0)
             {
-                ErrorText = "Все поля должы быть заполнены!";
-                EventAggregator.Publish(new CourseAddedOrChangedEvent(false));
+                SetErrorText("Количество вложений должно быть больше 0");
                 return;
             }
 
-            EventAggregator.Publish(new LoaderVisibilityChanged(Visibility.Visible, "Сохранение курса"));
-
-            var selectedCourse = _selectedCourse?.Course;
-            //TODO: _speciality
-            Course course = new Course
-                {
-                    Id = selectedCourse?.Id ?? 0,
-                    Title = CourseTitle,
-                    Description = CourseDescription,
-                    IdMainCourse = _mainCourse.Id,
-                    IdTeacher = selectedCourse?.IdTeacher
-                };
-
-            List<Attachment> attachments = Files.ToList();
-
-            var courses = new List<CourseAttachment>();
-
-            bool isZeroAttachments = attachments.Count == 0;
-
-            foreach (var attachment in attachments)
-            {
-                var courseToAdd = new CourseAttachment
-                {
-                    IdCourse = course.Id,
-                    IdCourseNavigation = course,
-                    IdAttachmanentNavigation = attachment
-                };
-                if (attachment != null && attachment.Id != 0)
-                {
-                    courseToAdd.IdAttachmanent = attachment.Id;
-                }
-
-                courses.Add(courseToAdd);
-            }
-
-            if (isZeroAttachments)
-            {
-                var courseToAdd = new CourseAttachment
-                {
-                    Id = _selectedCourse?.Id ?? 0,
-                    IdCourseNavigation = course
-                };
-                if (course.Id != 0)
-                {
-                    courseToAdd.IdCourse = course.Id;
-                }
-                courses.Add(courseToAdd);
-            }
+            EventAggregator.Publish(new LoaderVisibilityChanged(Visibility.Visible, "Отпарвка задания"));
 
             try
             {
-                if (!_isCourseAddMode)
+                var response = (await (App.Address + "Education/Courses")
+                        .SendRequestAsync(TaskAttachments, HttpRequestType.Put, App.Account.GetJwt()))
+                    .DeserializeJson<bool>();
+
+                if (!response)
                 {
-                    await SendCoursePutRequest(courses);
-                    EventAggregator.Publish(new InAppNotificationShowing(Symbol.Accept, "Курс изменен!"));
-                    EventAggregator.Publish(new CourseAddedOrChangedEvent(true));
+                    SetErrorText("Не удалось отправить задание");
                     EventAggregator.Publish(new LoaderVisibilityChanged(Visibility.Collapsed, string.Empty));
-                    UpdateNoResultsFoundVisibility(Visibility.Collapsed);
-                    return;
                 }
 
-                var (courseId, attachmentIds) = (await (App.Address + "Education/Courses.FromList")
-                        .SendRequestAsync(courses, HttpRequestType.Post, App.Account.GetJwt()))
-                    .DeserializeJson<KeyValuePair<int, List<int>>>();
-
-                if (courseId != -1)
-                {
-                    course.Id = courseId;
-                    for (int i = 0; i < attachmentIds.Count; i++)
-                    {
-                        var attachmentId = attachmentIds[i];
-                        var courseAttachment = courses[i];
-                        courseAttachment.Id = attachmentId;
-                        courseAttachment.IdCourse = courseId;
-                    }
-
-                    var formattedCourse = courses.Adapt<FormattedCourse>(TypeAdapterConfig);
-
-                    Courses.Add(formattedCourse);
-
-//                    List<FormattedCourse> formattedCourses = await ConvertToFormattedCourse(courses);
-//#pragma warning disable HAA0603 // Delegate allocation from a method group
-//                    formattedCourses.ForEach(Courses.Add);
-#pragma warning restore HAA0603 // Delegate allocation from a method group
-                }
-
-                EventAggregator.Publish(new InAppNotificationShowing(Symbol.Accept, "Курс добавлен!"));
-                EventAggregator.Publish(new CourseAddedOrChangedEvent(true));
-                EventAggregator.Publish(new LoaderVisibilityChanged(Visibility.Collapsed, string.Empty));
-                UpdateNoResultsFoundVisibility(Visibility.Collapsed);
+                EventAggregator.Publish(new DialogStatusChanged(true));
+                EventAggregator.Publish(new InAppNotificationShowing(Symbol.Accept, "Задание отправлено!"));
             }
             catch (Exception e)
             {
-                ErrorText = "Не удалось добавить курс";
-                EventAggregator.Publish(new InAppNotificationShowing(Symbol.ClosePane, "Не удалось добавить курс!"));
-                EventAggregator.Publish(new CourseAddedOrChangedEvent(false));
-                EventAggregator.Publish(new LoaderVisibilityChanged(Visibility.Collapsed, string.Empty));
+                SetErrorText("Не удалось отправить задание");
             }
-        }
-
-        private async Task SendCoursePutRequest(List<CourseAttachment> content)
-        {
-            var putResponse = ( await (App.Address + "Education/Courses")
-                                    .SendRequestAsync(content, HttpRequestType.Put, App.Account.GetJwt()))
-                                    .DeserializeJson<bool>();
-
-            if (putResponse)
+            finally
             {
-                await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.High,
-                    () =>
-                    {
-                        _selectedCourse.Course.Title = CourseTitle;
-                        _selectedCourse.Course.Description = CourseDescription;
-                        _selectedCourse.Attachments = new ObservableCollection<Attachment>(Files);
-                    });
+                EventAggregator.Publish(new LoaderVisibilityChanged(Visibility.Collapsed, string.Empty));
             }
         }
 
@@ -297,92 +221,62 @@ namespace EduMessage.ViewModels
             await file.OpenFile();
         }
 
-        
+        [Command]
+        private void DeleteFile(object fileObj)
+        {
+            if (fileObj is not CourseAttachment attachment)
+            {
+                return;
+            }
 
-        //[Command]
-        //private void Cancel()
-        //{
-        //    CourseTitle = string.Empty;
-        //    CourseDescription = string.Empty;
-        //    Files.Clear();
-        //}
+            TaskAttachments.Remove(attachment);
+        }
 
-        //[Command]
-        //private void DeleteFile(object file)
-        //{
-        //    var convertedFile = file as Attachment;
-        //    Files.Remove(convertedFile);
-        //    UpdateAccessibility();
-        //}
+        [Command]
+        private void ClearFiles()
+        {
+            TaskAttachments.Clear();
+        }
 
-        //private void UpdateAccessibility()
-        //{
-        //    IsClearButtonEnabled = Files.Count > 0;
-        //}
+        [Command]
+        private async void AddFiles()
+        {
+            var picker = new FileOpenPicker
+            {
+                ViewMode = PickerViewMode.List,
+                SuggestedStartLocation = PickerLocationId.Downloads
+            };
+            picker.FileTypeFilter.Add("*");
 
+            var files = await picker.PickMultipleFilesAsync();
 
-        //private async Task<List<Attachment>> ReadFiles(IReadOnlyList<Windows.Storage.IStorageItem> items)
-        //{
-        //    var result = new List<Attachment>();
-        //    var tasks = new List<Task>();
-        //    for (int i = 0; i < items.Count; i++)
-        //    {
-        //        IStorageItem item = items[i];
-        //        if (item is StorageFolder folder)
-        //        {
-        //            var filesInFolder = await ReadFiles(await folder.GetFilesAsync());
-        //            var filesInFolders = await ReadFiles(await folder.GetFoldersAsync());
+            var filesCount = files.Count;
 
-        //            result.AddRange(filesInFolder);
-        //            result.AddRange(filesInFolders);
-        //        }
-        //        else if (item is StorageFile file)
-        //        {
-        //            var fileProps = await file.GetBasicPropertiesAsync();
-        //            if (fileProps.Size == 0 && fileProps.Size >= 250 * 1024 * 1024)
-        //            {
-        //                continue;
-        //            }
+            if (TaskAttachments.Count  + filesCount > 10)
+            {
+                SetErrorText("Количество вложений должно быть не более 10");
+                return;
+            }
 
-        //            var buffer = await FileIO.ReadBufferAsync(file);
-        //            var data = buffer.ToArray();
-        //            await Task.Delay(TimeSpan.FromMilliseconds(1));
+            
+            foreach (var attachment in await files.CreateAttachments())
+            {
+                var courseAttachment = new CourseAttachment
+                {
+                    IdCourse = _selectedCourse.Course.Id,
+                    IdAttachmanentNavigation = attachment,
+                    IdUser = App.Account.GetUser().Id,
+                    //IdCourseNavigation = _selectedCourse.Course
+                };
+                TaskAttachments.Add(courseAttachment);
+            }
+        }
 
-        //            var attachment = new Attachment
-        //            {
-        //                Title = file.Name,
-        //                Data = data
-        //            };
-
-        //            attachment.IdType = attachment.ConvertFileType(file.FileType);
-
-        //            result.Add(attachment);
-
-        //            await Task.Delay(TimeSpan.FromMilliseconds(10));
-        //        }
-        //    }
-
-        //    await result.WriteAttachmentImagePath();
-
-        //    return result;
-        //}
 
         [Command]
         private void InitializeAddCourseDialog()
         {
-            //_selectedCourse = null;
-            //_isCourseAddMode = true;
-
-            //Files.Clear();
-            //CourseTitle = string.Empty;
-            //CourseDescription = string.Empty;
-
-            //IsClearButtonEnabled = false;
-
-            //EventAggregator.Publish(new CourseDialogStartShowing(_isCourseAddMode));
-
             EventAggregator.Publish(new SelectedSpecialityChangedEvent((_mainCourse.Id, new FormattedCourse())));
-            //new Navigator().Navigate(typeof(ThemeConstructorPage), _mainCourse.Id, new DrillInNavigationTransitionInfo(), FrameType.EducationFrame);
         }
 
         [Command]
@@ -415,28 +309,6 @@ namespace EduMessage.ViewModels
             }
         }
 
-//        public async void OnEvent(DropCompletedEvent eventData)
-//        {
-//            var items = eventData.Items;
-
-//            try
-//            {
-//                var files = await ReadFiles(items);
-
-//                foreach (var file in files)
-//                {
-//                    Files.Add(file);
-//                }
-
-//                UpdateAccessibility();
-//            }
-//#pragma warning disable CS0168 // Переменная "e" объявлена, но ни разу не использована.
-//            catch (Exception e)
-//#pragma warning restore CS0168 // Переменная "e" объявлена, но ни разу не использована.
-//            {
-
-//            }
-//        }
 
         public void OnEvent(CourseRequestCompleted eventData)
         {

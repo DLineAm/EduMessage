@@ -80,7 +80,7 @@
                                                 <TextBlock Style="{ThemeResource BaseTextBlockStyle}"
                                                            TextWrapping="Wrap"
                                                            Width="400">
-                                                    <Run Text="Вы действительно хотите удалить "/><Run Text="{Binding Converter={StaticResource NameConverter}}"/>&#x00AB;<Run Text="{Binding Title}"/><Run Text="?"/>&#x00BB;
+                                                    <Run Text="Вы действительно хотите удалить "/><Run Text="{Binding Converter={StaticResource NameConverter}}"/>&#x00AB;<Run Text="{Binding Title}"/>&#x00BB;?
                                                 </TextBlock>
                                                 <Button Content="Да, удалить"
                                                         Margin="0 12 0 0"
@@ -156,5 +156,11 @@
                          Header="Название"></TextBox>
             </StackPanel>
         </ContentDialog>
+
+        <TextBlock Grid.Row="1"
+                   Margin="48 12 0 0"
+                   Foreground="{ThemeResource TextBoxButtonForegroundThemeBrush}">
+            Всего записей: <Run Text="{Binding EducationFolders.Count}"></Run>
+        </TextBlock>
     </Grid>
 </Page>

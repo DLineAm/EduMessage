@@ -8,20 +8,12 @@ namespace SignalIRServerTest.Models
 {
     public partial class User
     {
-        public User()
-        {
-            Devices = new HashSet<Device>();
-            MessageIdRecipientNavigations = new HashSet<Message>();
-            MessageIdUserNavigations = new HashSet<Message>();
-            UserConversations = new HashSet<UserConversation>();
-        }
 
         public int Id { get; set; }
         public string FirstName { get; set; }
         public string MiddleName { get; set; }
         public string LastName { get; set; }
         public string Login { get; set; }
-        //public string Password { get; set; }
         public string Email { get; set; }
         public long? Phone { get; set; }
         public string Address { get; set; }
@@ -47,5 +39,7 @@ namespace SignalIRServerTest.Models
         public virtual ICollection<UserConversation> UserConversations { get; set; }
         [JsonIgnore]
         public virtual ICollection<Course> Courses { get; set; }
+        [JsonIgnore]
+        public virtual ICollection<CourseAttachment> CourseAttachments { get; set; }
     }
 }

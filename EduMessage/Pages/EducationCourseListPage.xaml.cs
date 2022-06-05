@@ -20,10 +20,11 @@ namespace EduMessage.Pages
     /// <summary>
     /// Пустая страница, которую можно использовать саму по себе или для перехода внутри фрейма.
     /// </summary>
-    public sealed partial class EducationCourseListPage : Page
+    public sealed partial class EducationCourseListPage : Page, IEventSubscriber<DialogStatusChanged>
     {
         private FeatureCollection _featureCollection;
         private bool _isPageLoaded;
+        private bool _isContentDialogSuccess;
 
         public EducationCourseListPage()
         {
@@ -206,6 +207,30 @@ namespace EduMessage.Pages
 
             UIElement dummyElement = new TextBlock();
             return baseFeature.Realise((text, formattedCourse), ref dummyElement);
+        }
+
+        private async void MoreButton_OnClick(object sender, RoutedEventArgs e)
+        {
+            _isContentDialogSuccess = false;
+            while (!_isContentDialogSuccess)
+            {
+                await TaskDialog.ShowAsync();
+            }
+        }
+
+        public void OnEvent(DialogStatusChanged eventData)
+        {
+            _isContentDialogSuccess = eventData.IsSuccess;
+            if (_isContentDialogSuccess)
+            {
+                TaskDialog.Hide();
+            }
+        }
+
+        private void TaskDialog_OnSecondaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
+        {
+            _isContentDialogSuccess = true;
+            TaskDialog.Hide();
         }
     }
 }
