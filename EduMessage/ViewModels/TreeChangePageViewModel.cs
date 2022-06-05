@@ -64,7 +64,6 @@ namespace EduMessage.ViewModels
                         course.CourseTrees = new ObservableCollection<CourseTree>(courses);
                         speciality.MainCourseTrees.Add(course);
                     }
-                    //speciality.MainCourseTrees = mainCourses.ToList();
                     list.Add(speciality);
                 }
 
@@ -249,27 +248,4 @@ namespace EduMessage.ViewModels
             EventAggregator.Publish(new LoaderVisibilityChanged(Visibility.Collapsed, string.Empty));
         }
     }
-}
-
-public class SpecialityTree
-{
-    public int Id { get; set; }
-    public string Code { get; set; }
-    public string Title { get; set; }
-    public ObservableCollection<MainCourseTree> MainCourseTrees { get; set; } = new();
-}
-
-public class MainCourseTree
-{
-    public int Id { get; set; }
-    public string Title { get; set; }
-    public int SpecialityId { get; set; }
-    public ObservableCollection<CourseTree> CourseTrees { get; set; } = new();
-}
-
-public class CourseTree
-{
-    public int Id { get; set; }
-    public int MainCourseId { get; set; }
-    public string Title { get; set; }
 }

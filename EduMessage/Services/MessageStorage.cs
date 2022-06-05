@@ -4,13 +4,7 @@ using SignalIRServerTest.Models;
 
 namespace EduMessage.Services
 {
-    public interface IStorage<T>
-    {
-        public T GetById(int id);
-        public IEnumerable<T> GetListById(int id);
-        public void Add(T entity);
-        public void AddRange(IEnumerable<T> entity);
-    }
+
     public class MessageStorage : IStorage<MessageAttachment>
     {
         private HashSet<MessageAttachment> _storage = new();

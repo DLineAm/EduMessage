@@ -38,7 +38,7 @@ namespace EduMessage.Pages
 
         public ObservableCollection<Crumb> Crumbs { get; set; } = new()
         {
-            new Crumb() {Title = "Главная"}
+            new Crumb {Title = "Главная"}
         };
 
         private void Page_DataContextChanged(FrameworkElement sender, DataContextChangedEventArgs args)
@@ -104,9 +104,9 @@ namespace EduMessage.Pages
                     return;
                 }
             }
-            catch (Exception e)
+            catch
             {
-
+                // ignored
             }
 
             var crumb = new Crumb {Data = parameter};

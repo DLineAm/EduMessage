@@ -305,14 +305,24 @@
       <DependentUpon>UIMessageControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Services\Account.cs" />
+    <Compile Include="Services\BaseTextBlockFeature.cs" />
+    <Compile Include="Services\BoldTextBlockFeature.cs" />
     <Compile Include="Services\Component.cs" />
+    <Compile Include="Services\FeatureCollection.cs" />
+    <Compile Include="Services\FeatureFactory.cs" />
+    <Compile Include="Services\FeatureFormatter.cs" />
     <Compile Include="Services\HttpRequestType.cs" />
     <Compile Include="Services\IChat.cs" />
     <Compile Include="Services\IDialogNotificator.cs" />
+    <Compile Include="Services\IFactory.cs" />
     <Compile Include="Services\IFeature.cs" />
+    <Compile Include="Services\ImageFeature.cs" />
+    <Compile Include="Services\IStorage.cs" />
+    <Compile Include="Services\ItalicTextFeature.cs" />
     <Compile Include="Services\MapsterConfig.cs" />
     <Compile Include="Services\MessageStorage.cs" />
     <Compile Include="Services\NullOrWhiteSpaceStringValidator.cs" />
+    <Compile Include="Services\TitleFeature.cs" />
     <Compile Include="Utils\BoolToVisibilityConverter.cs" />
     <Compile Include="Services\Chat.cs" />
     <Compile Include="Services\ColorManager.cs" />
@@ -367,9 +377,14 @@
     <Compile Include="Models\Events\CourseDialogStartShowing.cs" />
     <Compile Include="Models\Crumb.cs" />
     <Compile Include="Models\Events\DialogResultChanged.cs" />
+    <Compile Include="Models\Events\CourseRequestCompleted.cs" />
+    <Compile Include="Models\Events\CourseTaskDialogOpedRequested.cs" />
+    <Compile Include="Models\CourseTree.cs" />
+    <Compile Include="Models\Events\DialogStatusChanged.cs" />
     <Compile Include="ViewModels\EducationFolderPageViewModel.cs" />
     <Compile Include="ViewModels\EducationListPageViewModel.cs" />
     <Compile Include="ViewModels\EducationMainPageViewModel.cs" />
+    <Compile Include="Models\Events\EducationPageBack.cs" />
     <Compile Include="ViewModels\EmailConfirmingPageViewModel.cs" />
     <Compile Include="Models\FormattedCourse.cs" />
     <Compile Include="Models\FormattedMessage.cs" />
@@ -377,6 +392,7 @@
     <Compile Include="Models\Events\LoaderVisibilityChanged.cs" />
     <Compile Include="Models\Events\FeatureAdded.cs" />
     <Compile Include="ViewModels\LoginPageViewModel.cs" />
+    <Compile Include="Models\MainCourseTree.cs" />
     <Compile Include="ViewModels\MainMenuViewModel.cs" />
     <Compile Include="ViewModels\MainPageViewModel.cs" />
     <Compile Include="Models\Events\MessageChanged.cs" />
@@ -386,6 +402,7 @@
     <Compile Include="ViewModels\SchoolChoosePageViewModel.cs" />
     <Compile Include="Models\Events\SelectedSpecialityChangedEvent.cs" />
     <Compile Include="Models\Events\UserExitedEvent.cs" />
+    <Compile Include="Models\SpecialityTree.cs" />
     <Compile Include="ViewModels\ThemeConstructorPageViewModel.cs" />
     <Compile Include="ViewModels\TreeChangePageViewModel.cs" />
     <Compile Include="ViewModels\UserPickViewModel.cs" />

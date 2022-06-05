@@ -1,5 +1,7 @@
 ﻿using EduMessage.Services;
 
+using Microsoft.UI.Xaml.Controls;
+
 using MvvmGen;
 using MvvmGen.Events;
 
@@ -12,12 +14,10 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Linq;
 using System.Threading.Tasks;
-using Windows.ApplicationModel.Core;
+
 using Windows.Storage.Pickers;
-using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Controls;
 
 namespace EduMessage.ViewModels
 {
@@ -348,12 +348,4 @@ namespace EduMessage.ViewModels
             TaskTime = new TimeSpan(date.Value.Hour, date.Value.Minute, 0);
         }
     }
-
-    public record DialogStatusChanged(bool IsSuccess);
-
-    public record CourseTaskDialogOpedRequested;
-
-    public record EducationPageBack;
-
-    public record CourseRequestCompleted(IEnumerable<CourseAttachment> CourseAttachments);
 }
