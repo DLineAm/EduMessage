@@ -29,7 +29,6 @@
             <ColumnDefinition Width="Auto"></ColumnDefinition>
         </Grid.ColumnDefinitions>
 
-        <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"></RowDefinition>
                 <RowDefinition></RowDefinition>
@@ -91,29 +90,34 @@
                                         <Run Text="{Binding LastName}"></Run>
                                         <Run Text="{Binding FirstName}"></Run>
                                         <Run Text="{Binding MiddleName}"></Run>
+                                        (<Run Text="{Binding IdRoleNavigation.Title}"></Run>)
                                     </TextBlock>
                                     <TextBlock Text="{Binding IdSchoolNavigation.Name}"
                                                TextTrimming="CharacterEllipsis"></TextBlock>
                                 </StackPanel>
 
-                                <AppBarButton Icon="Edit"
-                                              Label="Начать диалог"
+                                <AppBarButton Label="Начать диалог"
                                               Grid.Column="2"
                                               Margin="12,0,0,0"
                                               Command="{Binding DataContext.StartDialogCommand, ElementName=ParentPage}"
-                                              CommandParameter="{Binding }"></AppBarButton>
+                                              CommandParameter="{Binding }">
+                                    <AppBarButton.Icon>
+                                        <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE715;"></FontIcon>
+                                    </AppBarButton.Icon>
+                                </AppBarButton>
                             </Grid>
                         </Border>
                     </DataTemplate>
                 </ListView.ItemTemplate>
             </ListView>
-        </Grid>
 
         <Border Grid.Column="1"
                 Style="{StaticResource CardBorder}"
                 Padding="48,12"
                 MaxWidth="370"
-                VerticalAlignment="Top">
+                VerticalAlignment="Top"
+                Margin="0 12 0 0"
+                Grid.Row="1">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"></RowDefinition>

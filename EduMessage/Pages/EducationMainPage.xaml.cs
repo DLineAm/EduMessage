@@ -33,12 +33,12 @@ namespace EduMessage.Pages
             this.DataContext = ViewModel;
             ContentFrame.Navigate(typeof(EducationFolderPage));
         }
-       
+
         public EducationMainPageViewModel ViewModel { get; }
 
         public ObservableCollection<Crumb> Crumbs { get; set; } = new()
         {
-            new Crumb {Title = "Главная"}
+            new Crumb { Title = "Главная" }
         };
 
         private void Page_DataContextChanged(FrameworkElement sender, DataContextChangedEventArgs args)
@@ -59,7 +59,7 @@ namespace EduMessage.Pages
             if (index == 0)
             {
                 Crumbs.Clear();
-                Crumbs.Add(new Crumb {Title = "Главная"});
+                Crumbs.Add(new Crumb { Title = "Главная" });
                 ContentFrame.BackStack.Clear();
                 ContentFrame.Navigate(typeof(EducationFolderPage));
                 return;
@@ -67,9 +67,11 @@ namespace EduMessage.Pages
 
             GoBackTo(item, index);
 
+
             while (Crumbs.Count > index + 1)
             {
                 Crumbs.RemoveAt(Crumbs.Count - 1);
+                ContentFrame.BackStack.RemoveAt(ContentFrame.BackStack.Count - 1);
             }
         }
 
@@ -109,7 +111,7 @@ namespace EduMessage.Pages
                 // ignored
             }
 
-            var crumb = new Crumb {Data = parameter};
+            var crumb = new Crumb { Data = parameter };
             var navigator = new Navigator();
             switch (parameter)
             {
@@ -133,8 +135,13 @@ namespace EduMessage.Pages
                     ContentFrame.Navigate(typeof(EducationCourseListPage), parameter,
                         new DrillInNavigationTransitionInfo());
                     break;
+                case int courseId:
+                    crumb.Title = "Присланные работы";
+                    ContentFrame.Navigate(typeof(UserTaskListPage), courseId,
+                        new DrillInNavigationTransitionInfo());
+                    break;
             }
-            
+
             Crumbs.Add(crumb);
         }
     }

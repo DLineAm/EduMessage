@@ -12,14 +12,17 @@ using SignalIRServerTest.Models;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
-using Windows.ApplicationModel.Core;
 using Windows.Storage.Pickers;
-using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Media.Animation;
+using EduMessage.Annotations;
+using EduMessage.Pages;
 
 namespace EduMessage.ViewModels
 {
@@ -35,7 +38,7 @@ namespace EduMessage.ViewModels
         [Property] private string _courseDescription;
         [Property] private Visibility _noResultsFoundAnimationVisibility = Visibility.Collapsed;
         [Property] private Visibility _teacherInputVisibility;
-        [Property] private Visibility _userInputVisibility = Visibility.Collapsed;
+        [Property] private Visibility _userTeacherInputVisibility = Visibility.Collapsed;
         [Property] private GridLength _gridWidth;
         [Property] private string _errorText;
         [Property] private bool _isInfoBarOpen;
@@ -44,6 +47,8 @@ namespace EduMessage.ViewModels
         [Property] private int? _mark;
         [Property] private string _taskStatus;
         [Property] private string _dialogActionText;
+        [Property] private string _dialogTaskComment;
+        [Property] private Visibility _dialogCompletedTaskInputVisibility;
 
         private bool _isCourseAddMode;
         private FormattedCourse _selectedCourse;
@@ -58,7 +63,7 @@ namespace EduMessage.ViewModels
             _mainCourse = mainCourse;
 
             UpdateTeacherInputVisibility(App.Account.GetUser().IdRole == 2 ? Visibility.Visible : Visibility.Collapsed);
-            UserInputVisibility = App.Account.GetUser().IdRole == 1 ? Visibility.Visible : Visibility.Collapsed;
+            UserTeacherInputVisibility = App.Account.GetUser().IdRole is 1 or 2 ? Visibility.Visible : Visibility.Collapsed;
 
             try
             {
@@ -115,10 +120,23 @@ namespace EduMessage.ViewModels
             }
 
             SetErrorText();
+            var user = App.Account.GetUser();
 
+            if (user.IdRole == 2)
+            {
+                EventAggregator.Publish(new SelectedSpecialityChangedEvent(id));
+                //EventAggregator.Publish(new CourseDialogStartShowing(false));
+                return;
+            }
+
+            await GetTask(id);
+        }
+
+        private async Task GetTask(int courseId)
+        {
             var userId = App.Account.GetUser().Id;
 
-            var currentCourse = Courses.FirstOrDefault(c => c.Course.Id == id);
+            var currentCourse = Courses.FirstOrDefault(c => c.Course.Id == courseId);
 
             _selectedCourse = currentCourse;
 
@@ -128,7 +146,7 @@ namespace EduMessage.ViewModels
 
             try
             {
-                var response = (await (App.Address + $"Education/Courses/Tasks.IdUser={userId}&IdCourse={id}")
+                var response = (await (App.Address + $"Education/Courses/Tasks.IdUser={userId}&IdCourse={courseId}")
                         .SendRequestAsync<string>(null, HttpRequestType.Get, App.Account.GetJwt()))
                     .DeserializeJson<IEnumerable<CourseAttachment>>();
 
@@ -150,12 +168,15 @@ namespace EduMessage.ViewModels
                 Mark = firstCourseAttachment.Mark;
                 TaskStatus = Mark == null ? "Не проверено" : $"Проверено ({Mark})";
                 DialogActionText = "Изменить";
+                DialogTaskComment = firstCourseAttachment.Comment;
+                DialogCompletedTaskInputVisibility = Mark == null ? Visibility.Visible : Visibility.Collapsed;
             }
             catch (Exception e)
             {
-                
             }
         }
+
+       
 
 
         private void SetErrorText(string text = null)
@@ -316,6 +337,71 @@ namespace EduMessage.ViewModels
                 .Adapt<FormattedCourse>(TypeAdapterConfig);
 
             Courses.Add(courses);
+        }
+    }
+
+    public class FormattedCourseTask : INotifyPropertyChanged
+    {
+        private byte? _generalMarkForInterface;
+        private string _commentForInterface;
+        public User User { get; set; }
+        public List<CourseAttachment> Attachments { get; set; }
+        public byte? GeneralMark { get; set; }
+        public DateTime? SendTime { get; set; }
+        public string Comment { get; set; }
+
+        public string CommentForInterface
+        {
+            get => _commentForInterface;
+            set
+            {
+                _commentForInterface = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public byte? GeneralMarkForInterface
+        {
+            get => _generalMarkForInterface;
+            set
+            {
+                _generalMarkForInterface = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public FormattedCourseTask(User user, List<CourseAttachment> attachments)
+        {
+            User = user;
+            Attachments = attachments;
+
+            foreach (var courseAttachment in Attachments)
+            {
+                var mark = courseAttachment.Mark;
+                if (courseAttachment.Mark == null) continue;
+                GeneralMark = mark;
+                GeneralMarkForInterface = mark;
+                SendTime = courseAttachment.SendTime;
+                Comment = courseAttachment.Comment;
+                if (Comment == null) return;
+                CommentForInterface = Comment;
+                return;
+            }
+
+            GeneralMark = 2;
+        }
+
+        public KeyValuePair<User, List<CourseAttachment>> GetKeyValuePair()
+        {
+            return new KeyValuePair<User, List<CourseAttachment>>(User, Attachments);
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        [NotifyPropertyChangedInvocator]
+        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }

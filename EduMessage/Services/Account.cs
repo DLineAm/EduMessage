@@ -120,6 +120,11 @@ namespace EduMessage.Services
                     return "Неверное имя пользователя или пароль";
                 }
 
+                if (token == null)
+                {
+                    return "Заявка на создание этого пользователя еще не была одобрена администратором";
+                }
+
                 _user = user;
 
                 _jwt = token;

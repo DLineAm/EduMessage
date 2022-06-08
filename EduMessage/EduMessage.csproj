@@ -190,6 +190,9 @@
     <Compile Include="Pages\LoginPage.xaml.cs">
       <DependentUpon>LoginPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Pages\NotApprovedUsersPage.xaml.cs">
+      <DependentUpon>NotApprovedUsersPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Pages\PersonalInfoAddPage.xaml.cs">
       <DependentUpon>PersonalInfoAddPage.xaml</DependentUpon>
     </Compile>
@@ -207,6 +210,9 @@
     </Compile>
     <Compile Include="Pages\UserPickPage.xaml.cs">
       <DependentUpon>UserPickPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Pages\UserTaskListPage.xaml.cs">
+      <DependentUpon>UserTaskListPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Properties\CanBeNullAttribute.cs" />
     <Compile Include="Properties\AspChildControlTypeAttribute.cs" />
@@ -344,6 +350,7 @@
     <Compile Include="Utils\DateToDateConverter.cs" />
     <Compile Include="Utils\InverseNullToVisibilityConverter.cs" />
     <Compile Include="Utils\ItemToNumberConverter.cs" />
+    <Compile Include="Utils\MarkTextConverter.cs" />
     <Compile Include="Utils\MessageToAttachmentConverter.cs" />
     <Compile Include="Utils\NullToVisibilityConverter.cs" />
     <Compile Include="Utils\RichTextBoxExtension.cs" />
@@ -397,6 +404,7 @@
     <Compile Include="ViewModels\MainPageViewModel.cs" />
     <Compile Include="Models\Events\MessageChanged.cs" />
     <Compile Include="Models\MessageList.cs" />
+    <Compile Include="ViewModels\NotApprovedUsersPageViewModel.cs" />
     <Compile Include="ViewModels\PersonalInfoAddPageViewModel.cs" />
     <Compile Include="ViewModels\PrimaryRegisterPageViewModel.cs" />
     <Compile Include="ViewModels\SchoolChoosePageViewModel.cs" />
@@ -406,6 +414,7 @@
     <Compile Include="ViewModels\ThemeConstructorPageViewModel.cs" />
     <Compile Include="ViewModels\TreeChangePageViewModel.cs" />
     <Compile Include="ViewModels\UserPickViewModel.cs" />
+    <Compile Include="ViewModels\UserTaskListPageViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <AppxManifest Include="Package.appxmanifest">
@@ -527,6 +536,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Pages\NotApprovedUsersPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Pages\PersonalInfoAddPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -548,6 +561,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Pages\UserPickPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Pages\UserTaskListPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

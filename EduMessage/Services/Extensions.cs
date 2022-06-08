@@ -10,6 +10,7 @@ using System.Net.Http;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text;
 using System.Threading.Tasks;
+
 using Windows.Foundation;
 using Windows.Storage;
 using Windows.Storage.Streams;
@@ -18,6 +19,7 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Animation;
 using Windows.UI.Xaml.Media.Imaging;
+
 using Attachment = SignalIRServerTest.Models.Attachment;
 
 using JsonSerializer = System.Text.Json.JsonSerializer;
@@ -35,12 +37,34 @@ namespace EduMessage.Services
             await Task.WhenAll(tasks);
         }
 
+        public static FrameworkElement VisualTreeFindName(this DependencyObject element, string name)
+        {
+            if (element == null || string.IsNullOrWhiteSpace(name))
+            {
+                return null;
+            }
+            if (name.Equals((element as FrameworkElement)?.Name, StringComparison.OrdinalIgnoreCase))
+            {
+                return element as FrameworkElement;
+            }
+            var childCount = VisualTreeHelper.GetChildrenCount(element);
+            for (int i = 0; i < childCount; i++)
+            {
+                var result = VisualTreeHelper.GetChild(element, i).VisualTreeFindName(name);
+                if (result != null)
+                {
+                    return result;
+                }
+            }
+            return null;
+        }
+
         public static async Task<string> SendRequestAsync<T>(this string address
-            , T value
-            , HttpRequestType requestType
-            , string token = ""
-            , bool passCertificateValidation = true
-            , bool isLoopHandleIgnore = false)
+        , T value
+        , HttpRequestType requestType
+        , string token = ""
+        , bool passCertificateValidation = true
+        , bool isLoopHandleIgnore = false)
         {
             using HttpClient client = CreateClient(token, passCertificateValidation);
 
@@ -56,7 +80,7 @@ namespace EduMessage.Services
                 }
 
                 using var stream = new MemoryStream();
-                await JsonSerializer.SerializeAsync(stream,value);
+                await JsonSerializer.SerializeAsync(stream, value);
                 stream.Seek(0, SeekOrigin.Begin);
                 using var reader = new StreamReader(stream);
                 var json = await reader.ReadToEndAsync();

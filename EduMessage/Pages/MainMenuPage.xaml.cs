@@ -78,6 +78,9 @@ namespace EduMessage.Pages
                         case "Параметры":
                             NavFrame.Navigate(typeof(ItemsPickPage));
                             break;
+                        case "Заявки преподавателей":
+                            NavFrame.Navigate(typeof(NotApprovedUsersPage));
+                            break;
                         default:
                             break;
                     }
@@ -159,7 +162,7 @@ namespace EduMessage.Pages
             {
                 NotificationBorder.Visibility = Visibility.Collapsed;
 
-                AnimatedIcon.SetState(SettingsIcon, "Normal");
+                //AnimatedIcon.SetState(SettingsIcon, "Normal");
 
                 var aggregator = ControlContainer.Get().Resolve<IEventAggregator>();
                 aggregator.RegisterSubscriber(this);
@@ -182,9 +185,9 @@ namespace EduMessage.Pages
 
         private async void SettingsNavigationViewItem_Tapped(object sender, TappedRoutedEventArgs e)
         {
-            AnimatedIcon.SetState(SettingsIcon, "Pressed");
+            //AnimatedIcon.SetState(SettingsIcon, "Pressed");
             await Task.Delay(1);
-            AnimatedIcon.SetState(SettingsIcon, "Normal");
+            //AnimatedIcon.SetState(SettingsIcon, "Normal");
         }
 
         public async void OnEvent(ConversationGot eventData)

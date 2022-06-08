@@ -1,27 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-
-using System.Globalization;
-using System.Linq;
-using System.Threading.Tasks;
-using Windows.Foundation;
-using Windows.System.UserProfile;
-using Windows.UI;
-using EduMessage.Services;
+﻿using EduMessage.Services;
 using EduMessage.ViewModels;
+
+using MapsterMapper;
+
+using MvvmGen.Events;
 
 using SignalIRServerTest.Models;
 
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+
+using Windows.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Animation;
 using Windows.UI.Xaml.Navigation;
-using EduMessage.Resources;
-using MapsterMapper;
-using MvvmGen.Events;
 
 // Документацию по шаблону элемента "Пустая страница" см. по адресу https://go.microsoft.com/fwlink/?LinkId=234238
 
@@ -168,7 +165,7 @@ namespace EduMessage.Pages
             catch (Exception ex)
             {
 
-                throw;
+                //throw;
             }
             this.DataContext = ViewModel;
         }

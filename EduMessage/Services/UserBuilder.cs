@@ -64,6 +64,7 @@ namespace EduMessage.Services
                 case Role role:
                     _user.IdRole = role.Id;
                     _user.IdRoleNavigation = role;
+                    _user.Approved = role.Id != 2;
                     break;
             }
 

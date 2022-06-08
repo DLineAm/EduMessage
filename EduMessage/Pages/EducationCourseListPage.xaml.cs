@@ -211,6 +211,10 @@ namespace EduMessage.Pages
 
         private async void MoreButton_OnClick(object sender, RoutedEventArgs e)
         {
+            if (App.Account.GetUser().IdRole != 1)
+            {
+                return;
+            }
             _isContentDialogSuccess = false;
             while (!_isContentDialogSuccess)
             {
@@ -232,5 +236,10 @@ namespace EduMessage.Pages
             _isContentDialogSuccess = true;
             TaskDialog.Hide();
         }
+
+        //public async void OnEvent(CourseDialogStartShowing eventData)
+        //{
+        //    await UserTaskDialog.ShowAsync();
+        //}
     }
 }

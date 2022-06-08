@@ -23,6 +23,7 @@ namespace EduMessage.ViewModels
         [Property] private string _loaderText;
         [Property] private Color _loaderColor = App.ColorManager.GetAccentColor();
         [Property] private List<UserConversation> _conversationList;
+        [Property] private Visibility _adminMenuItemsVisibility = Visibility.Collapsed;
 
         public async Task Initialize()
         {
@@ -30,6 +31,7 @@ namespace EduMessage.ViewModels
             AccountName = user.FirstName + " " + user.LastName;
             var imageBytes = user.Image;
             ChangeProfilePicture(imageBytes);
+            AdminMenuItemsVisibility = user.IdRole == 3 ? Visibility.Visible : Visibility.Collapsed;
         }
 
         public void OnEvent(AccountImageUploadedEvent eventData)

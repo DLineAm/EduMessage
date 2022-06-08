@@ -5,9 +5,16 @@
     xmlns:local="using:EduMessage.Pages"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:controls="using:Microsoft.UI.Xaml.Controls"
     mc:Ignorable="d">
 
     <StackPanel>
+        <controls:InfoBar IsOpen="{Binding IsInfoBarOpen}"
+                          Title="Предупреждение"
+                          Severity="Warning"
+                          Message="Прежде, чем создать аккаунт преподавателя, заявку на создание должен подтвердить администратор"
+                          IsClosable="False"
+                          Width="270"></controls:InfoBar>
         <TextBlock HorizontalAlignment="Center"
                    VerticalAlignment="Center"
                    Margin="12"

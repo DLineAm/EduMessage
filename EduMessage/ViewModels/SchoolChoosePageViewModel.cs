@@ -33,6 +33,7 @@ namespace EduMessage.ViewModels
         [Property] private Role _role;
         [Property] private bool _isLoginEnabled = true;
         [Property] private Visibility _studentInputVisibility = Visibility.Visible;
+        [Property] private bool _isInfoBarOpen;
 
         [Command(CanExecuteMethod = nameof(CanConfirm))]
         private async void Confirm()
@@ -61,6 +62,12 @@ namespace EduMessage.ViewModels
                     ErrorText = "Произошла ошибка при создании аккаунта, повторите попытку позже";
                 }
 
+                if (Role.Id == 2)
+                {
+                    new Navigator().Navigate(typeof(BaseLoginPage), null, new DrillInNavigationTransitionInfo(), FrameType.LoginFrame);
+                    return;
+                }
+
                 new Navigator().Navigate(typeof(MainMenuPage), null, new DrillInNavigationTransitionInfo());
             }
             catch (Exception e)
@@ -76,6 +83,7 @@ namespace EduMessage.ViewModels
         private void ChangeVisibility()
         {
             StudentInputVisibility = Role.Title == "Студент" ? Visibility.Visible : Visibility.Collapsed;
+            IsInfoBarOpen = Role.Title == "Преподаватель";
         }
 
         public async void LoadData()
@@ -95,7 +103,7 @@ namespace EduMessage.ViewModels
 
                 Groups = groups;
 
-                var specialities = (await (App.Address + "Login/EducationFolders")
+                var specialities = (await (App.Address + "Login/Specialities")
                     .SendRequestAsync<string>(null, HttpRequestType.Get))
                     .DeserializeJson<List<Speciality>>();
 

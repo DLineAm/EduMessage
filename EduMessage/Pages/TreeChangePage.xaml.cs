@@ -47,11 +47,19 @@ namespace EduMessage.Pages
             {
                 return;
             }
-            if ( await e.DataView.GetDataAsync("RecordId") is int courseId &&
-                 await e.DataView.GetDataAsync("MainCourseId") is int mainCourseId)
+            try
             {
-                _aggregator.Publish(new UiElementDropCompletedEvent(courseId, mainCourseId, mainCourse.Id, typeof(CourseTree)));
+                if (await e.DataView.GetDataAsync("RecordId") is int courseId &&
+                 await e.DataView.GetDataAsync("MainCourseId") is int mainCourseId)
+                {
+                    _aggregator.Publish(new UiElementDropCompletedEvent(courseId, mainCourseId, mainCourse.Id, typeof(CourseTree)));
+                }
             }
+            catch (Exception ex)
+            {
+                
+            }
+            
             //var data = await e.Data.GetView().GetDataAsync("UiElement");
         }
 
@@ -93,12 +101,20 @@ namespace EduMessage.Pages
             {
                 return;
             }
-            if ( await e.DataView.GetDataAsync("MainCourseId") is int mainCourseId &&
+            try
+            {
+                if (await e.DataView.GetDataAsync("MainCourseId") is int mainCourseId &&
                  await e.DataView.GetDataAsync("SpecialityId") is int specialityId &&
                  specialityId != speciality.Id)
-            {
-                _aggregator.Publish(new UiElementDropCompletedEvent(mainCourseId, specialityId, speciality.Id, typeof(MainCourseTree)));
+                {
+                    _aggregator.Publish(new UiElementDropCompletedEvent(mainCourseId, specialityId, speciality.Id, typeof(MainCourseTree)));
+                }
             }
+            catch (Exception ex) 
+            {
+
+            }
+            
         }
     }
 
