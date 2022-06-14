@@ -1,22 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
+﻿using EduMessage.Services;
+using EduMessage.ViewModels;
 
-using Windows.Foundation;
-using Windows.Foundation.Collections;
+using Microsoft.UI.Xaml.Controls;
+
+using MvvmGen.Events;
+
+using System.Linq;
+
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
-using EduMessage.Services;
-using EduMessage.ViewModels;
-using Microsoft.UI.Xaml.Controls;
-using MvvmGen.Events;
 
 // Документацию по шаблону элемента "Пустая страница" см. по адресу https://go.microsoft.com/fwlink/?LinkId=234238
 

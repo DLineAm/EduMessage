@@ -184,6 +184,21 @@ namespace EduMessage.Pages
                 {
                     panel.Children.Remove(last);
                     panel.Children.Add(last);
+
+                    if (i == matches.Count - 1)
+                    {
+                        var matchIndex = match.Index + match.Length;
+                        var lastText = description.Substring(matchIndex, description.Length - matchIndex);
+                        var lastElement = baseFeature.Realise((lastText, course), ref last);
+                        if (lastElement == null)
+                        {
+                            panel.Children.Remove(last);
+                            panel.Children.Add(last);
+                            continue;
+                        }
+                        panel.Children.Add(lastElement);
+                        continue;
+                    }
                     continue;
                 }
                 panel.Children.Add(elem);

@@ -222,9 +222,9 @@
                                                               Command="{Binding DataContext.InitializeChangeCourseDialogCommand, ElementName=window}"
                                                               CommandParameter="{Binding }"
                                                               Visibility="{Binding DataContext.TeacherInputVisibility, ElementName=window}"/>
-                                                <AppBarButton Label="Отправить"
+                                                <!--<AppBarButton Label="Отправить"
                                                               Icon="Share"
-                                                              HorizontalAlignment="Right"/>
+                                                              HorizontalAlignment="Right"/>-->
                                             </StackPanel>
 
 
@@ -282,8 +282,12 @@
 
                 <StackPanel Grid.Row="1"
                             Margin="0,12,0,0">
-                    <HyperlinkButton Content="Добавить курс"
+                    <HyperlinkButton Content="Добавить тему"
                                      Command="{Binding InitializeAddCourseDialogCommand}"/>
+                    <HyperlinkButton Content="Журнал оценок"
+                                     Command="{Binding OpenJournalPageCommand}"
+                                     CommandParameter=""
+                                     Margin="0 12 0 0"/>
                 </StackPanel>
             </Grid>
         </Border>
@@ -291,7 +295,7 @@
         <ContentDialog x:Name="TaskDialog"
                        Title="Подробнее о задании"
                        PrimaryButtonText="{Binding DialogActionText}"
-                       PrimaryButtonCommand="{Binding ApplyCommand}"
+                       PrimaryButtonCommand="{Binding ApplyTaskCommand}"
                        SecondaryButtonText="Отмена"
                        SecondaryButtonClick="TaskDialog_OnSecondaryButtonClick"
                        DefaultButton="Primary">

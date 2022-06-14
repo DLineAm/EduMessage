@@ -1,4 +1,5 @@
-﻿using EduMessage.Models;
+﻿using EduMessage.Annotations;
+using EduMessage.Models;
 using EduMessage.Services;
 
 using Mapster;
@@ -20,9 +21,6 @@ using System.Threading.Tasks;
 using Windows.Storage.Pickers;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Media.Animation;
-using EduMessage.Annotations;
-using EduMessage.Pages;
 
 namespace EduMessage.ViewModels
 {
@@ -67,7 +65,7 @@ namespace EduMessage.ViewModels
 
             try
             {
-                var response = (await (App.Address + $"Education/Courses.IdMainCourse={mainCourse.Id}")
+                var response = (await (App.Address + $"Education/Courses.IdMainCourse={mainCourse.Id}&WithoutUsers={true}")
                     .SendRequestAsync<string>(null, HttpRequestType.Get, App.Account.GetJwt()))
                     .DeserializeJson<HashSet<CourseAttachment>>();
 
@@ -199,6 +197,22 @@ namespace EduMessage.ViewModels
         }
 
         [Command]
+        private async void ApplyTask()
+        {
+            try
+            {
+                var response = (await (App.Address + "Education/Tasks/Add")
+                        .SendRequestAsync(TaskAttachments, HttpRequestType.Post, App.Account.GetJwt()))
+                    .DeserializeJson<bool>();
+            }
+            catch (Exception e)
+            {
+
+            }
+            
+        }
+
+        [Command]
         private async void Apply()
         {
             if (TaskAttachments.Count == 0)
@@ -298,6 +312,12 @@ namespace EduMessage.ViewModels
         private void InitializeAddCourseDialog()
         {
             EventAggregator.Publish(new SelectedSpecialityChangedEvent((_mainCourse.Id, new FormattedCourse())));
+        }
+
+        [Command]
+        private void OpenJournalPage()
+        {
+            EventAggregator.Publish(new SelectedSpecialityChangedEvent((_mainCourse.Id, _mainCourse)));
         }
 
         [Command]

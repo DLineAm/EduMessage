@@ -100,14 +100,14 @@ namespace EduMessage.ViewModels
             }
             else if (parameter is MainCourse course)
             {
-                response = (await (App.Address + $"Education/Courses.IdMainCourse={course.Id}")
+                response = (await (App.Address + $"Education/Courses.IdMainCourse={course.Id}&WithoutUsers={true}")
                         .SendRequestAsync<string>(null, HttpRequestType.Delete, App.Account.GetJwt()))
                     .DeserializeJson<bool>();
             }
 
             if (!response)
             {
-                Notificator.Notificate("Не удалось удалить запись", "Запись имеет внешние ключи, из-за которых удалить эту запись невозможно");
+                Notificator.Notificate("Не удалось удалить запись", "Некоторые пользователи прикреплены к выбранной специальности, поэтому удаление невозможно");
                 EventAggregator.Publish(new LoaderVisibilityChanged(Visibility.Collapsed, string.Empty));
                 return;
             }

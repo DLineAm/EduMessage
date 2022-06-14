@@ -15,6 +15,7 @@
     d:DesignWidth="400"
     d:DataContext="{d:DesignInstance Type=local:UIMessageControl}"
     x:Name="MessageUserControl">
+   
 
     <UserControl.Resources>
         <AcrylicBrush x:Key="AttachmentsAcrylicBrush"
@@ -35,7 +36,6 @@
                    DataContext="{Binding FormattedMessageContent}"
                    Text="{Binding Message.MessageContent}"
                    FontSize="20"
-                   Foreground="{StaticResource PrimaryMessageForeground}"
                    TextAlignment="Left"
                    HorizontalAlignment="Left"
                    Padding="10,10,5,0"

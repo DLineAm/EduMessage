@@ -220,7 +220,7 @@ namespace EduMessage.ViewModels
             }
             else if (parameter is MainCourseTree course)
             {
-                response = (await (App.Address + $"Education/Courses.IdMainCourse={course.Id}")
+                response = (await (App.Address + $"Education/Courses.IdMainCourse={course.Id}&WithoutUsers={true}")
                         .SendRequestAsync<string>(null, HttpRequestType.Delete, App.Account.GetJwt()))
                     .DeserializeJson<bool>();
 

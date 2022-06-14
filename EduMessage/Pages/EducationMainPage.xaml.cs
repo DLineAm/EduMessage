@@ -125,6 +125,12 @@ namespace EduMessage.Pages
                     ContentFrame.Navigate(typeof(ThemeConstructorPage), (id, formattedCourse),
                         new DrillInNavigationTransitionInfo());
                     break;
+                case (int id, MainCourse mainCourse):
+                    crumb.Data = mainCourse;
+                    crumb.Title = "Журнал оценок";
+                    ContentFrame.Navigate(typeof(JournalPage), (id, mainCourse),
+                        new DrillInNavigationTransitionInfo());
+                    break;
                 case Speciality speciality:
                     crumb.Title = speciality.Code + " " + speciality.Title;
                     ContentFrame.Navigate(typeof(EducationFolderPage), parameter,

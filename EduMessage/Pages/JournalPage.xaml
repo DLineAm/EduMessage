@@ -1,0 +1,61 @@
+﻿<Page
+    x:Class="EduMessage.Pages.JournalPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:EduMessage.Pages"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:controls="using:Microsoft.Toolkit.Uwp.UI.Controls"
+    xmlns:untils="using:EduMessage.Utils" xmlns:animatedvisuals="using:AnimatedVisuals" xmlns:controls1="using:Microsoft.UI.Xaml.Controls"
+    mc:Ignorable="d"
+    DataContext="{Binding RelativeSource={RelativeSource Self}}">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <TextBlock Style="{StaticResource 26TitleTextBlock}"
+                   Text="{Binding MainCourseTitle}"/>
+        <StackPanel VerticalAlignment="Center"
+                    Visibility="{Binding NoResultsFoundAnimationVisibility}"
+                    Grid.Row="1"
+                    HorizontalAlignment="Center">
+            <controls1:AnimatedVisualPlayer Height="130"
+                                           >
+                <animatedvisuals:Fire/>
+            </controls1:AnimatedVisualPlayer>
+
+            <TextBlock Text="Здесь ничего нет, может быть что-то появится позже"
+                       HorizontalAlignment="Center"
+                       TextWrapping="Wrap"
+                       Width="200"
+                       TextAlignment="Center"
+                       Foreground="{ThemeResource TextBoxButtonForegroundThemeBrush}"/>
+        </StackPanel>
+        <Border Style="{StaticResource AcrylicCardBorder}"
+                Grid.Row="1"
+              Margin="0 12 0 0"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Top"
+                Padding="48 12">
+            <Grid x:Name="JournalGrid">
+
+            </Grid>
+        </Border>
+        
+        <!--<ListView ItemsSource="{Binding JournalList}"
+                  x:Name="JournalListView">
+            <ListView.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <Grid x:Name="ListGrid"
+                          HorizontalAlignment="Stretch"
+                          VerticalAlignment="Stretch"
+
+                          Loaded="ListGrid_OnLoaded"></Grid>
+                </ItemsPanelTemplate>
+            </ListView.ItemsPanel>
+
+        </ListView>-->
+    </Grid>
+</Page>

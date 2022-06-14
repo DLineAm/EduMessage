@@ -148,8 +148,8 @@
                         <MenuFlyoutItem Icon="Contact"
                                         Text="Профиль"
                                         Command="{Binding NavigateToAccountInfoCommand}" CommandParameter="{Binding User}"/>
-                        <MenuFlyoutItem Icon="AddFriend"
-                                        Text="Добавить участников"></MenuFlyoutItem>
+                        <!--<MenuFlyoutItem Icon="AddFriend"
+                                        Text="Добавить участников"></MenuFlyoutItem>-->
                     </MenuFlyout>
                 </Button.Flyout>
             </Button>

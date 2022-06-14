@@ -181,6 +181,9 @@
     <Compile Include="Pages\ItemsPickPage.xaml.cs">
       <DependentUpon>ItemsPickPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Pages\JournalPage.xaml.cs">
+      <DependentUpon>JournalPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Pages\MainMenuPage.xaml.cs">
       <DependentUpon>MainMenuPage.xaml</DependentUpon>
     </Compile>
@@ -310,6 +313,7 @@
     <Compile Include="Resources\UIMessageControl.xaml.cs">
       <DependentUpon>UIMessageControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Resources\UniformGrid.cs" />
     <Compile Include="Services\Account.cs" />
     <Compile Include="Services\BaseTextBlockFeature.cs" />
     <Compile Include="Services\BoldTextBlockFeature.cs" />
@@ -348,6 +352,7 @@
     <Compile Include="Services\PersonNameValidator.cs" />
     <Compile Include="Services\Settings.cs" />
     <Compile Include="Utils\DateToDateConverter.cs" />
+    <Compile Include="Utils\GridHelpers.cs" />
     <Compile Include="Utils\InverseNullToVisibilityConverter.cs" />
     <Compile Include="Utils\ItemToNumberConverter.cs" />
     <Compile Include="Utils\MarkTextConverter.cs" />
@@ -521,6 +526,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Pages\ItemsPickPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Pages\JournalPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

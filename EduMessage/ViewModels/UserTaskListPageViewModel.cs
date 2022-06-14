@@ -54,7 +54,7 @@ namespace EduMessage.ViewModels
                     var courseAttachments = groupedTasks.Where(t => t.Key == courseAttachment.Key);
                     var pairs = courseAttachments.Select(t =>
                         new FormattedCourseTask(user, t.Select(a => a).ToList()));
-                    tasks = pairs.ToList();
+                    tasks.AddRange( pairs);
                 }
 
                 return tasks;
