@@ -78,7 +78,7 @@ namespace SignalIRServerTest.Models
 
         private async Task<object> GetImage(string type, byte[] data, int decodedHeight) => type switch
         {
-            ".docx" => "ms-appx:///Assets/word.png",
+            ".docx" or ".doc" => "ms-appx:///Assets/word.png",
             ".pdf" => "ms-appx:///Assets/pdf.png",
             ".txt" => "ms-appx:///Assets/txt.png",
             ".png" or ".jpg" or ".jpeg" => await data.CreateBitmap(decodedHeight),

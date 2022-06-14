@@ -48,7 +48,6 @@ namespace EduMessage.ViewModels
         [Property] private string _dialogTaskComment;
         [Property] private Visibility _dialogCompletedTaskInputVisibility;
 
-        private bool _isCourseAddMode;
         private FormattedCourse _selectedCourse;
         private MainCourse _mainCourse;
 
@@ -67,7 +66,8 @@ namespace EduMessage.ViewModels
             {
                 var response = (await (App.Address + $"Education/Courses.IdMainCourse={mainCourse.Id}&WithoutUsers={true}")
                     .SendRequestAsync<string>(null, HttpRequestType.Get, App.Account.GetJwt()))
-                    .DeserializeJson<HashSet<CourseAttachment>>();
+                    .DeserializeJson<HashSet<CourseAttachment>>()
+                    .OrderBy(c => c.IdCourseNavigation.Position);
 
                 Courses = new ObservableCollection<FormattedCourse>();
 
@@ -110,6 +110,67 @@ namespace EduMessage.ViewModels
         }
 
         [Command]
+        private async void MoveCourseUp(object parameter)
+        {
+            if (parameter is not Course courseFromParameter)
+            {
+                return;
+            }
+
+            await MoveCourse(courseFromParameter, false);
+        }
+
+        [Command]
+        private async void MoveCourseDown(object parameter)
+        {
+            if (parameter is not Course courseFromParameter)
+            {
+                return;
+            }
+
+            await MoveCourse(courseFromParameter, true);
+        }
+
+        private async Task MoveCourse(Course courseFromParameter, bool isAscending)
+        {
+            var (courseFromParameterPosition, (changedCourseId, changedCoursePosition)) =
+                await SendMoveCourseRequest(courseFromParameter.Id, isAscending);
+
+            if (courseFromParameterPosition == 0 && changedCourseId == 0 && changedCoursePosition == 0)
+            {
+                return;
+            }
+
+            courseFromParameter.Position = courseFromParameterPosition;
+
+            var changedCourse = Courses.FirstOrDefault(c => c.Course.Id == changedCourseId);
+
+            if (changedCourse == null)
+            {
+                return;
+            }
+
+            changedCourse.Course.Position = changedCoursePosition;
+
+            Courses = new ObservableCollection<FormattedCourse>(Courses.OrderBy(c => c.Course.Position));
+        }
+
+        private async Task<KeyValuePair<int, KeyValuePair<int, int>>> SendMoveCourseRequest(int courseId, bool isAscending)
+        {
+            try
+            {
+                var response = (await (App.Address + $"Education/Courses/ChangePosition.CourseId={courseId}&IsAscending={isAscending}")
+                            .SendRequestAsync("", HttpRequestType.Put, App.Account.GetJwt()))
+                        .DeserializeJson<KeyValuePair<int, KeyValuePair<int, int>>>();
+                return response;
+            }
+            catch (Exception e)
+            {
+                return new KeyValuePair<int, KeyValuePair<int, int>>();
+            }
+        }
+
+        [Command]
         private async void GetUserTask(object parameter)
         {
             if (parameter is not int id || id == 0)
@@ -123,7 +184,6 @@ namespace EduMessage.ViewModels
             if (user.IdRole == 2)
             {
                 EventAggregator.Publish(new SelectedSpecialityChangedEvent(id));
-                //EventAggregator.Publish(new CourseDialogStartShowing(false));
                 return;
             }
 
@@ -160,6 +220,7 @@ namespace EduMessage.ViewModels
                 {
                     DialogActionText = "Выполнить";
                     TaskStatus = "Не выполнено";
+                    DialogCompletedTaskInputVisibility = Visibility.Visible;
                     return;
                 }
 
@@ -173,9 +234,6 @@ namespace EduMessage.ViewModels
             {
             }
         }
-
-       
-
 
         private void SetErrorText(string text = null)
         {
@@ -199,40 +257,26 @@ namespace EduMessage.ViewModels
         [Command]
         private async void ApplyTask()
         {
-            try
-            {
-                var response = (await (App.Address + "Education/Tasks/Add")
-                        .SendRequestAsync(TaskAttachments, HttpRequestType.Post, App.Account.GetJwt()))
-                    .DeserializeJson<bool>();
-            }
-            catch (Exception e)
-            {
-
-            }
-            
-        }
-
-        [Command]
-        private async void Apply()
-        {
             if (TaskAttachments.Count == 0)
             {
                 SetErrorText("Количество вложений должно быть больше 0");
                 return;
             }
 
-            EventAggregator.Publish(new LoaderVisibilityChanged(Visibility.Visible, "Отпарвка задания"));
-
             try
             {
-                var response = (await (App.Address + "Education/Courses")
-                        .SendRequestAsync(TaskAttachments, HttpRequestType.Put, App.Account.GetJwt()))
+                EventAggregator.Publish(new LoaderVisibilityChanged(Visibility.Visible, "Отпарвка задания"));
+
+                var response = (await (App.Address + "Education/Tasks/Add")
+                        .SendRequestAsync(TaskAttachments, HttpRequestType.Post, App.Account.GetJwt()))
                     .DeserializeJson<bool>();
 
                 if (!response)
                 {
-                    SetErrorText("Не удалось отправить задание");
+                    SetErrorText("При отправлении задания произошла ошибка, повторите отправку задания позднее");
                     EventAggregator.Publish(new LoaderVisibilityChanged(Visibility.Collapsed, string.Empty));
+                    return;
+
                 }
 
                 EventAggregator.Publish(new DialogStatusChanged(true));
@@ -240,13 +284,50 @@ namespace EduMessage.ViewModels
             }
             catch (Exception e)
             {
-                SetErrorText("Не удалось отправить задание");
+
             }
             finally
             {
                 EventAggregator.Publish(new LoaderVisibilityChanged(Visibility.Collapsed, string.Empty));
             }
+
         }
+
+        //[Command]
+        //private async void Apply()
+        //{
+        //    if (TaskAttachments.Count == 0)
+        //    {
+        //        SetErrorText("Количество вложений должно быть больше 0");
+        //        return;
+        //    }
+
+        //    EventAggregator.Publish(new LoaderVisibilityChanged(Visibility.Visible, "Отпарвка задания"));
+
+        //    try
+        //    {
+        //        var response = (await (App.Address + "Education/Courses")
+        //                .SendRequestAsync(TaskAttachments, HttpRequestType.Put, App.Account.GetJwt()))
+        //            .DeserializeJson<bool>();
+
+        //        if (!response)
+        //        {
+        //            SetErrorText("Не удалось отправить задание");
+        //            EventAggregator.Publish(new LoaderVisibilityChanged(Visibility.Collapsed, string.Empty));
+        //        }
+
+        //        EventAggregator.Publish(new DialogStatusChanged(true));
+        //        EventAggregator.Publish(new InAppNotificationShowing(Symbol.Accept, "Задание отправлено!"));
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        SetErrorText("Не удалось отправить задание");
+        //    }
+        //    finally
+        //    {
+        //        EventAggregator.Publish(new LoaderVisibilityChanged(Visibility.Collapsed, string.Empty));
+        //    }
+        //}
 
         [Command]
         private async void OpenFile(object fileObj)
@@ -334,6 +415,7 @@ namespace EduMessage.ViewModels
                 if (response)
                 {
                     Courses.Remove(course);
+                    Courses = new ObservableCollection<FormattedCourse>(Courses.OrderBy(c => c.Course.Position));
                     EventAggregator.Publish(new InAppNotificationShowing(Symbol.Accept, "Курс удален!"));
                 }
 

@@ -31,6 +31,7 @@ namespace EduMessage.ViewModels
         [Property] private Visibility _codeInputVisibility;
         [Property] private string _errorText;
         [Property] private bool _infoBarIsOpen;
+        [Property] private Visibility _noResultsFoundAnimationVisibility = Visibility.Collapsed;
 
         private object _itemToChange;
         private Type _folderType;
@@ -59,6 +60,8 @@ namespace EduMessage.ViewModels
                                 .Cast<dynamic>()
                                 .ToList();
 
+                            NoResultsFoundAnimationVisibility = response.Count == 0 ? Visibility.Visible : Visibility.Collapsed;
+
                             EducationFolders = new ObservableCollection<dynamic>(response);
                             _folderType = typeof(Speciality);
                             return;
@@ -71,6 +74,8 @@ namespace EduMessage.ViewModels
                             .DeserializeJson<List<MainCourse>>()
                             .Cast<dynamic>()
                             .ToList();
+
+                        NoResultsFoundAnimationVisibility = courses.Count == 0 ? Visibility.Visible : Visibility.Collapsed;
 
                         EducationFolders = new ObservableCollection<dynamic>(courses);
                     }

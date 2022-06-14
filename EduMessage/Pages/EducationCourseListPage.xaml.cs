@@ -32,12 +32,7 @@ namespace EduMessage.Pages
             ViewModel = ControlContainer.Get().ResolveConstructor<EducationListPageViewModel>();
             _featureCollection = ControlContainer.Get().ResolveConstructor<FeatureCollection>();
 
-            //ContentFrame.Navigate(typeof(ItemsPickPage));
-
-            //var page = ContentFrame.Content as ItemsPickPage;
-
             var eventAggregator = ControlContainer.Get().Resolve<IEventAggregator>();
-            //page.Initialize(eventAggregator);
         }
 
         protected override async void OnNavigatedTo(NavigationEventArgs e)
@@ -54,62 +49,10 @@ namespace EduMessage.Pages
 
         public EducationListPageViewModel ViewModel { get; }
 
-//        public async void OnEvent(CourseDialogStartShowing eventData)
-//        {
-//            if (!_isPageLoaded)
-//            {
-//                return;
-//            }
-
-//            var parameter = eventData.IsAddMode;
-
-//            //CourseAddDialog.Title = parameter ? "Добавление курса" : "Изменение курса";
-
-//            try
-//            {
-//                _contentDialogCompleted = false;
-//                while (!_contentDialogCompleted)
-//                {
-//                    //await CourseAddDialog.ShowAsync();
-//                }
-//            }
-//#pragma warning disable CS0168 // Переменная "e" объявлена, но ни разу не использована.
-//            catch (Exception e)
-//#pragma warning restore CS0168 // Переменная "e" объявлена, но ни разу не использована.
-//            {
-
-//            }
-
-//        }
-
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
             _isPageLoaded = true;
         }
-
-        //private void CourseAddDialog_OnClosing(ContentDialog sender, ContentDialogClosingEventArgs args)
-        //{
-
-        //}
-
-        //private void CourseAddDialog_OnPrimaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
-        //{
-
-        //}
-
-        //private void CourseAddDialog_OnSecondaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
-        //{
-        //    _contentDialogCompleted = true;
-        //}
-
-        //public void OnEvent(CourseAddedOrChangedEvent eventData)
-        //{
-        //    _contentDialogCompleted = eventData.IsSuccess;
-        //    if (eventData.IsSuccess)
-        //    {
-        //        CourseAddDialog.Hide();
-        //    }
-        //}
 
         private void FrameworkElement_OnDataContextChanged(FrameworkElement sender, DataContextChangedEventArgs args)
         {
@@ -251,10 +194,5 @@ namespace EduMessage.Pages
             _isContentDialogSuccess = true;
             TaskDialog.Hide();
         }
-
-        //public async void OnEvent(CourseDialogStartShowing eventData)
-        //{
-        //    await UserTaskDialog.ShowAsync();
-        //}
     }
 }

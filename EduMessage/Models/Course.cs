@@ -4,6 +4,7 @@ using SignalIRServerTest.Models;
 
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Text.Json.Serialization;
 
 #nullable disable
 
@@ -19,6 +20,11 @@ namespace SignalIRServerTest
         public int? IdMainCourse { get; set; }
         public int? IdTeacher { get; set; }
         public int? IdTask { get; set; }
+        public int? Position { get; set; }
+
+        [JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+        public bool IsExpanded { get; set; }
 
         public virtual CourseTask IdCourseTaskNavigation { get; set; }
         public virtual MainCourse IdMainCourseNavigation { get; set; }

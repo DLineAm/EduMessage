@@ -22,6 +22,7 @@
         <services:TextBlockVisibilityConverter x:Key="TextBlockVisibilityConverter"/>
         <utils:TaskToValueConverter x:Key="TaskToValueConverter"/>
         <utils:ItemToNumberConverter x:Name="ItemToNumberConverter" ListView="{x:Bind ListView}"></utils:ItemToNumberConverter>
+        <utils:ItemIndexToBoolConverter x:Name="IndexToBoolConverter" ListView="{x:Bind ListView}"></utils:ItemIndexToBoolConverter>
         <utils:NullToVisibilityConverter x:Key="NullToVisibilityConverter"></utils:NullToVisibilityConverter>
         <utils:InverseNullToVisibilityConverter x:Key="InverseNullToVisibilityConverter"></utils:InverseNullToVisibilityConverter>
         <utils:StringFormatConverter x:Key="StringFormatConverter"></utils:StringFormatConverter>
@@ -66,20 +67,27 @@
                           Background="Transparent">
                         <Interactivity:Interaction.Behaviors>
                             <Core:EventTriggerBehavior EventName="PointerEntered">
+                                <Core:ChangePropertyAction TargetObject="{Binding ElementName=MoveCourseUpButton}" PropertyName="Visibility" Value="Visible"/>
+                                <Core:ChangePropertyAction TargetObject="{Binding ElementName=MoveCourseDownButton}" PropertyName="Visibility" Value="Visible"/>
                                 <Core:ChangePropertyAction TargetObject="{Binding ElementName=BarButton}" PropertyName="Visibility" Value="Visible"/>
                             </Core:EventTriggerBehavior>
                             <Core:EventTriggerBehavior EventName="PointerExited">
+                                <Core:ChangePropertyAction TargetObject="{Binding ElementName=MoveCourseUpButton}" PropertyName="Visibility" Value="Collapsed"/>
+                                <Core:ChangePropertyAction TargetObject="{Binding ElementName=MoveCourseDownButton}" PropertyName="Visibility" Value="Collapsed"/>
                                 <Core:ChangePropertyAction TargetObject="{Binding ElementName=BarButton}" PropertyName="Visibility" Value="Collapsed"/>
                             </Core:EventTriggerBehavior>
                         </Interactivity:Interaction.Behaviors>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition/>
                             <ColumnDefinition Width="{Binding DataContext.GridWidth, ElementName=window}"/>
+                            <ColumnDefinition Width="{Binding DataContext.GridWidth, ElementName=window}"/>
+                            <ColumnDefinition Width="{Binding DataContext.GridWidth, ElementName=window}"/>
                         </Grid.ColumnDefinitions>
                         <controls:Expander HorizontalAlignment="Stretch"
                                            VerticalAlignment="Stretch"
                                            Margin="0,5,0,0"
-                                           HorizontalContentAlignment="Stretch">
+                                           HorizontalContentAlignment="Stretch"
+                                           IsExpanded="{Binding Course.IsExpanded, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
                             <controls:Expander.Header>
                                 <Grid Height="50">
                                     <Grid.ColumnDefinitions>
@@ -239,8 +247,45 @@
 
                             </controls:Expander.Content>
                         </controls:Expander>
+                        <Grid Grid.Column="1" Visibility="{Binding DataContext.TeacherInputVisibility, ElementName=window}">
+                            <AppBarButton FontSize="26"
+                                          Visibility="Collapsed"
+                                          x:Name="MoveCourseUpButton"
+                                          Label="Вверх"
+                                          Command="{Binding DataContext.MoveCourseUpCommand, ElementName=window}"
+                                          CommandParameter="{Binding Course}"
+                                          IsEnabled="{Binding Converter={StaticResource IndexToBoolConverter}, ConverterParameter=-}">
+                                <AppBarButton.Icon>
+                                    <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE70E;"
+                                              FontSize="26"></FontIcon>
+                                </AppBarButton.Icon>
+                            </AppBarButton>
+                            
+                        </Grid>
+
+                        
+
+                        
+                        <Grid Grid.Column="2"
+                              Visibility="{Binding DataContext.TeacherInputVisibility, ElementName=window}">
+                            <AppBarButton FontSize="26"
+                                          Visibility="Collapsed"
+                                          x:Name="MoveCourseDownButton"
+                                          Label="Вниз"
+                                          Command="{Binding DataContext.MoveCourseDownCommand, ElementName=window}"
+                                          CommandParameter="{Binding Course}"
+                                          IsEnabled="{Binding Converter={StaticResource IndexToBoolConverter}, ConverterParameter=+}">
+                                <AppBarButton.Icon>
+                                    <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE70D;"
+                                              FontSize="26"></FontIcon>
+                                </AppBarButton.Icon>
+                            </AppBarButton>
+
+                        </Grid>
+                        
+                        
                         <Grid Visibility="{Binding DataContext.TeacherInputVisibility, ElementName=window}"
-                              Grid.Column="1">
+                              Grid.Column="3">
                             <AppBarButton Icon="Delete"
                                       Label="Удалить"
                                       x:Name="BarButton"
@@ -429,4 +474,6 @@
         </ContentDialog>
 
     </Grid>
+
+   
 </Page>

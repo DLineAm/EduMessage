@@ -126,7 +126,7 @@ namespace EduMessage.ViewModels
             {
                 var result = (await (App.Address +
                                      $"Education/Courses/Tasks.IdCourse={idCourse}&IdUser={idUser}&Mark={mark}")
-                        .SendRequestAsync(formattedCourseTask.Comment, HttpRequestType.Put, App.Account.GetJwt()))
+                        .SendRequestAsync(formattedCourseTask.Comment ?? string.Empty, HttpRequestType.Put, App.Account.GetJwt()))
                     .DeserializeJson<bool>();
 
                 if (!result)

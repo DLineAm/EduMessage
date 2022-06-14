@@ -354,6 +354,7 @@
     <Compile Include="Utils\DateToDateConverter.cs" />
     <Compile Include="Utils\GridHelpers.cs" />
     <Compile Include="Utils\InverseNullToVisibilityConverter.cs" />
+    <Compile Include="Utils\ItemIndexToBoolConverter.cs" />
     <Compile Include="Utils\ItemToNumberConverter.cs" />
     <Compile Include="Utils\MarkTextConverter.cs" />
     <Compile Include="Utils\MessageToAttachmentConverter.cs" />

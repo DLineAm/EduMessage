@@ -9,7 +9,7 @@
     xmlns:interactivity="using:Microsoft.Xaml.Interactivity" 
     xmlns:core="using:Microsoft.Xaml.Interactions.Core" 
     xmlns:viewModels="using:EduMessage.ViewModels" 
-    xmlns:controls="using:Microsoft.UI.Xaml.Controls"
+    xmlns:controls="using:Microsoft.UI.Xaml.Controls" xmlns:animatedvisuals="using:AnimatedVisuals"
     mc:Ignorable="d"
     DataContextChanged="Page_DataContextChanged"
     d:DataContext="{d:DesignInstance Type=viewModels:EducationFolderPageViewModel}"
@@ -27,6 +27,24 @@
             <ColumnDefinition></ColumnDefinition>
             <ColumnDefinition Width="Auto"></ColumnDefinition>
         </Grid.ColumnDefinitions>
+
+        <StackPanel VerticalAlignment="Center"
+                    Visibility="{Binding NoResultsFoundAnimationVisibility}"
+                    Grid.RowSpan="4"
+                    Grid.ColumnSpan="4"
+                    HorizontalAlignment="Center">
+            <controls:AnimatedVisualPlayer Height="130">
+                <animatedvisuals:Fire/>
+            </controls:AnimatedVisualPlayer>
+
+            <TextBlock Text="Здесь ничего нет, может быть что-то появится позже"
+                       HorizontalAlignment="Center"
+                       TextWrapping="Wrap"
+                       Width="200"
+                       TextAlignment="Center"
+                       Foreground="{ThemeResource TextBoxButtonForegroundThemeBrush}"/>
+        </StackPanel>
+
         <ListView ItemsSource="{Binding EducationFolders}"
                   SelectedItem="{Binding EducationFolder, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
             <ListView.ItemsPanel>
