@@ -83,7 +83,12 @@ namespace EduMessage.Pages
             }
 
             var stack = ContentFrame.BackStack.ToList();
-            ContentFrame.Navigate(stack[index].SourcePageType, item.Data);
+            var pageFromStack = stack.FirstOrDefault(p => p.Parameter?.GetType() == item.Data.GetType());
+            if (pageFromStack == null)
+            {
+                return;
+            }
+            ContentFrame.Navigate(pageFromStack.SourcePageType, item.Data);
         }
 
         public void OnEvent(EducationPageBack eventData)
@@ -120,7 +125,7 @@ namespace EduMessage.Pages
                     navigator.Navigate(typeof(TreeChangePage), user, new DrillInNavigationTransitionInfo(), FrameType.EducationFrame);
                     break;
                 case (int id, FormattedCourse formattedCourse):
-                    crumb.Data = formattedCourse;
+                    //crumb.Data = parameter;
                     crumb.Title = (formattedCourse.Course == null ? "Создание " : "Изменение ") + "темы";
                     ContentFrame.Navigate(typeof(ThemeConstructorPage), (id, formattedCourse),
                         new DrillInNavigationTransitionInfo());
@@ -144,6 +149,11 @@ namespace EduMessage.Pages
                 case int courseId:
                     crumb.Title = "Присланные работы";
                     ContentFrame.Navigate(typeof(UserTaskListPage), courseId,
+                        new DrillInNavigationTransitionInfo());
+                    break;
+                case Course course:
+                    crumb.Title = (course.IdTestPage == null ? "Добавление" : "Изменение") + " тестов"; 
+                    ContentFrame.Navigate(typeof(TestConstructorPage), course,
                         new DrillInNavigationTransitionInfo());
                     break;
             }

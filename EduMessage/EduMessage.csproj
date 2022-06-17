@@ -154,6 +154,10 @@
     <Compile Include="Models\Role.cs" />
     <Compile Include="Models\School.cs" />
     <Compile Include="Models\Speciality.cs" />
+    <Compile Include="Models\TestFrame.cs" />
+    <Compile Include="Models\TestPage.cs" />
+    <Compile Include="Models\TestType.cs" />
+    <Compile Include="Models\TestVariant.cs" />
     <Compile Include="Models\User.cs" />
     <Compile Include="Models\UserConversation.cs" />
     <Compile Include="Pages\AccountInfoPage.xaml.cs">
@@ -204,6 +208,9 @@
     </Compile>
     <Compile Include="Pages\SchoolChoosePage.xaml.cs">
       <DependentUpon>SchoolChoosePage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Pages\TestConstructorPage.xaml.cs">
+      <DependentUpon>TestConstructorPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Pages\ThemeConstructorPage.xaml.cs">
       <DependentUpon>ThemeConstructorPage.xaml</DependentUpon>
@@ -361,6 +368,7 @@
     <Compile Include="Utils\NullToVisibilityConverter.cs" />
     <Compile Include="Utils\RichTextBoxExtension.cs" />
     <Compile Include="Utils\StringFormatConverter.cs" />
+    <Compile Include="Utils\TwoIntEqualityToVisibilityConverter.cs" />
     <Compile Include="Utils\TextBlockVisibilityConverter.cs" />
     <Compile Include="Services\ToastNotificator.cs" />
     <Compile Include="Services\UserBuilder.cs" />
@@ -417,6 +425,7 @@
     <Compile Include="Models\Events\SelectedSpecialityChangedEvent.cs" />
     <Compile Include="Models\Events\UserExitedEvent.cs" />
     <Compile Include="Models\SpecialityTree.cs" />
+    <Compile Include="ViewModels\TestConstructorPageViewModel.cs" />
     <Compile Include="ViewModels\ThemeConstructorPageViewModel.cs" />
     <Compile Include="ViewModels\TreeChangePageViewModel.cs" />
     <Compile Include="ViewModels\UserPickViewModel.cs" />
@@ -474,6 +483,7 @@
     <Content Include="Assets\StoreLogo.scale-150.png" />
     <Content Include="Assets\StoreLogo.scale-200.png" />
     <Content Include="Assets\StoreLogo.scale-400.png" />
+    <Content Include="Assets\Tip.png" />
     <Content Include="Assets\txt.png" />
     <Content Include="Assets\user.png" />
     <Content Include="Assets\userPicture.png" />
@@ -559,6 +569,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Pages\SchoolChoosePage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Pages\TestConstructorPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -648,6 +662,9 @@
     </PackageReference>
     <PackageReference Include="System.Text.Json">
       <Version>6.0.3</Version>
+    </PackageReference>
+    <PackageReference Include="WinRTXamlToolkit.Controls.DataVisualization.UWP">
+      <Version>2.3.0</Version>
     </PackageReference>
   </ItemGroup>
   <ItemGroup>

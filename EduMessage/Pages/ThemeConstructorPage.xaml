@@ -31,6 +31,7 @@
                     <RowDefinition Height="Auto"></RowDefinition>
                     <RowDefinition Height="Auto"></RowDefinition>
                     <RowDefinition Height="Auto"></RowDefinition>
+                    <RowDefinition Height="Auto"></RowDefinition>
                 </Grid.RowDefinitions>
                 <StackPanel>
                     <TextBlock Text="{Binding ErrorText}"
@@ -96,7 +97,7 @@
                                 <ColumnDefinition Width="Auto"></ColumnDefinition>
                             </Grid.ColumnDefinitions>
 
-                            <TextBlock Text="Нет активного задания"
+                            <TextBlock Text="Нет прикрепленного задания"
                                        Style="{StaticResource 26TitleTextBlock}"
                                        FontSize="20"
                                        Grid.ColumnSpan="2"
@@ -140,7 +141,65 @@
                     </Border>
                 </StackPanel>
 
-                <StackPanel Grid.Row="2"
+                <StackPanel Grid.Row="2">
+                    <TextBlock Text="Тестирование"
+                               Margin="0 12"></TextBlock>
+
+                    <Border Style="{StaticResource AcrylicCardBorder}"
+                            Height="100">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"></ColumnDefinition>
+                                <ColumnDefinition></ColumnDefinition>
+                                <ColumnDefinition Width="Auto"></ColumnDefinition>
+                            </Grid.ColumnDefinitions>
+
+                            <TextBlock Text="Нет прикрепленного тестирования"
+                                       Style="{StaticResource 26TitleTextBlock}"
+                                       FontSize="20"
+                                       Grid.ColumnSpan="2"
+                                       VerticalAlignment="Center"
+                                       Margin="12 0 0 0"></TextBlock>
+                            <!--Visibility="{Binding Task, Converter={StaticResource InverseNullToVisibilityConverter}}"></TextBlock>-->
+
+                            <Viewbox Margin="12 20"
+                                     Visibility="{Binding Task, Converter={StaticResource NullToVisibilityConverter}}">
+                                <SymbolIcon Symbol="Bullets"></SymbolIcon>
+                            </Viewbox>
+
+                            <!--<StackPanel Grid.Column="1"
+                                        VerticalAlignment="Center"
+                                        Visibility="{Binding Task, Converter={StaticResource NullToVisibilityConverter}}">
+                                <TextBlock Grid.Column="1"
+                                           Style="{StaticResource 26TitleTextBlock}"
+                                           FontSize="20"
+                                           Text="{Binding Task.Description, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                           TextTrimming="CharacterEllipsis"></TextBlock>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock>
+                                        <TextBlock.Text>
+                                            <Binding Path="Task.EndTime"
+                                                     Mode="TwoWay"
+                                                     UpdateSourceTrigger="PropertyChanged"
+                                                     Converter="{StaticResource StringFormatConverter}"
+                                                     ConverterParameter="{}Выполнить до {0:dd/MM/yyy HH:mm (ddd)}"></Binding>
+                                        </TextBlock.Text>
+                                    </TextBlock>
+                                </StackPanel>
+                            </StackPanel>-->
+
+                            <HyperlinkButton Content="Изменить"
+                                    Grid.Column="2"
+                                    Margin="12 0"
+                                    Command="{Binding ChangeTestCommand}"></HyperlinkButton>
+
+
+                        </Grid>
+                    </Border>
+                </StackPanel>
+
+
+                <StackPanel Grid.Row="3"
                             Margin="0 12">
 
                     <TextBlock Margin="0 12 0 0">
@@ -242,7 +301,7 @@
 
 
 
-                <StackPanel Grid.Row="3"
+                <StackPanel Grid.Row="4"
                             Orientation="Horizontal"
                             Margin="0 12 0 0">
                     <HyperlinkButton Content="Применить"

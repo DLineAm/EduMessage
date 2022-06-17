@@ -162,11 +162,36 @@ namespace EduMessage.Pages
                                 .Select(r => r.IdCourse)
                                 .Distinct();
                             var marks = new List<byte>();
+                            List<KeyValuePair<byte?, int>> markAttachments = new List<KeyValuePair<byte?, int>>();
                             foreach (var item in attachmentsForUser)
                             {
                                 var attachment = response.FirstOrDefault(r => r.IdCourse == item && r.IdUser == userId && r.Mark != null);
                                 marks.Add((byte)attachment.Mark);
+
+                                var foundMark = markAttachments.FirstOrDefault(c => c.Key == attachment.Mark);
+
+                                KeyValuePair<byte?, int> newMarkPair;
+
+                                if (foundMark.Key != null)
+                                {
+                                    newMarkPair = new KeyValuePair<byte?, int>(foundMark.Key, foundMark.Value + 1);
+                                    markAttachments.Remove(foundMark);
+                                    markAttachments.Add(newMarkPair);
+                                    continue;
+                                }
+
+                                newMarkPair = new KeyValuePair<byte?, int>(attachment.Mark, 1);
+                                markAttachments.Add(newMarkPair);
+                                //markAttachments.Add(attachment);
+                                //var aboba = new KeyValuePair<int, int>();
                             }
+
+                            if (PieSeries.ItemsSource == null)
+                            {
+                                PieSeries.ItemsSource = markAttachments;
+                            }
+                            //var chartList = markAttachments.Select(a => new KeyValuePair<byte, int>((byte)a.Mark, markAttachments.Count(m => m.Mark == a.Mark)));
+
                             var averageMark = Math.Round(marks
                                 .Average(t => t), 1);
                             text = isVerticalHeader ? string.Empty : $"Среднее\r({averageMark})";

@@ -7,6 +7,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:controls="using:Microsoft.Toolkit.Uwp.UI.Controls"
     xmlns:untils="using:EduMessage.Utils" xmlns:animatedvisuals="using:AnimatedVisuals" xmlns:controls1="using:Microsoft.UI.Xaml.Controls"
+    xmlns:charting="using:WinRTXamlToolkit.Controls.DataVisualization.Charting"
     mc:Ignorable="d"
     DataContext="{Binding RelativeSource={RelativeSource Self}}">
 
@@ -33,16 +34,39 @@
                        TextAlignment="Center"
                        Foreground="{ThemeResource TextBoxButtonForegroundThemeBrush}"/>
         </StackPanel>
-        <Border Style="{StaticResource AcrylicCardBorder}"
-                Grid.Row="1"
-              Margin="0 12 0 0"
-                HorizontalAlignment="Left"
-                VerticalAlignment="Top"
-                Padding="48 12">
-            <Grid x:Name="JournalGrid">
+        <StackPanel Grid.Row="1">
+            <Border Style="{StaticResource AcrylicCardBorder}"
+                    Margin="0 12 0 0"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Top"
+                    Padding="48 12">
+                <Grid x:Name="JournalGrid">
 
-            </Grid>
-        </Border>
+                </Grid>
+            </Border>
+
+            <charting:Chart>
+                <charting:PieSeries x:Name="PieSeries"
+                                    IndependentValuePath="Key"
+                                    DependentValuePath="Value">
+                    <charting:PieSeries.Palette>
+                        <charting:ResourceDictionaryCollection>
+                            <ResourceDictionary>
+                                <Style x:Key="DataPointStyle" TargetType="Control">
+                                    <Setter Property="Background" Value="Red" />
+                                </Style>
+                            </ResourceDictionary>
+                            <ResourceDictionary>
+                                <Style x:Key="DataPointStyle" TargetType="Control">
+                                    <Setter Property="Background" Value="Green" />
+                                </Style>
+                            </ResourceDictionary>
+                        </charting:ResourceDictionaryCollection>
+                    </charting:PieSeries.Palette>
+                </charting:PieSeries>
+            </charting:Chart>
+        </StackPanel>
+        
         
         <!--<ListView ItemsSource="{Binding JournalList}"
                   x:Name="JournalListView">

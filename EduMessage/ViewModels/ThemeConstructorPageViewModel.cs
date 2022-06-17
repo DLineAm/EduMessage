@@ -56,6 +56,7 @@ namespace EduMessage.ViewModels
         {
             _isCourseAddMode = true;
             BaseInitialize(mainCourseId);
+            _formattedCourse = new FormattedCourse {Course = new Course()};
         }
 
         private void BaseInitialize(int mainCourseId)
@@ -77,6 +78,12 @@ namespace EduMessage.ViewModels
             Severity = severity;
             InfoBarMessage = message ?? "Очистите поле ввода описания для удаление текущего задания";
             InfoBarTitle = severity == InfoBarSeverity.Informational ? "Информация" : "Ошибка";
+        }
+
+        [Command]
+        private void ChangeTest()
+        {
+            EventAggregator.Publish(new SelectedSpecialityChangedEvent(_formattedCourse.Course));
         }
 
         [Command]
@@ -117,107 +124,107 @@ namespace EduMessage.ViewModels
         [Command]
         private async void Apply()
         {
-            ErrorText = "";
-            EventAggregator.Publish(new LoaderVisibilityChanged(Visibility.Visible, "Сохранение курса"));
+            //ErrorText = "";
+            //EventAggregator.Publish(new LoaderVisibilityChanged(Visibility.Visible, "Сохранение курса"));
 
-            var validatorResponse = _validator.Validate(new []{Title, Description});
+            //var validatorResponse = _validator.Validate(new []{Title, Description});
 
-            if (!validatorResponse)
-            {
-                ErrorText = "Все поля дожны быть заполнены!";
-                EventAggregator.Publish(new InAppNotificationShowing(Symbol.Cancel, "Не удалось добавить курс!"));
-                EventAggregator.Publish(new LoaderVisibilityChanged(Visibility.Collapsed, string.Empty));
-                return;
-            }
+            //if (!validatorResponse)
+            //{
+            //    ErrorText = "Все поля дожны быть заполнены!";
+            //    EventAggregator.Publish(new InAppNotificationShowing(Symbol.Cancel, "Не удалось добавить курс!"));
+            //    EventAggregator.Publish(new LoaderVisibilityChanged(Visibility.Collapsed, string.Empty));
+            //    return;
+            //}
 
-            var attachments = Images.ToList();
-            attachments.AddRange(OtherFiles);
+            //var attachments = Images.ToList();
+            //attachments.AddRange(OtherFiles);
 
-            var taskId = Task?.Id;
+            //var taskId = Task?.Id;
 
-            var course = new Course
-            {
-                Id = _formattedCourse?.Course?.Id ?? 0,
-                Title = Title,
-                Description = Description,
-                IdMainCourse = _mainCourseId,
-                IdTeacher = App.Account.GetUser().Id,
-                IdCourseTaskNavigation = Task,
-                IdTask = taskId
-            };
+            //var course = new Course
+            //{
+            //    Id = _formattedCourse?.Course?.Id ?? 0,
+            //    Title = Title,
+            //    Description = Description,
+            //    IdMainCourse = _mainCourseId,
+            //    IdTeacher = App.Account.GetUser().Id,
+            //    IdCourseTaskNavigation = Task,
+            //    IdTask = taskId
+            //};
 
-            var courseAttachments = new List<CourseAttachment>();
+            //var courseAttachments = new List<CourseAttachment>();
 
-            foreach (var attachment in attachments)
-            {
-                var id = attachment.Id;
-                courseAttachments.Add(new CourseAttachment
-                {
-                    IdCourse = course.Id == 0 ? null : course.Id,
-                    IdCourseNavigation = course,
-                    IdAttachmanentNavigation = id == 0 ? attachment : null,
-                    IdAttachmanent = id == 0 ? null : id
-                });
-            }
+            //foreach (var attachment in attachments)
+            //{
+            //    var id = attachment.Id;
+            //    courseAttachments.Add(new CourseAttachment
+            //    {
+            //        IdCourse = course.Id == 0 ? null : course.Id,
+            //        IdCourseNavigation = course,
+            //        IdAttachmanentNavigation = id == 0 ? attachment : null,
+            //        IdAttachmanent = id == 0 ? null : id
+            //    });
+            //}
 
-            if (courseAttachments.Count == 0)
-            {
-                courseAttachments.Add(new CourseAttachment
-                {
-                    IdCourseNavigation = course
-                });
-            }
+            //if (courseAttachments.Count == 0)
+            //{
+            //    courseAttachments.Add(new CourseAttachment
+            //    {
+            //        IdCourseNavigation = course
+            //    });
+            //}
 
-            try
-            {
-                if (!_isCourseAddMode)
-                {
-                    await SendCoursePutRequest(courseAttachments);
-                    EventAggregator.Publish(new InAppNotificationShowing(Symbol.Accept, "Курс изменен!"));
-                    EventAggregator.Publish(new CourseAddedOrChangedEvent(true));
-                    EventAggregator.Publish(new LoaderVisibilityChanged(Visibility.Collapsed, string.Empty));
-                    EventAggregator.Publish(new EducationPageBack());
-                    return;
-                }
-                var (courseId, attachmentIds) = (await (App.Address + "Education/Courses.FromList")
-                           .SendRequestAsync(courseAttachments, HttpRequestType.Post, App.Account.GetJwt()))
-                       .DeserializeJson<KeyValuePair<int, List<int>>>();
+            //try
+            //{
+            //    if (!_isCourseAddMode)
+            //    {
+            //        await SendCoursePutRequest(courseAttachments);
+            //        EventAggregator.Publish(new InAppNotificationShowing(Symbol.Accept, "Курс изменен!"));
+            //        EventAggregator.Publish(new CourseAddedOrChangedEvent(true));
+            //        EventAggregator.Publish(new LoaderVisibilityChanged(Visibility.Collapsed, string.Empty));
+            //        EventAggregator.Publish(new EducationPageBack());
+            //        return;
+            //    }
+            //    var (courseId, attachmentIds) = (await (App.Address + "Education/Courses.FromList")
+            //               .SendRequestAsync(courseAttachments, HttpRequestType.Post, App.Account.GetJwt()))
+            //           .DeserializeJson<KeyValuePair<int, List<int>>>();
 
-                if (courseId != -1)
-                {
-                    course.Id = courseId;
-                    for (int i = 0; i < attachmentIds.Count; i++)
-                    {
-                        var attachmentId = attachmentIds[i];
-                        var courseAttachment = courseAttachments[i];
-                        courseAttachment.Id = attachmentId;
-                        courseAttachment.IdCourse = courseId;
-                    }
-                }
-                else
-                {
-                    throw new Exception();
-                }
+            //    if (courseId != -1)
+            //    {
+            //        course.Id = courseId;
+            //        for (int i = 0; i < attachmentIds.Count; i++)
+            //        {
+            //            var attachmentId = attachmentIds[i];
+            //            var courseAttachment = courseAttachments[i];
+            //            courseAttachment.Id = attachmentId;
+            //            courseAttachment.IdCourse = courseId;
+            //        }
+            //    }
+            //    else
+            //    {
+            //        throw new Exception();
+            //    }
 
-                EventAggregator.Publish(new CourseRequestCompleted(courseAttachments));
+            //    EventAggregator.Publish(new CourseRequestCompleted(courseAttachments));
 
-                EventAggregator.Publish(new InAppNotificationShowing(Symbol.Accept, "Курс добавлен!"));
-                EventAggregator.Publish(new LoaderVisibilityChanged(Visibility.Collapsed, string.Empty));
+            //    EventAggregator.Publish(new InAppNotificationShowing(Symbol.Accept, "Курс добавлен!"));
+            //    EventAggregator.Publish(new LoaderVisibilityChanged(Visibility.Collapsed, string.Empty));
 
-                try
-                {
-                    EventAggregator.Publish(new EducationPageBack());
-                }
-                catch (Exception e)
-                {
+            //    try
+            //    {
+            //        EventAggregator.Publish(new EducationPageBack());
+            //    }
+            //    catch (Exception e)
+            //    {
 
-                }
-            }
-            catch (Exception e)
-            {
-                EventAggregator.Publish(new InAppNotificationShowing(Symbol.Cancel, "Не удалось добавить курс!"));
-                EventAggregator.Publish(new LoaderVisibilityChanged(Visibility.Collapsed, string.Empty));
-            }
+            //    }
+            //}
+            //catch (Exception e)
+            //{
+            //    EventAggregator.Publish(new InAppNotificationShowing(Symbol.Cancel, "Не удалось добавить курс!"));
+            //    EventAggregator.Publish(new LoaderVisibilityChanged(Visibility.Collapsed, string.Empty));
+            //}
         }
 
         private async Task SendCoursePutRequest(List<CourseAttachment> content)

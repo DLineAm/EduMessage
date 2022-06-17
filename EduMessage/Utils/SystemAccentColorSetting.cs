@@ -1,14 +1,15 @@
-﻿using System;
+﻿using EduMessage.Annotations;
+
+using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using System.Threading;
+
 using Windows.ApplicationModel.Core;
 using Windows.UI;
 using Windows.UI.Core;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Media;
-using EduMessage.Annotations;
 
 namespace EduMessage.Utils
 {
@@ -23,9 +24,9 @@ namespace EduMessage.Utils
 
         private async void UiSettings_ColorValuesChanged(UISettings sender, object args)
         {
-            Color accentColor = sender.GetColorValue(UIColorType.Accent);
+            Color accentColor = sender.GetColorValue(UIColorType.AccentLight1);
 
-            
+
             await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.High,
                 () => { SystemAccentColor = new SolidColorBrush(accentColor); });
         }
@@ -44,6 +45,8 @@ namespace EduMessage.Utils
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        private SolidColorBrush _systemAccentColor = new((Color)Application.Current.Resources["SystemAccentColor"]);
+        private SolidColorBrush _systemAccentColor = new((Color)Application.Current.Resources["SystemAccentColorLight1"]);
+
+        //private SolidColorBrush _systemAccentColor = new((Color)Application.Current.Resources["AccentFillColorDefaultBrush"]);
     }
 }

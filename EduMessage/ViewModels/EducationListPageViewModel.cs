@@ -47,6 +47,7 @@ namespace EduMessage.ViewModels
         [Property] private string _dialogActionText;
         [Property] private string _dialogTaskComment;
         [Property] private Visibility _dialogCompletedTaskInputVisibility;
+        [Property] private bool _isContentDialogPrimaryButtonEnabled = true;
 
         private FormattedCourse _selectedCourse;
         private MainCourse _mainCourse;
@@ -221,11 +222,13 @@ namespace EduMessage.ViewModels
                     DialogActionText = "Выполнить";
                     TaskStatus = "Не выполнено";
                     DialogCompletedTaskInputVisibility = Visibility.Visible;
+                    IsContentDialogPrimaryButtonEnabled = true;
                     return;
                 }
 
                 Mark = firstCourseAttachment.Mark;
                 TaskStatus = Mark == null ? "Не проверено" : $"Проверено ({Mark})";
+                IsContentDialogPrimaryButtonEnabled = Mark == null;
                 DialogActionText = "Изменить";
                 DialogTaskComment = firstCourseAttachment.Comment;
                 DialogCompletedTaskInputVisibility = Mark == null ? Visibility.Visible : Visibility.Collapsed;

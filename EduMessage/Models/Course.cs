@@ -21,6 +21,7 @@ namespace SignalIRServerTest
         public int? IdTeacher { get; set; }
         public int? IdTask { get; set; }
         public int? Position { get; set; }
+        public int? IdTestPage { get; set; }
 
         [JsonIgnore]
         [Newtonsoft.Json.JsonIgnore]
