@@ -56,11 +56,22 @@ namespace EduMessage.Pages
 
         private void GoBackUntil(Crumb item, int index)
         {
+            var backStack = ContentFrame.BackStack;
+
+            var lastPage = Crumbs.LastOrDefault();
+
+            if (lastPage.Data is (int, FormattedCourse))
+            {
+                var themeConstructorPage = ContentFrame.Content as ThemeConstructorPage;
+                themeConstructorPage.ViewModel.SaveData = false;
+            }
+
+
             if (index == 0)
             {
                 Crumbs.Clear();
                 Crumbs.Add(new Crumb { Title = "Главная" });
-                ContentFrame.BackStack.Clear();
+                backStack.Clear();
                 ContentFrame.Navigate(typeof(EducationFolderPage));
                 return;
             }
@@ -71,7 +82,7 @@ namespace EduMessage.Pages
             while (Crumbs.Count > index + 1)
             {
                 Crumbs.RemoveAt(Crumbs.Count - 1);
-                ContentFrame.BackStack.RemoveAt(ContentFrame.BackStack.Count - 1);
+                backStack.RemoveAt(ContentFrame.BackStack.Count - 1);
             }
         }
 
@@ -152,7 +163,7 @@ namespace EduMessage.Pages
                         new DrillInNavigationTransitionInfo());
                     break;
                 case Course course:
-                    crumb.Title = (course.IdTestPage == null ? "Добавление" : "Изменение") + " тестов"; 
+                    crumb.Title = (course.IdTestFrame == null ? "Добавление" : "Изменение") + " тестов"; 
                     ContentFrame.Navigate(typeof(TestConstructorPage), course,
                         new DrillInNavigationTransitionInfo());
                     break;

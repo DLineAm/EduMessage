@@ -4,6 +4,7 @@ using EduMessage.ViewModels;
 
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
+using SignalIRServerTest;
 using WebApplication1;
 
 // Документацию по шаблону элемента "Пустая страница" см. по адресу https://go.microsoft.com/fwlink/?LinkId=234238
@@ -24,8 +25,10 @@ namespace EduMessage.Pages
         {
             base.OnNavigatedTo(e);
 
+            var course = e.Parameter as Course;
+
             ViewModel = ControlContainer.Get().ResolveConstructor<TestConstructorPageViewModel>();
-            await ViewModel.Initialize();
+            await ViewModel.Initialize(course.IdTestFrameNavigation);
             DataContext = ViewModel;
         }
 

@@ -11,7 +11,8 @@
     xmlns:controls="using:Microsoft.UI.Xaml.Controls"
     mc:Ignorable="d"
     d:DataContext="{d:DesignInstance Type=viewModels:ThemeConstructorPageViewModel}"
-    x:Name="Page">
+    x:Name="Page"
+    NavigationCacheMode="Required">
 
     <Page.Resources>
         <services:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"></services:BoolToVisibilityConverter>
@@ -159,26 +160,27 @@
                                        FontSize="20"
                                        Grid.ColumnSpan="2"
                                        VerticalAlignment="Center"
-                                       Margin="12 0 0 0"></TextBlock>
+                                       Margin="12 0 0 0"
+                                       Visibility="{Binding TestFrame, Converter={StaticResource InverseNullToVisibilityConverter}}"></TextBlock>
                             <!--Visibility="{Binding Task, Converter={StaticResource InverseNullToVisibilityConverter}}"></TextBlock>-->
 
                             <Viewbox Margin="12 20"
-                                     Visibility="{Binding Task, Converter={StaticResource NullToVisibilityConverter}}">
+                                     Visibility="{Binding TestFrame, Converter={StaticResource NullToVisibilityConverter}}">
                                 <SymbolIcon Symbol="Bullets"></SymbolIcon>
                             </Viewbox>
 
-                            <!--<StackPanel Grid.Column="1"
+                            <StackPanel Grid.Column="1"
                                         VerticalAlignment="Center"
-                                        Visibility="{Binding Task, Converter={StaticResource NullToVisibilityConverter}}">
+                                        Visibility="{Binding TestFrame, Converter={StaticResource NullToVisibilityConverter}}">
                                 <TextBlock Grid.Column="1"
                                            Style="{StaticResource 26TitleTextBlock}"
                                            FontSize="20"
-                                           Text="{Binding Task.Description, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                           Text="{Binding TestFrame.Title, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                            TextTrimming="CharacterEllipsis"></TextBlock>
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock>
                                         <TextBlock.Text>
-                                            <Binding Path="Task.EndTime"
+                                            <Binding Path="TestFrame.EndTime"
                                                      Mode="TwoWay"
                                                      UpdateSourceTrigger="PropertyChanged"
                                                      Converter="{StaticResource StringFormatConverter}"
@@ -186,7 +188,7 @@
                                         </TextBlock.Text>
                                     </TextBlock>
                                 </StackPanel>
-                            </StackPanel>-->
+                            </StackPanel>
 
                             <HyperlinkButton Content="Изменить"
                                     Grid.Column="2"

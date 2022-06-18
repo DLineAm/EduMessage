@@ -18,6 +18,7 @@ using System.Threading.Tasks;
 using Windows.Storage.Pickers;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using WebApplication1;
 
 namespace EduMessage.ViewModels
 {
@@ -25,7 +26,7 @@ namespace EduMessage.ViewModels
     [Inject(typeof(FeatureCollection))]
     [Inject(typeof(IEventAggregator))]
     [Inject(typeof(INotificator))]
-    public partial class ThemeConstructorPageViewModel
+    public partial class ThemeConstructorPageViewModel : IEventSubscriber<TestFrameDataChanged>
     {
         [Property] private List<IFeature> _features;
         [Property] private string _title;
@@ -42,6 +43,7 @@ namespace EduMessage.ViewModels
         [Property] private InfoBarSeverity _severity = InfoBarSeverity.Informational;
         [Property] private string _infoBarTitle = "Информация";
         [Property] private string _infoBarMessage = "Очистите поле ввода описания для удаление текущего задания";
+        [Property] private TestFrame _testFrame;
 
         private IValidator<string[]> _validator;
 
@@ -50,6 +52,8 @@ namespace EduMessage.ViewModels
         private int _mainCourseId;
 
         private bool _isCourseAddMode;
+
+        public bool SaveData;
         
 
         public void Initialize(int mainCourseId)
@@ -124,107 +128,108 @@ namespace EduMessage.ViewModels
         [Command]
         private async void Apply()
         {
-            //ErrorText = "";
-            //EventAggregator.Publish(new LoaderVisibilityChanged(Visibility.Visible, "Сохранение курса"));
+            ErrorText = "";
+            EventAggregator.Publish(new LoaderVisibilityChanged(Visibility.Visible, "Сохранение курса"));
 
-            //var validatorResponse = _validator.Validate(new []{Title, Description});
+            var validatorResponse = _validator.Validate(new[] { Title, Description });
 
-            //if (!validatorResponse)
-            //{
-            //    ErrorText = "Все поля дожны быть заполнены!";
-            //    EventAggregator.Publish(new InAppNotificationShowing(Symbol.Cancel, "Не удалось добавить курс!"));
-            //    EventAggregator.Publish(new LoaderVisibilityChanged(Visibility.Collapsed, string.Empty));
-            //    return;
-            //}
+            if (!validatorResponse)
+            {
+                ErrorText = "Все поля дожны быть заполнены!";
+                EventAggregator.Publish(new InAppNotificationShowing(Symbol.Cancel, "Не удалось добавить курс!"));
+                EventAggregator.Publish(new LoaderVisibilityChanged(Visibility.Collapsed, string.Empty));
+                return;
+            }
 
-            //var attachments = Images.ToList();
-            //attachments.AddRange(OtherFiles);
+            var attachments = Images.ToList();
+            attachments.AddRange(OtherFiles);
 
-            //var taskId = Task?.Id;
+            var taskId = Task?.Id;
 
-            //var course = new Course
-            //{
-            //    Id = _formattedCourse?.Course?.Id ?? 0,
-            //    Title = Title,
-            //    Description = Description,
-            //    IdMainCourse = _mainCourseId,
-            //    IdTeacher = App.Account.GetUser().Id,
-            //    IdCourseTaskNavigation = Task,
-            //    IdTask = taskId
-            //};
+            var course = new Course
+            {
+                Id = _formattedCourse?.Course?.Id ?? 0,
+                Title = Title,
+                Description = Description,
+                IdMainCourse = _mainCourseId,
+                IdTeacher = App.Account.GetUser().Id,
+                IdCourseTaskNavigation = Task,
+                IdTask = taskId,
+                IdTestFrameNavigation = TestFrame
+            };
 
-            //var courseAttachments = new List<CourseAttachment>();
+            var courseAttachments = new List<CourseAttachment>();
 
-            //foreach (var attachment in attachments)
-            //{
-            //    var id = attachment.Id;
-            //    courseAttachments.Add(new CourseAttachment
-            //    {
-            //        IdCourse = course.Id == 0 ? null : course.Id,
-            //        IdCourseNavigation = course,
-            //        IdAttachmanentNavigation = id == 0 ? attachment : null,
-            //        IdAttachmanent = id == 0 ? null : id
-            //    });
-            //}
+            foreach (var attachment in attachments)
+            {
+                var id = attachment.Id;
+                courseAttachments.Add(new CourseAttachment
+                {
+                    IdCourse = course.Id == 0 ? null : course.Id,
+                    IdCourseNavigation = course,
+                    IdAttachmanentNavigation = id == 0 ? attachment : null,
+                    IdAttachmanent = id == 0 ? null : id
+                });
+            }
 
-            //if (courseAttachments.Count == 0)
-            //{
-            //    courseAttachments.Add(new CourseAttachment
-            //    {
-            //        IdCourseNavigation = course
-            //    });
-            //}
+            if (courseAttachments.Count == 0)
+            {
+                courseAttachments.Add(new CourseAttachment
+                {
+                    IdCourseNavigation = course
+                });
+            }
 
-            //try
-            //{
-            //    if (!_isCourseAddMode)
-            //    {
-            //        await SendCoursePutRequest(courseAttachments);
-            //        EventAggregator.Publish(new InAppNotificationShowing(Symbol.Accept, "Курс изменен!"));
-            //        EventAggregator.Publish(new CourseAddedOrChangedEvent(true));
-            //        EventAggregator.Publish(new LoaderVisibilityChanged(Visibility.Collapsed, string.Empty));
-            //        EventAggregator.Publish(new EducationPageBack());
-            //        return;
-            //    }
-            //    var (courseId, attachmentIds) = (await (App.Address + "Education/Courses.FromList")
-            //               .SendRequestAsync(courseAttachments, HttpRequestType.Post, App.Account.GetJwt()))
-            //           .DeserializeJson<KeyValuePair<int, List<int>>>();
+            try
+            {
+                if (!_isCourseAddMode)
+                {
+                    await SendCoursePutRequest(courseAttachments);
+                    EventAggregator.Publish(new InAppNotificationShowing(Symbol.Accept, "Курс изменен!"));
+                    EventAggregator.Publish(new CourseAddedOrChangedEvent(true));
+                    EventAggregator.Publish(new LoaderVisibilityChanged(Visibility.Collapsed, string.Empty));
+                    EventAggregator.Publish(new EducationPageBack());
+                    return;
+                }
+                var (courseId, attachmentIds) = (await (App.Address + "Education/Courses.FromList")
+                           .SendRequestAsync(courseAttachments, HttpRequestType.Post, App.Account.GetJwt()))
+                       .DeserializeJson<KeyValuePair<int, List<int>>>();
 
-            //    if (courseId != -1)
-            //    {
-            //        course.Id = courseId;
-            //        for (int i = 0; i < attachmentIds.Count; i++)
-            //        {
-            //            var attachmentId = attachmentIds[i];
-            //            var courseAttachment = courseAttachments[i];
-            //            courseAttachment.Id = attachmentId;
-            //            courseAttachment.IdCourse = courseId;
-            //        }
-            //    }
-            //    else
-            //    {
-            //        throw new Exception();
-            //    }
+                if (courseId != -1)
+                {
+                    course.Id = courseId;
+                    for (int i = 0; i < attachmentIds.Count; i++)
+                    {
+                        var attachmentId = attachmentIds[i];
+                        var courseAttachment = courseAttachments[i];
+                        courseAttachment.Id = attachmentId;
+                        courseAttachment.IdCourse = courseId;
+                    }
+                }
+                else
+                {
+                    throw new Exception();
+                }
 
-            //    EventAggregator.Publish(new CourseRequestCompleted(courseAttachments));
+                //EventAggregator.Publish(new CourseRequestCompleted(courseAttachments));
 
-            //    EventAggregator.Publish(new InAppNotificationShowing(Symbol.Accept, "Курс добавлен!"));
-            //    EventAggregator.Publish(new LoaderVisibilityChanged(Visibility.Collapsed, string.Empty));
+                EventAggregator.Publish(new InAppNotificationShowing(Symbol.Accept, "Курс добавлен!"));
+                EventAggregator.Publish(new LoaderVisibilityChanged(Visibility.Collapsed, string.Empty));
 
-            //    try
-            //    {
-            //        EventAggregator.Publish(new EducationPageBack());
-            //    }
-            //    catch (Exception e)
-            //    {
+                try
+                {
+                    EventAggregator.Publish(new EducationPageBack());
+                }
+                catch (Exception e)
+                {
 
-            //    }
-            //}
-            //catch (Exception e)
-            //{
-            //    EventAggregator.Publish(new InAppNotificationShowing(Symbol.Cancel, "Не удалось добавить курс!"));
-            //    EventAggregator.Publish(new LoaderVisibilityChanged(Visibility.Collapsed, string.Empty));
-            //}
+                }
+            }
+            catch (Exception e)
+            {
+                EventAggregator.Publish(new InAppNotificationShowing(Symbol.Cancel, "Не удалось добавить курс!"));
+                EventAggregator.Publish(new LoaderVisibilityChanged(Visibility.Collapsed, string.Empty));
+            }
         }
 
         private async Task SendCoursePutRequest(List<CourseAttachment> content)
@@ -344,6 +349,7 @@ namespace EduMessage.ViewModels
             OtherFiles = new ObservableCollection<Attachment>(course.Attachments.Where(a => a != null && a.IdType != 3));
             FilesCount = Images.Count + OtherFiles.Count;
             Task = course.Course.IdCourseTaskNavigation;
+            TestFrame = course.Course.IdTestFrameNavigation;
             TaskDescription = Task?.Description;
             BaseInitialize(mainCourseId);
             var date = Task?.EndTime;
@@ -353,6 +359,13 @@ namespace EduMessage.ViewModels
             }
             TaskDate = date.Value.Date;
             TaskTime = new TimeSpan(date.Value.Hour, date.Value.Minute, 0);
+        }
+
+        public void OnEvent(TestFrameDataChanged eventData)
+        {
+            SaveData = true;
+            var data = eventData.TestFrame;
+            TestFrame = data;
         }
     }
 }

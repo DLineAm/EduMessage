@@ -111,6 +111,7 @@
                                         <RowDefinition Height="Auto"></RowDefinition>
                                         <RowDefinition Height="Auto"></RowDefinition>
                                         <RowDefinition Height="Auto"></RowDefinition>
+                                        <RowDefinition Height="Auto"></RowDefinition>
                                     </Grid.RowDefinitions>
 
                                     <StackPanel DataContext="{Binding }"
@@ -122,7 +123,7 @@
                                                DataContextChanged="FrameworkElement_OnDataContextChanged"/>-->
 
                                     <StackPanel Visibility="{Binding FilesInfoVisibility}"
-                                                    Grid.Row="2">
+                                                    Grid.Row="3">
                                         <TextBlock Text="Прикрепленные файлы"
                                                    Margin="0,12"
                                                    Foreground="{ThemeResource TextBoxButtonForegroundThemeBrush}"></TextBlock>
@@ -205,7 +206,50 @@
                                         </Border>
                                     </StackPanel>
 
-                                    <Grid Grid.Row="3"
+                                     <StackPanel Grid.Row="2"
+                                                Visibility="{Binding Course.IdTestFrameNavigation, Converter={StaticResource NullToVisibilityConverter}}"
+                                                Margin="0 12 0 0">
+                                        <TextBlock Text="Тестирование"
+                                                   FontWeight="SemiBold"></TextBlock>
+                                        <Border Margin="0 12 0 0"
+                                                Style="{StaticResource CardBorder}">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="Auto"></ColumnDefinition>
+                                                    <ColumnDefinition></ColumnDefinition>
+                                                    <ColumnDefinition Width="Auto"></ColumnDefinition>
+                                                </Grid.ColumnDefinitions>
+
+                                                <Viewbox Margin="12 24">
+                                                    <SymbolIcon Symbol="Bullets"></SymbolIcon>
+                                                </Viewbox>
+
+                                                <StackPanel Grid.Column="1"
+                                                            VerticalAlignment="Center">
+                                                    <TextBlock Text="{Binding Course.IdTestFrameNavigation.Title}"
+                                                               FontWeight="SemiBold"></TextBlock>
+                                                    <TextBlock>
+                                                        Выполнить до <Run>
+                                                            <Run.Text>
+                                                                <Binding Path="Course.IdTestFrameNavigation.EndDate"
+                                                                         Converter="{StaticResource StringFormatConverter}"
+                                                                         ConverterParameter="{}{0:dd/MM/yyy HH:mm (ddd)}"/>
+                                                            </Run.Text>
+                                                        </Run>
+                                                    </TextBlock>
+                                                </StackPanel>
+
+                                                <HyperlinkButton Grid.Column="2"
+                                                                 Visibility="{Binding DataContext.UserTeacherInputVisibility, ElementName=window}"
+                                                                 Margin="0 0 12 0"
+                                                                 Command="{Binding DataContext.GetUserTaskCommand, ElementName=window}"
+                                                                 CommandParameter="{Binding Course.Id}"
+                                                                 Click="MoreButton_OnClick"></HyperlinkButton>
+                                            </Grid>
+                                        </Border>
+                                    </StackPanel>
+
+                                    <Grid Grid.Row="4"
                                           Margin="0 12 0 0">
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition/>

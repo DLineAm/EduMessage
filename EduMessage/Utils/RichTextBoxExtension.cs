@@ -37,7 +37,7 @@ namespace EduMessage.Utils
     var state = GetState(o);
     switch (state)
     {
-      case RichEditChangeState.Idle:
+      case RichEditChangeState.Idle or RichEditChangeState.PlainTextChanged:
         var text = e.NewValue as string;
         SetState(o, RichEditChangeState.PlainTextChanged);
         source.Document.SetText(Windows.UI.Text.TextSetOptions.Unhide, text);
@@ -48,8 +48,8 @@ namespace EduMessage.Utils
         break;
 
       default:
-        Debug.Assert(false, "Unknown state");
         SetState(o, RichEditChangeState.Idle);
+        Debug.Assert(false, "Unknown state");
         break;
     }
   }

@@ -4,7 +4,7 @@ using EduMessage.ViewModels;
 using MvvmGen.Events;
 
 using System;
-
+using System.ComponentModel;
 using Windows.UI.Text;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -49,6 +49,30 @@ namespace EduMessage.Pages
             var collection = container.ResolveConstructor<FeatureCollection>();
             var aggregator = container.Resolve<IEventAggregator>();
             var notificator = container.Resolve<INotificator>("Dialog");
+
+
+            if (ViewModel != null)
+            {
+                if (ViewModel.SaveData)
+                {
+                    return;
+                }
+                if (course.Course == null)
+                {
+                    ViewModel = new ThemeConstructorPageViewModel(notificator,aggregator, collection);
+                    ViewModel.Initialize(mainCourseId);
+                }
+                else
+                {
+                    ViewModel = new ThemeConstructorPageViewModel(notificator,aggregator, collection);
+                    await ViewModel.Initialize(mainCourseId, course);
+                }
+
+                DataContext = ViewModel;
+                return;
+            }
+
+            
             aggregator.RegisterSubscriber(this);
             ViewModel = new ThemeConstructorPageViewModel(notificator,aggregator, collection);
             if (course.Course == null)
@@ -58,8 +82,8 @@ namespace EduMessage.Pages
             else
             {
                 await ViewModel.Initialize(mainCourseId, course);
-            }
-            this.DataContext = ViewModel;
+            } 
+            DataContext = ViewModel;
         }
 
         private void ButtonBase_OnClick(object sender, RoutedEventArgs e)
