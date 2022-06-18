@@ -70,18 +70,18 @@ namespace EduMessage.ViewModels
                     .DeserializeJson<HashSet<CourseAttachment>>()
                     .OrderBy(c => c.IdCourseNavigation.Position);
 
-                Courses = new ObservableCollection<FormattedCourse>();
+                Courses = new ObservableCollection<FormattedCourse>(await ConvertToFormattedCourse(response));
 
-                var groupedCourseAttachments = response.GroupBy(ca => ca.IdCourse);
+                //var groupedCourseAttachments = response.GroupBy(ca => ca.IdCourse);
 
-                foreach (var groupedCourseAttachment in groupedCourseAttachments)
-                {
-                    var key = groupedCourseAttachment.Key;
-                    var courses = response.Where(c => c.IdCourse == key);
-                    var formattedCourse = courses.Adapt<FormattedCourse>(TypeAdapterConfig);
-                    await formattedCourse.Attachments.WriteAttachmentImagePath(700);
-                    Courses.Add(formattedCourse);
-                }
+                //foreach (var groupedCourseAttachment in groupedCourseAttachments)
+                //{
+                //    var key = groupedCourseAttachment.Key;
+                //    var courses = response.Where(c => c.IdCourse == key);
+                //    var formattedCourse = courses.Adapt<FormattedCourse>(TypeAdapterConfig);
+                //    await formattedCourse.Attachments.WriteAttachmentImagePath(700);
+                //    Courses.Add(formattedCourse);
+                //}
 
 
                 if (Courses.Count == 0)
@@ -95,6 +95,52 @@ namespace EduMessage.ViewModels
 #pragma warning restore CS0168 // Переменная "e" объявлена, но ни разу не использована.
             {
             }
+        }
+
+        private async Task<List<FormattedCourse>> ConvertToFormattedCourse(IEnumerable<CourseAttachment> response)
+        {
+            var formattedCourses = new List<FormattedCourse>();
+            foreach (var courseAttachment in response)
+            {
+                var course = courseAttachment.IdCourseNavigation;
+                var any = false;
+                foreach (var c in formattedCourses)
+                {
+                    if (c.Course.Id == course.Id)
+                    {
+                        any = true;
+                        break;
+                    }
+                }
+
+                if (any)
+                {
+                    continue;
+                }
+
+                var attachments = response.Where(c => c.IdCourse == course.Id && c.IdAttachmanentNavigation != null)
+                    .Select(c => c.IdAttachmanentNavigation).ToList();
+
+                attachments.ForEach(async a => await a.SplitAndGetImage(48));
+
+                var formattedCourse = new FormattedCourse
+                {
+                    Id = courseAttachment.Id,
+                    Course = course,
+                    Attachments = new ObservableCollection<Attachment>( attachments)
+                };
+
+                if (!attachments.Any())
+                {
+                    formattedCourse.Attachments = null;
+                }
+
+                formattedCourses.Add(formattedCourse);
+
+                
+            }
+
+            return formattedCourses;
         }
 
         private void UpdateTeacherInputVisibility(Visibility visibility)
