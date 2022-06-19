@@ -375,10 +375,10 @@
                             Margin="0,12,0,0">
                     <HyperlinkButton Content="Добавить тему"
                                      Command="{Binding InitializeAddCourseDialogCommand}"/>
-                    <HyperlinkButton Content="Журнал оценок"
+                    <!--<HyperlinkButton Content="Журнал оценок"
                                      Command="{Binding OpenJournalPageCommand}"
                                      CommandParameter=""
-                                     Margin="0 12 0 0"/>
+                                     Margin="0 12 0 0"/>-->
                 </StackPanel>
             </Grid>
         </Border>

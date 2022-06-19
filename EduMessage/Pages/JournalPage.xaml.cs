@@ -88,7 +88,7 @@ namespace EduMessage.Pages
 
             try
             {
-                var response = (await (App.Address + $"Education/Courses.IdMainCourse={idMainCourse}&WithoutUsers={false}")
+                var response = (await (App.Address + $"Education/Courses.IdMainCourse={idMainCourse}")
                         .SendRequestAsync<string>(null, HttpRequestType.Get, App.Account.GetJwt()))
                     .DeserializeJson<List<CourseAttachment>>();
                 var courseAttachments = response.Where(c => c.IdUser != null);
@@ -102,15 +102,20 @@ namespace EduMessage.Pages
                 NoResultsFoundAnimationVisibility = Visibility.Collapsed;
 
                 var taskIds = courseAttachments
+                    .Where(c => c.IsTask is true)
                     .Select(c => c.IdCourseNavigation.IdTask)
-                    .Distinct()
-                    .Where(t => t != null);
+                    .Distinct();
+
+                var testIds = courseAttachments
+                    .Where(c => c.IsTask is false)
+                    .OrderBy(t => t.IdCourseNavigation.Position);
 
                 var tasksCount = taskIds.Count();
+                var testsCount = testIds.Count();
 
                 TasksCount = tasksCount + 1;
 
-                for (int i = 0; i < TasksCount + 1; i++)
+                for (int i = 0; i < TasksCount + 2 + testsCount; i++)
                 {
                     JournalGrid.ColumnDefinitions.Add(new ColumnDefinition
                     {
@@ -137,12 +142,22 @@ namespace EduMessage.Pages
                 //SetRowCount(usersCount);
                 //SetColumnCount(tasksCount);
 
+
+                var testIndex = 0;
+
                 for (int i = 0; i < UsersCount; i++)
                 {
                     var isVerticalHeader = i == 0;
-                    for (int j = 0; j <  tasksCount + 2; j++)
+                    if (i == 0)
+                    {
+                        testIndex = 0;
+                    }
+                    var columnOffset = 0;
+
+                    for (int j = 0; j < tasksCount + 2 + testsCount; j++)
                     {
                         var isHorizontalHeader = j == 0;
+
 
                         if (isVerticalHeader && isHorizontalHeader)
                         {
@@ -156,79 +171,123 @@ namespace EduMessage.Pages
 
                         var text = string.Empty;
 
-                        if (j == tasksCount + 1)
+                        if (j == tasksCount + 1 + testsCount)
                         {
                             var attachmentsForUser = response.Where(r => r.IdUser == userId && r.Mark != null)
                                 .Select(r => r.IdCourse)
                                 .Distinct();
                             var marks = new List<byte>();
-                            List<KeyValuePair<byte?, int>> markAttachments = new List<KeyValuePair<byte?, int>>();
+
                             foreach (var item in attachmentsForUser)
                             {
                                 var attachment = response.FirstOrDefault(r => r.IdCourse == item && r.IdUser == userId && r.Mark != null);
                                 marks.Add((byte)attachment.Mark);
-
-                                var foundMark = markAttachments.FirstOrDefault(c => c.Key == attachment.Mark);
-
-                                KeyValuePair<byte?, int> newMarkPair;
-
-                                if (foundMark.Key != null)
-                                {
-                                    newMarkPair = new KeyValuePair<byte?, int>(foundMark.Key, foundMark.Value + 1);
-                                    markAttachments.Remove(foundMark);
-                                    markAttachments.Add(newMarkPair);
-                                    continue;
-                                }
-
-                                newMarkPair = new KeyValuePair<byte?, int>(attachment.Mark, 1);
-                                markAttachments.Add(newMarkPair);
-                                //markAttachments.Add(attachment);
-                                //var aboba = new KeyValuePair<int, int>();
                             }
-
-                            if (PieSeries.ItemsSource == null)
-                            {
-                                PieSeries.ItemsSource = markAttachments;
-                            }
-                            //var chartList = markAttachments.Select(a => new KeyValuePair<byte, int>((byte)a.Mark, markAttachments.Count(m => m.Mark == a.Mark)));
 
                             var averageMark = Math.Round(marks
                                 .Average(t => t), 1);
+
                             text = isVerticalHeader ? string.Empty : $"Среднее\r({averageMark})";
                             var averageResultElement = CreateElement(text, null);
-                            Grid.SetColumn((FrameworkElement)averageResultElement, j + 1);
+                            Grid.SetColumn((FrameworkElement)averageResultElement, j + 2 + testsCount);
                             Grid.SetRow((FrameworkElement)averageResultElement, i);
                             JournalGrid.Children.Add(averageResultElement);
                             JournalList.Add(averageResultElement);
                             continue;
                         }
 
+                        int? taskId = null;
+                        CourseAttachment courseAttachment = null;
 
-                        var taskId = taskIds.ElementAt(isHorizontalHeader ? j : j - 1);
+                        try
+                        {
+                            taskId = taskIds.ElementAt(isHorizontalHeader ? j : j - 1 );
+
+                            courseAttachment = courseAttachments.FirstOrDefault(c => c.IdUser == userId && c.IdCourseNavigation.IdTask == taskId);
+
+                        }
+                        catch (Exception ex)
+                        {
+
+                        }
+
+                        CourseAttachment testId = null;
+
+                        if (taskId == null || courseAttachment == null)
+                        {
+                            try
+                            {
+                                testId = testIds.ElementAt(testIndex > testIds.Count() ? testIds.Count() - 1: testIndex);
+                            }
+                            catch (Exception exc)
+                            {
+                                testId = new CourseAttachment();
+                            }
+                        }
+                        else
+                        {
+                            testId = testIds.FirstOrDefault(t =>
+                                t.IdUser == userId && t.IdCourse == courseAttachment.IdCourse && t.IsTask == false);
+                        }
 
                         if (isVerticalHeader)
                         {
-                            var task = courseAttachments.FirstOrDefault(c => c.IdCourseNavigation.IdTask == taskId);
+                            if (taskId != null)
+                            {
+                                var task = courseAttachments.FirstOrDefault(c => c.IdCourseNavigation.IdTask == taskId);
 
-                            text = task?.IdCourseNavigation.IdCourseTaskNavigation.Description;
+                                text = task?.IdCourseNavigation.IdCourseTaskNavigation.Description;
 
-                            var element = CreateElement(text, isVerticalHeader);
-                            Grid.SetColumn((FrameworkElement)element, j);
-                            JournalGrid.Children.Add(element);
-                            JournalList.Add(element);
+                                var element = CreateElement(text, isVerticalHeader);
+                                Grid.SetColumn((FrameworkElement)element, j + columnOffset);
+                                JournalGrid.Children.Add(element);
+                                JournalList.Add(element);
+                            }
+
+                            if (testId == null)
+                            {
+                                continue;
+                            }
+
+                            text = testId.IdCourseNavigation.Title;
+
+                            var testElement = CreateElement(text + "\r(Тестирование)", isVerticalHeader);
+                            Grid.SetColumn((FrameworkElement)testElement, j + columnOffset);
+                            JournalGrid.Children.Add(testElement);
+                            JournalList.Add(testElement);
+
+                            testIndex++;
+                            //columnOffset++;
+
                             continue;
                         }
 
-                        var courseAttachment = courseAttachments.FirstOrDefault(c => c.IdUser == userId && c.IdCourseNavigation.IdTask == taskId);
-
                         if (!isVerticalHeader && !isHorizontalHeader)
                         {
-                            text = courseAttachment?.Mark?.ToString() ?? "-";
-                            var header = CreateElement(text, null);
-                            JournalGrid.Children.Add(header);
-                            JournalList.Add(header);
-                            Grid.SetRow((FrameworkElement)header, i);
-                            Grid.SetColumn((FrameworkElement)header, j);
+                            if (taskId != null)
+                            {
+                                text = courseAttachment?.Mark?.ToString() ?? "-";
+                                var header = CreateElement(text, null);
+                                JournalGrid.Children.Add(header);
+                                JournalList.Add(header);
+                                Grid.SetRow((FrameworkElement)header, i);
+                                Grid.SetColumn((FrameworkElement)header, j + columnOffset);
+                            }
+
+                            if (testId == null && courseAttachment?.IdCourseNavigation.IdTestFrameNavigation == null)
+                            {
+                                continue;
+                            }
+
+                            columnOffset++;
+
+                            text = testId?.Mark?.ToString() ?? "-";
+                            var testHeader = CreateElement(text, null);
+                            JournalGrid.Children.Add(testHeader);
+                            JournalList.Add(testHeader);
+                            Grid.SetRow((FrameworkElement)testHeader, i);
+                            Grid.SetColumn((FrameworkElement)testHeader, j + columnOffset);
+                            testIndex += testId?.Mark == null ? 0 : 1;
                             continue;
                         }
 
@@ -246,7 +305,7 @@ namespace EduMessage.Pages
             }
             catch (Exception exception)
             {
-                
+
             }
         }
 
