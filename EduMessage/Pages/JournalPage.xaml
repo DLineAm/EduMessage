@@ -53,12 +53,12 @@
                         <charting:ResourceDictionaryCollection>
                             <ResourceDictionary>
                                 <Style x:Key="DataPointStyle" TargetType="Control">
-                                    <Setter Property="Background" Value="Red" />
+                                    <Setter Property="Background" Value="Green" />
                                 </Style>
                             </ResourceDictionary>
                             <ResourceDictionary>
                                 <Style x:Key="DataPointStyle" TargetType="Control">
-                                    <Setter Property="Background" Value="Green" />
+                                    <Setter Property="Background" Value="Red" />
                                 </Style>
                             </ResourceDictionary>
                         </charting:ResourceDictionaryCollection>

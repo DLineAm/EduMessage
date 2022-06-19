@@ -14,6 +14,8 @@ namespace WebApplication1
         public Guid Code { get; } = Guid.NewGuid();
         private bool? _isCorrect;
         private string _title;
+        private string _inputText;
+        private bool _isChecked;
         public int Id { get; set; }
 
         public string Title
@@ -44,6 +46,46 @@ namespace WebApplication1
                     testVariant.UpdateIsCorrect(false);
                 }
             }
+        }
+
+        [System.Text.Json.Serialization.JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+        public string InputText
+        {
+            get => _inputText;
+            set
+            {
+                if (value == _inputText) return;
+                _inputText = value;
+                OnPropertyChanged();
+            }
+        }
+
+        [System.Text.Json.Serialization.JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+        public bool IsChecked
+        {
+            get => _isChecked;
+            set
+            {
+                if (value == _isChecked) return;
+                _isChecked = value;
+                OnPropertyChanged();
+
+                if (IdTestPageNavigation is not {IdTestType: 1} testPage) return;
+
+                var variants = testPage.TestVariants.Where(v => v.Code != Code);
+                foreach (var testVariant in variants)
+                {
+                    testVariant.UpdateIsChecked(false);
+                }
+            }
+        }
+
+        public void UpdateIsChecked(bool value)
+        {
+            _isChecked = value;
+            OnPropertyChanged(nameof(IsChecked));
         }
 
         public void UpdateIsCorrect(bool value)

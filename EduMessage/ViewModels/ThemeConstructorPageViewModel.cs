@@ -91,6 +91,42 @@ namespace EduMessage.ViewModels
         }
 
         [Command]
+        private async void DeleteTest()
+        {
+            if (TestFrame.Id == 0)
+            {
+                TestFrame = null;
+                return;
+            }
+
+            EventAggregator.Publish(new LoaderVisibilityChanged(Visibility.Visible, "Удаление тестирования"));
+
+            try
+            {
+                var response = (await (App.Address + $"Education/Tests.Id={TestFrame.Id}")
+                        .SendRequestAsync<string>(null, HttpRequestType.Delete, App.Account.GetJwt()))
+                    .DeserializeJson<bool>();
+
+                if (!response)
+                {
+                    EventAggregator.Publish(new InAppNotificationShowing(Symbol.Cancel, "Не удалось удалить тестирование!"));
+                    return;
+                }
+
+                TestFrame = null;
+                EventAggregator.Publish(new InAppNotificationShowing(Symbol.Accept, "Тестирование удалено!"));
+            }
+            catch (Exception e)
+            {
+                EventAggregator.Publish(new InAppNotificationShowing(Symbol.Cancel, "Не удалось удалить тестирование!"));
+            }
+            finally
+            {
+                EventAggregator.Publish(new LoaderVisibilityChanged(Visibility.Collapsed, string.Empty));
+            }
+        }
+
+        [Command]
         private void AddOrChangeTask()
         {
             if (string.IsNullOrWhiteSpace(TaskDescription))
@@ -340,13 +376,13 @@ namespace EduMessage.ViewModels
             _formattedCourse = course;
             Title = course.Course.Title;
             Description = course.Course.Description;
-            var images = course.Attachments.Where(a => a is {IdType: 3});
+            var images = course.Attachments?.Where(a => a is {IdType: 3}) ?? new List<Attachment>();
             foreach (var attachment in images)
             {
                 await attachment.SplitAndGetImage(64);
             }
             Images = new ObservableCollection<Attachment>(images);
-            OtherFiles = new ObservableCollection<Attachment>(course.Attachments.Where(a => a != null && a.IdType != 3));
+            OtherFiles = new ObservableCollection<Attachment>(course.Attachments?.Where(a => a != null && a.IdType != 3) ?? new List<Attachment>());
             FilesCount = Images.Count + OtherFiles.Count;
             Task = course.Course.IdCourseTaskNavigation;
             TestFrame = course.Course.IdTestFrameNavigation;

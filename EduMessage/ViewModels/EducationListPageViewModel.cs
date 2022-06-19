@@ -21,6 +21,7 @@ using System.Threading.Tasks;
 using Windows.Storage.Pickers;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using WebApplication1;
 
 namespace EduMessage.ViewModels
 {
@@ -37,20 +38,25 @@ namespace EduMessage.ViewModels
         [Property] private Visibility _noResultsFoundAnimationVisibility = Visibility.Collapsed;
         [Property] private Visibility _teacherInputVisibility;
         [Property] private Visibility _userTeacherInputVisibility = Visibility.Collapsed;
+        [Property] private Visibility _userInputVisibility = Visibility.Collapsed;
         [Property] private GridLength _gridWidth;
         [Property] private string _errorText;
         [Property] private bool _isInfoBarOpen;
         [Property] private ObservableCollection<CourseAttachment> _taskAttachments = new();
         [Property] private CourseTask _currentCourseTask;
+        [Property] private TestFrame _currentTestFrame;
         [Property] private int? _mark;
         [Property] private string _taskStatus;
         [Property] private string _dialogActionText;
         [Property] private string _dialogTaskComment;
         [Property] private Visibility _dialogCompletedTaskInputVisibility;
         [Property] private bool _isContentDialogPrimaryButtonEnabled = true;
+        [Property] private Visibility _dialogTaskInputVisibility;
+        [Property] private Visibility _dialogTestInputVisibility;
 
         private FormattedCourse _selectedCourse;
         private MainCourse _mainCourse;
+        private Course _testCourse;
 
         public async Task Initialize(object parameter)
         {
@@ -62,6 +68,7 @@ namespace EduMessage.ViewModels
 
             UpdateTeacherInputVisibility(App.Account.GetUser().IdRole == 2 ? Visibility.Visible : Visibility.Collapsed);
             UserTeacherInputVisibility = App.Account.GetUser().IdRole is 1 or 2 ? Visibility.Visible : Visibility.Collapsed;
+            UserInputVisibility = App.Account.GetUser().IdRole is 1 ? Visibility.Visible : Visibility.Collapsed;
 
             try
             {
@@ -71,18 +78,6 @@ namespace EduMessage.ViewModels
                     .OrderBy(c => c.IdCourseNavigation.Position);
 
                 Courses = new ObservableCollection<FormattedCourse>(await ConvertToFormattedCourse(response));
-
-                //var groupedCourseAttachments = response.GroupBy(ca => ca.IdCourse);
-
-                //foreach (var groupedCourseAttachment in groupedCourseAttachments)
-                //{
-                //    var key = groupedCourseAttachment.Key;
-                //    var courses = response.Where(c => c.IdCourse == key);
-                //    var formattedCourse = courses.Adapt<FormattedCourse>(TypeAdapterConfig);
-                //    await formattedCourse.Attachments.WriteAttachmentImagePath(700);
-                //    Courses.Add(formattedCourse);
-                //}
-
 
                 if (Courses.Count == 0)
                 {
@@ -237,8 +232,44 @@ namespace EduMessage.ViewModels
             await GetTask(id);
         }
 
+        [Command]
+        private async void InitializeTestDialog(object parameter)
+        {
+            if (parameter is not Course course)
+            {
+                return;
+            }
+
+            _testCourse = course;
+
+            DialogActionText = "Выполнить";
+
+            var mark = (await (App.Address +
+                               $"Education/Tests.IdUser={App.Account.GetUser().Id}&IdCourse={course.Id}")
+                .SendRequestAsync<string>(null, HttpRequestType.Get, App.Account.GetJwt()))
+                .DeserializeJson<int?>();
+
+            TaskStatus = mark switch
+            {
+                null => "Не выполнено",
+                -1 => "Не проверено",
+                _ => "Выполнено (" + mark + ")"
+            };
+
+            IsContentDialogPrimaryButtonEnabled = mark == null;
+
+            CurrentTestFrame = course.IdTestFrameNavigation;
+
+            DialogTaskInputVisibility = Visibility.Collapsed;
+            DialogTestInputVisibility  = Visibility.Visible;
+
+        }
+
         private async Task GetTask(int courseId)
         {
+            DialogTaskInputVisibility = Visibility.Visible;
+            DialogTestInputVisibility  = Visibility.Collapsed;
+
             var userId = App.Account.GetUser().Id;
 
             var currentCourse = Courses.FirstOrDefault(c => c.Course.Id == courseId);
@@ -306,6 +337,13 @@ namespace EduMessage.ViewModels
         [Command]
         private async void ApplyTask()
         {
+            if (DialogTestInputVisibility == Visibility.Visible)
+            {
+                EventAggregator.Publish(new DialogStatusChanged(true));
+                EventAggregator.Publish(new SelectedSpecialityChangedEvent((App.Account.GetUser().Id, _testCourse)));
+                return;
+            }
+
             if (TaskAttachments.Count == 0)
             {
                 SetErrorText("Количество вложений должно быть больше 0");

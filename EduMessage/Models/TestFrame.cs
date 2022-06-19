@@ -16,6 +16,8 @@ namespace WebApplication1
     {
         private bool _isOpen;
         private string _errorText;
+        private string _inputTest;
+        private bool _isChecked;
 
         public TestFrame()
         {

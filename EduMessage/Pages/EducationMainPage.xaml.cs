@@ -12,6 +12,7 @@ using Windows.UI.Xaml.Media.Animation;
 using EduMessage.Models;
 using SignalIRServerTest;
 using SignalIRServerTest.Models;
+using WebApplication1;
 
 // Документацию по шаблону элемента "Пустая страница" см. по адресу https://go.microsoft.com/fwlink/?LinkId=234238
 
@@ -134,6 +135,11 @@ namespace EduMessage.Pages
                 case User user:
                     crumb.Title = "Изменение иерархии";
                     navigator.Navigate(typeof(TreeChangePage), user, new DrillInNavigationTransitionInfo(), FrameType.EducationFrame);
+                    break;
+                case (int userId, Course course):
+                    crumb.Title = "Выполнение тестирования";
+                    ContentFrame.Navigate(typeof(TestPassPage), (userId, course),
+                        new DrillInNavigationTransitionInfo());
                     break;
                 case (int id, FormattedCourse formattedCourse):
                     //crumb.Data = parameter;

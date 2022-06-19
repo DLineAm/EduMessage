@@ -36,7 +36,17 @@ namespace EduMessage.ViewModels
             else
             {
                 TestFrame = testFrame;
+                TestDate = TestFrame.EndDate.Value.Date;
+                TestTime = TestFrame.EndDate.Value.TimeOfDay;
                 TestPages = new ObservableCollection<TestPage>(TestFrame.TestPages);
+
+                foreach (var testPage in TestPages)
+                {
+                    if (testPage.IdTestType != 3) continue;
+
+                    var variant = testPage.TestVariants.FirstOrDefault();
+                    testPage.TextTestVariant = variant;
+                }
                 _isAddMode = false;
             }
 

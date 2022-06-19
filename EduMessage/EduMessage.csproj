@@ -212,6 +212,9 @@
     <Compile Include="Pages\TestConstructorPage.xaml.cs">
       <DependentUpon>TestConstructorPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Pages\TestPassPage.xaml.cs">
+      <DependentUpon>TestPassPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Pages\ThemeConstructorPage.xaml.cs">
       <DependentUpon>ThemeConstructorPage.xaml</DependentUpon>
     </Compile>
@@ -340,6 +343,7 @@
     <Compile Include="Services\MessageStorage.cs" />
     <Compile Include="Services\NullOrWhiteSpaceStringValidator.cs" />
     <Compile Include="Services\TitleFeature.cs" />
+    <Compile Include="Utils\AddOrChangeTextConverter.cs" />
     <Compile Include="Utils\BoolToVisibilityConverter.cs" />
     <Compile Include="Services\Chat.cs" />
     <Compile Include="Services\ColorManager.cs" />
@@ -358,6 +362,7 @@
     <Compile Include="Services\PasswordValidator.cs" />
     <Compile Include="Services\PersonNameValidator.cs" />
     <Compile Include="Services\Settings.cs" />
+    <Compile Include="Utils\DateExpiredStringConverter.cs" />
     <Compile Include="Utils\DateToDateConverter.cs" />
     <Compile Include="Utils\GridHelpers.cs" />
     <Compile Include="Utils\InverseNullToVisibilityConverter.cs" />
@@ -426,6 +431,7 @@
     <Compile Include="Models\Events\UserExitedEvent.cs" />
     <Compile Include="Models\SpecialityTree.cs" />
     <Compile Include="ViewModels\TestConstructorPageViewModel.cs" />
+    <Compile Include="ViewModels\TestPassPageViewModel.cs" />
     <Compile Include="ViewModels\ThemeConstructorPageViewModel.cs" />
     <Compile Include="ViewModels\TreeChangePageViewModel.cs" />
     <Compile Include="ViewModels\UserPickViewModel.cs" />
@@ -573,6 +579,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Pages\TestConstructorPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Pages\TestPassPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

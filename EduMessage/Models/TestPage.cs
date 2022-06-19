@@ -108,6 +108,8 @@ namespace WebApplication1
 
         public virtual ObservableCollection<TestVariant> TestVariants { get; set; }
 
+        [JsonIgnore]
+        public TestVariant FirstTestVariant => TestVariants.FirstOrDefault();
 
         [JsonIgnore]
         public bool IsAddFunctionEnabled

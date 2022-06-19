@@ -27,6 +27,7 @@
         <utils:InverseNullToVisibilityConverter x:Key="InverseNullToVisibilityConverter"></utils:InverseNullToVisibilityConverter>
         <utils:StringFormatConverter x:Key="StringFormatConverter"></utils:StringFormatConverter>
         <utils:ByteToImageConverter x:Key="ImageConverter"></utils:ByteToImageConverter>
+        <utils:DateExpiredStringConverter x:Key="DateExpiredStringConverter"></utils:DateExpiredStringConverter>
     </Page.Resources>
 
     <Grid Margin="-12,0">
@@ -118,12 +119,9 @@
                                                 DataContextChanged="FrameworkElement_OnDataContextChanged">
 
                                     </StackPanel>
-                                    <!--<TextBlock Text="{Binding Course.Description}"
-                                               TextWrapping="Wrap"
-                                               DataContextChanged="FrameworkElement_OnDataContextChanged"/>-->
 
                                     <StackPanel Visibility="{Binding FilesInfoVisibility}"
-                                                    Grid.Row="3">
+                                                Grid.Row="3">
                                         <TextBlock Text="Прикрепленные файлы"
                                                    Margin="0,12"
                                                    Foreground="{ThemeResource TextBoxButtonForegroundThemeBrush}"></TextBlock>
@@ -192,6 +190,7 @@
                                                                          ConverterParameter="{}{0:dd/MM/yyy HH:mm (ddd)}"/>
                                                             </Run.Text>
                                                         </Run>
+                                                        <Run Text="{Binding Course.IdCourseTaskNavigation.EndTime, Converter={StaticResource DateExpiredStringConverter}}"></Run>
                                                     </TextBlock>
                                                 </StackPanel>
 
@@ -236,15 +235,21 @@
                                                                          ConverterParameter="{}{0:dd/MM/yyy HH:mm (ddd)}"/>
                                                             </Run.Text>
                                                         </Run>
+                                                        <Run Text="{Binding Course.IdTestFrameNavigation.EndDate, Converter={StaticResource DateExpiredStringConverter}}"></Run>
                                                     </TextBlock>
                                                 </StackPanel>
 
-                                                <HyperlinkButton Grid.Column="2"
-                                                                 Visibility="{Binding DataContext.UserTeacherInputVisibility, ElementName=window}"
-                                                                 Margin="0 0 12 0"
-                                                                 Command="{Binding DataContext.GetUserTaskCommand, ElementName=window}"
-                                                                 CommandParameter="{Binding Course.Id}"
-                                                                 Click="MoreButton_OnClick"></HyperlinkButton>
+                                                <Grid Grid.Column="2"
+                                                      Margin="0 0 12 0"
+                                                      Visibility="{Binding Course.IdTestFrameNavigation, Converter={StaticResource NullToVisibilityConverter}}">
+                                                    <HyperlinkButton Visibility="{Binding DataContext.UserInputVisibility, ElementName=window}"
+                                                                     Command="{Binding DataContext.InitializeTestDialogCommand, ElementName=window}"
+                                                                     CommandParameter="{Binding Course}"
+                                                                     Click="MoreButton_OnClick"
+                                                                     Content="Подробнее"></HyperlinkButton>
+                                                </Grid>
+
+                                                
                                             </Grid>
                                         </Border>
                                     </StackPanel>
@@ -274,9 +279,6 @@
                                                               Command="{Binding DataContext.InitializeChangeCourseDialogCommand, ElementName=window}"
                                                               CommandParameter="{Binding }"
                                                               Visibility="{Binding DataContext.TeacherInputVisibility, ElementName=window}"/>
-                                                <!--<AppBarButton Label="Отправить"
-                                                              Icon="Share"
-                                                              HorizontalAlignment="Right"/>-->
                                             </StackPanel>
 
 
@@ -397,7 +399,8 @@
                                   IsClosable="False"></controls:InfoBar>
 
                 <TextBlock Margin="0 12"
-                           Text="Задание"></TextBlock>
+                           Text="Задание"
+                           Visibility="{Binding DialogTaskInputVisibility}"></TextBlock>
 
                 <Border Style="{StaticResource CardBorder}"
                         Padding="12"
@@ -417,8 +420,13 @@
                                     Margin="12 0 0 0">
                             <TextBlock Text="{Binding CurrentCourseTask.Description}"
                                        FontWeight="SemiBold"
-                                       TextTrimming="CharacterEllipsis"></TextBlock>
-                            <TextBlock>
+                                       TextTrimming="CharacterEllipsis"
+                                       Visibility="{Binding DialogTaskInputVisibility}"></TextBlock>
+                            <TextBlock Text="{Binding CurrentTestFrame.Title}"
+                                       FontWeight="SemiBold"
+                                       TextTrimming="CharacterEllipsis"
+                                       Visibility="{Binding DialogTestInputVisibility}"></TextBlock>
+                            <TextBlock Visibility="{Binding DialogTaskInputVisibility}">
                                 Выполнить до <Run>
                                     <Run.Text>
                                         <Binding Path="CurrentCourseTask.EndTime"
@@ -426,6 +434,17 @@
                                             ConverterParameter="{}{0:dd/MM/yyy HH:mm (ddd)}"></Binding>
                                     </Run.Text>
                                 </Run>
+                                <Run Text="{Binding CurrentCourseTask.EndTime, Converter={StaticResource DateExpiredStringConverter}}"></Run>
+                            </TextBlock>
+                            <TextBlock Visibility="{Binding DialogTestInputVisibility}">
+                                Выполнить до <Run>
+                                    <Run.Text>
+                                        <Binding Path="CurrentTestFrame.EndDate"
+                                                 Converter="{StaticResource StringFormatConverter}"
+                                                 ConverterParameter="{}{0:dd/MM/yyy HH:mm (ddd)}"></Binding>
+                                    </Run.Text>
+                                </Run>
+                                <Run Text="{Binding CurrentTestFrame.EndDate, Converter={StaticResource DateExpiredStringConverter}}"></Run>
                             </TextBlock>
                             <TextBlock FontWeight="SemiBold">
                                 Статус: <Run Text="{Binding TaskStatus}"></Run>
@@ -434,19 +453,24 @@
                     </Grid>
                 </Border>
 
-                <StackPanel Margin="0 12"
-                            Visibility="{Binding DialogTaskComment, Converter={StaticResource NullToVisibilityConverter}}">
-                    <TextBlock Text="Комментарий преподавателя"
-                               Margin="0 0 0 12"></TextBlock>
+                <Grid Visibility="{Binding DialogTaskInputVisibility}">
+                    <StackPanel Margin="0 12"
+                                Visibility="{Binding DialogTaskComment, Converter={StaticResource NullToVisibilityConverter}}">
+                        <TextBlock Text="Комментарий преподавателя"
+                                   Margin="0 0 0 12"></TextBlock>
 
-                    <TextBlock Text="{Binding DialogTaskComment}"
-                               TextWrapping="Wrap"></TextBlock>
-                </StackPanel>
+                        <TextBlock Text="{Binding DialogTaskComment}"
+                                   TextWrapping="Wrap"></TextBlock>
+                    </StackPanel>
+                </Grid>
+                
 
-                <TextBlock Margin="0 12">
+                <TextBlock Margin="0 12"
+                           Visibility="{Binding DialogTaskInputVisibility}">
                     Прикрепленные файлы <Run Text="(Всего:" Foreground="{ThemeResource TextBoxButtonForegroundThemeBrush}"></Run>  <Run Text="{Binding TaskAttachments.Count}" Foreground="{ThemeResource TextBoxButtonForegroundThemeBrush}"></Run><Run Text=")" Foreground="{ThemeResource TextBoxButtonForegroundThemeBrush}"></Run>
                 </TextBlock>
-                <Grid Width="450">
+                <Grid Width="450"
+                      Visibility="{Binding DialogTaskInputVisibility}">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"></ColumnDefinition>
                         <ColumnDefinition></ColumnDefinition>

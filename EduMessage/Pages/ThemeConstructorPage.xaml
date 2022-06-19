@@ -21,6 +21,7 @@
         <utils:StringFormatConverter x:Key="StringFormatConverter"></utils:StringFormatConverter>
         <utils:NullToVisibilityConverter x:Key="NullToVisibilityConverter"></utils:NullToVisibilityConverter>
         <utils:InverseNullToVisibilityConverter x:Key="InverseNullToVisibilityConverter"></utils:InverseNullToVisibilityConverter>
+        <utils:AddOrChangeTextConverter x:Key="AddOrChangeTextConverter"></utils:AddOrChangeTextConverter>
     </Page.Resources>
 
     <Grid>
@@ -132,7 +133,7 @@
                                 </StackPanel>
                             </StackPanel>
 
-                            <HyperlinkButton Content="Изменить"
+                            <HyperlinkButton Content="{Binding Task, Converter={StaticResource AddOrChangeTextConverter}}"
                                     Grid.Column="2"
                                     Margin="12 0"
                                     Command="{Binding ChangeTaskCommand}"></HyperlinkButton>
@@ -180,7 +181,7 @@
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock>
                                         <TextBlock.Text>
-                                            <Binding Path="TestFrame.EndTime"
+                                            <Binding Path="TestFrame.EndDate"
                                                      Mode="TwoWay"
                                                      UpdateSourceTrigger="PropertyChanged"
                                                      Converter="{StaticResource StringFormatConverter}"
@@ -190,10 +191,17 @@
                                 </StackPanel>
                             </StackPanel>
 
-                            <HyperlinkButton Content="Изменить"
-                                    Grid.Column="2"
-                                    Margin="12 0"
-                                    Command="{Binding ChangeTestCommand}"></HyperlinkButton>
+                            <StackPanel Orientation="Horizontal"
+                                        Grid.Column="2"
+                                        Margin="12 0">
+                                <HyperlinkButton Content="{Binding TestFrame, Converter={StaticResource AddOrChangeTextConverter}}"
+                                                 Command="{Binding ChangeTestCommand}"></HyperlinkButton>
+                                <HyperlinkButton Content="Удалить"
+                                                 Command="{Binding DeleteTestCommand}"
+                                                 Visibility="{Binding TestFrame, Converter={StaticResource NullToVisibilityConverter}}"/>
+                            </StackPanel>
+
+                            
 
 
                         </Grid>
