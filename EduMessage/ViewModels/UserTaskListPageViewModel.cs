@@ -41,6 +41,10 @@ namespace EduMessage.ViewModels
 
                 foreach (var courseAttachment in response)
                 {
+                    if (courseAttachment.IdAttachmanentNavigation == null)
+                    {
+                        continue;
+                    }
                     await courseAttachment.IdAttachmanentNavigation?.SplitAndGetImage(48);
                 }
 

@@ -177,7 +177,15 @@ namespace EduMessage.Pages
             while (!_isContentDialogSuccess)
             {
                 await TaskDialog.ShowAsync();
+
             }
+        }
+
+        private async void MoreButton1_OnClick(object sender, RoutedEventArgs e)
+        {
+
+                await TaskDialog.ShowAsync();
+
         }
 
         public void OnEvent(DialogStatusChanged eventData)

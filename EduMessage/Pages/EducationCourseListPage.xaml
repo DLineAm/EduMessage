@@ -240,10 +240,8 @@
                                                 </StackPanel>
 
                                                 <Grid Grid.Column="2"
-                                                      Margin="0 0 12 0"
-                                                      Visibility="{Binding Course.IdTestFrameNavigation, Converter={StaticResource NullToVisibilityConverter}}">
-                                                    <HyperlinkButton Visibility="{Binding DataContext.UserInputVisibility, ElementName=window}"
-                                                                     Command="{Binding DataContext.InitializeTestDialogCommand, ElementName=window}"
+                                                      Margin="0 0 12 0">
+                                                    <HyperlinkButton Command="{Binding DataContext.InitializeTestDialogCommand, ElementName=window}"
                                                                      CommandParameter="{Binding Course}"
                                                                      Click="MoreButton_OnClick"
                                                                      Content="Подробнее"></HyperlinkButton>
@@ -257,8 +255,8 @@
                                     <Grid Grid.Row="4"
                                           Margin="0 12 0 0">
                                         <Grid.ColumnDefinitions>
-                                            <ColumnDefinition/>
-                                            <ColumnDefinition Width="auto"/>
+                                            <ColumnDefinition />
+                                            <ColumnDefinition Width="auto" />
                                         </Grid.ColumnDefinitions>
 
                                         <TextBlock Foreground="{ThemeResource TextBoxButtonForegroundThemeBrush}"
@@ -278,17 +276,11 @@
                                                               HorizontalAlignment="Right"
                                                               Command="{Binding DataContext.InitializeChangeCourseDialogCommand, ElementName=window}"
                                                               CommandParameter="{Binding }"
-                                                              Visibility="{Binding DataContext.TeacherInputVisibility, ElementName=window}"/>
+                                                              Visibility="{Binding DataContext.TeacherInputVisibility, ElementName=window}" />
                                             </StackPanel>
-
 
                                         </StackPanel>
                                     </Grid>
-
-
-
-
-
                                 </Grid>
 
                             </controls:Expander.Content>
@@ -375,10 +367,10 @@
                             Margin="0,12,0,0">
                     <HyperlinkButton Content="Добавить тему"
                                      Command="{Binding InitializeAddCourseDialogCommand}"/>
-                    <!--<HyperlinkButton Content="Журнал оценок"
+                    <HyperlinkButton Content="Журнал оценок"
                                      Command="{Binding OpenJournalPageCommand}"
                                      CommandParameter=""
-                                     Margin="0 12 0 0"/>-->
+                                     Margin="0 12 0 0"/>
                 </StackPanel>
             </Grid>
         </Border>

@@ -27,7 +27,12 @@
                 <StackPanel>
                     <ListView ItemsSource="{Binding TestFrame.TestPages}"
                           SelectionMode="None">
-                        <ListView.ItemTemplate>
+                    <ListView.ItemContainerStyle>
+                        <Style TargetType="ListViewItem">
+                            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                        </Style>
+                    </ListView.ItemContainerStyle>
+                    <ListView.ItemTemplate>
                             <DataTemplate x:DataType="webApplication1:TestPage">
                                 <Grid Background="Transparent">
                                     <Grid.ColumnDefinitions>

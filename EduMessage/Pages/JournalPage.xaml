@@ -8,57 +8,163 @@
     xmlns:controls="using:Microsoft.Toolkit.Uwp.UI.Controls"
     xmlns:untils="using:EduMessage.Utils" xmlns:animatedvisuals="using:AnimatedVisuals" xmlns:controls1="using:Microsoft.UI.Xaml.Controls"
     xmlns:charting="using:WinRTXamlToolkit.Controls.DataVisualization.Charting"
+    xmlns:signalIrServerTest="using:SignalIRServerTest"
     mc:Ignorable="d"
     DataContext="{Binding RelativeSource={RelativeSource Self}}">
 
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="auto"/>
-            <RowDefinition/>
+            <RowDefinition></RowDefinition>
+            <RowDefinition Height="Auto"></RowDefinition>
         </Grid.RowDefinitions>
-        <TextBlock Style="{StaticResource 26TitleTextBlock}"
-                   Text="{Binding MainCourseTitle}"/>
-        <StackPanel VerticalAlignment="Center"
-                    Visibility="{Binding NoResultsFoundAnimationVisibility}"
-                    Grid.Row="1"
-                    HorizontalAlignment="Center">
-            <controls1:AnimatedVisualPlayer Height="130"
-                                           >
-                <animatedvisuals:Fire/>
-            </controls1:AnimatedVisualPlayer>
 
-            <TextBlock Text="Здесь ничего нет, может быть что-то появится позже"
-                       HorizontalAlignment="Center"
-                       TextWrapping="Wrap"
-                       Width="200"
-                       TextAlignment="Center"
-                       Foreground="{ThemeResource TextBoxButtonForegroundThemeBrush}"/>
-        </StackPanel>
-        <StackPanel Grid.Row="1">
+        <Grid HorizontalAlignment="Center"
+              Margin="0 12 0 0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="70"></RowDefinition>
+                <RowDefinition ></RowDefinition>
+                <RowDefinition Height="70"></RowDefinition>
+            </Grid.RowDefinitions>
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="150"></ColumnDefinition>
+                <ColumnDefinition Width="Auto"></ColumnDefinition>
+                <ColumnDefinition Width="150"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+
+            <Border Style="{StaticResource AcrylicCardBorder}"></Border>
             <Border Style="{StaticResource AcrylicCardBorder}"
-                    Margin="0 12 0 0"
-                    HorizontalAlignment="Left"
-                    VerticalAlignment="Top"
-                    Padding="48 12">
-                <Grid x:Name="JournalGrid">
+                    Grid.Column="3"></Border>
 
-                </Grid>
-            </Border>
-        </StackPanel>
-        
-        
-        <!--<ListView ItemsSource="{Binding JournalList}"
-                  x:Name="JournalListView">
-            <ListView.ItemsPanel>
-                <ItemsPanelTemplate>
-                    <Grid x:Name="ListGrid"
-                          HorizontalAlignment="Stretch"
-                          VerticalAlignment="Stretch"
 
-                          Loaded="ListGrid_OnLoaded"></Grid>
-                </ItemsPanelTemplate>
-            </ListView.ItemsPanel>
+            <ListView Grid.Column="1"
+                      x:Name="ThemeListView"
+                      SelectionMode="None">
+                <ListView.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel Orientation="Horizontal"></StackPanel>
+                    </ItemsPanelTemplate>
+                </ListView.ItemsPanel>
+                <ListView.ItemTemplate>
+                    <DataTemplate x:DataType="signalIrServerTest:CourseAttachment">
+                        <Grid Width="150" Height="70">
+                            <Grid.RowDefinitions>
+                                <RowDefinition></RowDefinition>
+                                <RowDefinition Height="Auto"></RowDefinition>
+                            </Grid.RowDefinitions>
 
-        </ListView>-->
+                            <TextBlock Text="{Binding IdCourseNavigation.Title}"
+                                       TextAlignment="Center"
+                                       VerticalAlignment="Center"
+                                       TextWrapping="WrapWholeWords"
+                                       TextTrimming="CharacterEllipsis"></TextBlock>
+
+                            <Rectangle Height="2"
+                                       Grid.Row="1"
+                                       Fill="White"></Rectangle>
+                        </Grid>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+
+            <ListView Grid.Row="1"
+                      x:Name="UsersListView"
+                      SelectionMode="None"
+                      Margin="00 10 0 0">
+                <ListView.ItemTemplate>
+                    <DataTemplate x:DataType="signalIrServerTest:CourseAttachment">
+                        <Grid Height="70">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition></ColumnDefinition>
+                                <ColumnDefinition Width="Auto"></ColumnDefinition>
+                            </Grid.ColumnDefinitions>
+
+                            <TextBlock TextAlignment="Center"
+                                       VerticalAlignment="Center"
+                                       TextTrimming="CharacterEllipsis"
+                                       TextWrapping="WrapWholeWords">
+                                <Run Text="{Binding IdUserNavigation.LastName}"></Run>
+                                <Run Text="{Binding IdUserNavigation.FirstName}"></Run>
+                                <Run Text="{Binding IdUserNavigation.MiddleName}"></Run>
+                            </TextBlock>
+
+                            <Rectangle Width="2"
+                                       Grid.Column="1"
+                                       Fill="White"
+                                       Margin="0 5 -10 5 "></Rectangle>
+                        </Grid>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+
+            <ListView Grid.Row="1"
+                      Grid.Column="1"
+                      x:Name="UserMarkListView"
+                      Margin="-10 10 0 0"
+                      SelectionMode="None">
+
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <ListView Height="70"
+                                  ItemsSource="{Binding }"
+                                  SelectionMode="None">
+                            <ListView.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <StackPanel Orientation="Horizontal"></StackPanel>
+                                </ItemsPanelTemplate>
+                            </ListView.ItemsPanel>
+                            <ListView.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Width="150"
+                                               TextAlignment="Center">
+                                        <Run Text="{Binding Key, TargetNullValue=-}"></Run> | <Run Text="{Binding Value, TargetNullValue=-}"></Run>
+                                    </TextBlock>
+                                </DataTemplate>
+                            </ListView.ItemTemplate>
+                        </ListView>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+              
+            </ListView>
+
+            <ListView Grid.Column="2"
+                      Grid.Row="1"
+                      x:Name="AverageMarkListView"
+                      Margin="0 30 0 0"
+                      SelectionMode="None">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Height="70"
+                                    VerticalAlignment="Center">
+                            <TextBlock Text="Среднее"
+                                       TextAlignment="Center"></TextBlock>
+                            <TextBlock
+                                TextAlignment="Center">
+                                (<Run Text="{Binding }"></Run>)
+                            </TextBlock>
+                        </StackPanel>
+                        
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+
+        </Grid>
+
+        <controls1:TeachingTip Title="Структура журнала"
+                               Subtitle="В списке оценок левое число - это оценка за задание, правое - за тестирование"
+                               PreferredPlacement="Auto"
+                               PlacementMargin="20"
+                               IsLightDismissEnabled="True"
+                               CloseButtonContent="Понятно"
+                               x:Name="MarkTeachingTip">
+            <controls1:TeachingTip.HeroContent>
+                <Image Source="/Assets/MarkTip.png"></Image>
+            </controls1:TeachingTip.HeroContent>
+        </controls1:TeachingTip>
+
+        <HyperlinkButton Grid.Row="1"
+                         Margin="0 12 0 0"
+                         Content="Структура журнала"
+                         Click="TipButton_OnClick"></HyperlinkButton>
     </Grid>
 </Page>

@@ -194,7 +194,8 @@
                                     Margin="0,12,0,0">
                                     <TextBlock Width="150"
                                        Text="Адрес"
-                                       VerticalAlignment="Center"/>
+                                       VerticalAlignment="Center"
+                                               Foreground="Gray"/>
                                     <TextBlock Text="{Binding User.Address}"
                                        Foreground="Gray"/>
                                     <!--<TextBox MaxWidth="350"
@@ -327,8 +328,5 @@
 
             </Grid>
         </ScrollViewer>
-
-        
-
     </Grid>
 </Page>

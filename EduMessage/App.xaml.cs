@@ -51,6 +51,7 @@ namespace EduMessage
         //public static string Address = "https://localhost:44347/";
 
         //public static string Address = "https://169.254.74.100:5001/";
+        //public static string Address = "https://169.254.74.96:5001/";
         //public static string Address = "https://169.254.77.140:5001/";
         //public static string Address = "https://169.254.74.121:5001/";
         //public static string Address = "https://169.254.74.120:5001/";

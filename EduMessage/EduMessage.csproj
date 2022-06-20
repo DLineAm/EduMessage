@@ -472,6 +472,7 @@
     <Content Include="Assets\LargeTile.scale-150.png" />
     <Content Include="Assets\LargeTile.scale-200.png" />
     <Content Include="Assets\LargeTile.scale-400.png" />
+    <Content Include="Assets\MarkTip.png" />
     <Content Include="Assets\pdf.png" />
     <Content Include="Assets\reply_dark.png" />
     <Content Include="Assets\reply_light.png" />

@@ -99,209 +99,77 @@ namespace EduMessage.Pages
                     return;
                 }
 
-                NoResultsFoundAnimationVisibility = Visibility.Collapsed;
-
-                var taskIds = courseAttachments
-                    .Where(c => c.IsTask is true)
-                    .Select(c => c.IdCourseNavigation.IdTask)
+                var coursesIds = courseAttachments
+                    .Where(c => c.IdCourse != null && c.IsTask != null)
+                    .OrderBy(c => c.IdCourseNavigation.Position)
+                    .Select(c => c.IdCourse)
                     .Distinct();
 
-                var testIds = courseAttachments
-                    .Where(c => c.IsTask is false)
-                    .OrderBy(t => t.IdCourseNavigation.Position);
+                var courses = coursesIds.Select(coursesId => courseAttachments.FirstOrDefault(c => c.IdCourse == coursesId))
+                    .Where(course => course != null).ToList();
 
-                var tasksCount = taskIds.Count();
-                var testsCount = testIds.Count();
+                ThemeListView.ItemsSource = courses;
 
-                TasksCount = tasksCount + 1;
+                var usersIds = courseAttachments
+                    .Where(c => c.IdCourse != null && c.IdUser != null && c.IsTask != null)
+                    .Select(c => c.IdUser)
+                    .Distinct();
 
-                for (int i = 0; i < TasksCount + 2 + testsCount; i++)
+                var users = usersIds.Select(userId => courseAttachments.FirstOrDefault(c => c.IdUser == userId))
+                    .Where(c => c != null)
+                    .ToList();
+
+                UsersListView.ItemsSource = users;
+
+                var usersMarks = new List<List<KeyValuePair<int?, int?>>>();
+
+                var averageMarks = new List<double>();
+
+                foreach (var userAttachment in users)
                 {
-                    JournalGrid.ColumnDefinitions.Add(new ColumnDefinition
+                    var user = userAttachment.IdUserNavigation;
+
+                    var marksCount = 0;
+
+                    var averageMark = 0d;
+
+                    var userMarks = new List<KeyValuePair<int?, int?>>();
+                    foreach (var courseAttachment in courses)
                     {
-                        Width = GridLength.Auto
-                    });
-                }
+                        var course = courseAttachment.IdCourseNavigation;
 
-                var usersIds = courseAttachments.Select(c => c.IdUser)
-                    .Distinct()
-                    .Where(u => u != null);
+                        var testsTasks = courseAttachments.Where(c =>
+                            c.IdCourse == course.Id && c.IdUser == user.Id && c.IsTask != null);
 
-                var usersCount = usersIds.Count();
+                        var test = testsTasks.FirstOrDefault(t => t.IsTask is false);
 
-                UsersCount = usersCount + 1;
+                        if (test is {Mark: { } taskMark})
+                        {
+                            averageMark += taskMark;
+                            marksCount++;
+                        }
 
-                for (int i = 0; i < UsersCount + 1; i++)
-                {
-                    JournalGrid.RowDefinitions.Add(new RowDefinition
-                    {
-                        Height = GridLength.Auto
-                    });
-                }
+                        var task = testsTasks.FirstOrDefault(t => t.IsTask is true);
 
-                //SetRowCount(usersCount);
-                //SetColumnCount(tasksCount);
+                        if (task is {Mark: { } testMark})
+                        {
+                            averageMark += testMark;
+                            marksCount++;
+                        }
 
-
-                var testIndex = 0;
-
-                for (int i = 0; i < UsersCount; i++)
-                {
-                    var isVerticalHeader = i == 0;
-                    if (i == 0)
-                    {
-                        testIndex = 0;
+                        userMarks.Add(new KeyValuePair<int?, int?>(task?.Mark, test?.Mark));
                     }
-                    var columnOffset = 0;
 
-                    for (int j = 0; j < tasksCount + 2 + testsCount; j++)
-                    {
-                        var isHorizontalHeader = j == 0;
+                    averageMark /= marksCount;
 
+                    averageMarks.Add(Math.Round(averageMark,2));
 
-                        if (isVerticalHeader && isHorizontalHeader)
-                        {
-                            var header = CreateElement(string.Empty, null);
-                            JournalGrid.Children.Add(header);
-                            JournalList.Add(header);
-                            continue;
-                        }
-
-                        var userId = usersIds.ElementAt(isVerticalHeader ? i : i - 1);
-
-                        var text = string.Empty;
-
-                        if (j == tasksCount + 1 + testsCount)
-                        {
-                            var attachmentsForUser = response.Where(r => r.IdUser == userId && r.Mark != null)
-                                .Select(r => r.IdCourse)
-                                .Distinct();
-                            var marks = new List<byte>();
-
-                            foreach (var item in attachmentsForUser)
-                            {
-                                var attachment = response.FirstOrDefault(r => r.IdCourse == item && r.IdUser == userId && r.Mark != null);
-                                marks.Add((byte)attachment.Mark);
-                            }
-
-                            var averageMark = Math.Round(marks
-                                .Average(t => t), 1);
-
-                            text = isVerticalHeader ? string.Empty : $"Среднее\r({averageMark})";
-                            var averageResultElement = CreateElement(text, null);
-                            Grid.SetColumn((FrameworkElement)averageResultElement, j + 2 + testsCount);
-                            Grid.SetRow((FrameworkElement)averageResultElement, i);
-                            JournalGrid.Children.Add(averageResultElement);
-                            JournalList.Add(averageResultElement);
-                            continue;
-                        }
-
-                        int? taskId = null;
-                        CourseAttachment courseAttachment = null;
-
-                        try
-                        {
-                            taskId = taskIds.ElementAt(isHorizontalHeader ? j : j - 1 );
-
-                            courseAttachment = courseAttachments.FirstOrDefault(c => c.IdUser == userId && c.IdCourseNavigation.IdTask == taskId);
-
-                        }
-                        catch (Exception ex)
-                        {
-
-                        }
-
-                        CourseAttachment testId = null;
-
-                        if (taskId == null || courseAttachment == null)
-                        {
-                            try
-                            {
-                                testId = testIds.ElementAt(testIndex > testIds.Count() ? testIds.Count() - 1: testIndex);
-                            }
-                            catch (Exception exc)
-                            {
-                                testId = new CourseAttachment();
-                            }
-                        }
-                        else
-                        {
-                            testId = testIds.FirstOrDefault(t =>
-                                t.IdUser == userId && t.IdCourse == courseAttachment.IdCourse && t.IsTask == false);
-                        }
-
-                        if (isVerticalHeader)
-                        {
-                            if (taskId != null)
-                            {
-                                var task = courseAttachments.FirstOrDefault(c => c.IdCourseNavigation.IdTask == taskId);
-
-                                text = task?.IdCourseNavigation.IdCourseTaskNavigation.Description;
-
-                                var element = CreateElement(text, isVerticalHeader);
-                                Grid.SetColumn((FrameworkElement)element, j + columnOffset);
-                                JournalGrid.Children.Add(element);
-                                JournalList.Add(element);
-                            }
-
-                            if (testId == null)
-                            {
-                                continue;
-                            }
-
-                            text = testId.IdCourseNavigation.Title;
-
-                            var testElement = CreateElement(text + "\r(Тестирование)", isVerticalHeader);
-                            Grid.SetColumn((FrameworkElement)testElement, j + columnOffset);
-                            JournalGrid.Children.Add(testElement);
-                            JournalList.Add(testElement);
-
-                            testIndex++;
-                            //columnOffset++;
-
-                            continue;
-                        }
-
-                        if (!isVerticalHeader && !isHorizontalHeader)
-                        {
-                            if (taskId != null)
-                            {
-                                text = courseAttachment?.Mark?.ToString() ?? "-";
-                                var header = CreateElement(text, null);
-                                JournalGrid.Children.Add(header);
-                                JournalList.Add(header);
-                                Grid.SetRow((FrameworkElement)header, i);
-                                Grid.SetColumn((FrameworkElement)header, j + columnOffset);
-                            }
-
-                            if (testId == null && courseAttachment?.IdCourseNavigation.IdTestFrameNavigation == null)
-                            {
-                                continue;
-                            }
-
-                            columnOffset++;
-
-                            text = testId?.Mark?.ToString() ?? "-";
-                            var testHeader = CreateElement(text, null);
-                            JournalGrid.Children.Add(testHeader);
-                            JournalList.Add(testHeader);
-                            Grid.SetRow((FrameworkElement)testHeader, i);
-                            Grid.SetColumn((FrameworkElement)testHeader, j + columnOffset);
-                            testIndex += testId?.Mark == null ? 0 : 1;
-                            continue;
-                        }
-
-                        var user = courseAttachments.FirstOrDefault(c => c.IdUser == userId)
-                            .IdUserNavigation;
-
-                        text = $"{user.LastName} {user.FirstName} {user.MiddleName}";
-
-                        var horizontalHeader = CreateElement(text, isVerticalHeader);
-                        Grid.SetRow((FrameworkElement)horizontalHeader, i);
-                        JournalGrid.Children.Add(horizontalHeader);
-                        JournalList.Add(horizontalHeader);
-                    }
+                    usersMarks.Add(userMarks);
                 }
+
+                UserMarkListView.ItemsSource = usersMarks;
+
+                AverageMarkListView.ItemsSource = averageMarks;
             }
             catch (Exception exception)
             {
@@ -309,96 +177,6 @@ namespace EduMessage.Pages
             }
         }
 
-        //private void SetRowCount(int rowCount)
-        //{
-        //    var panel = JournalListView.ItemsPanelRoot as Grid;
-        //    panel.RowDefinitions.Clear();
-        //    for (int i = 0; i < rowCount; i++)
-        //    {
-        //        panel.RowDefinitions.Add(new RowDefinition());
-        //    }
-        //}
-
-        //private void SetColumnCount(int columnCount)
-        //{
-        //    var panel = JournalListView.ItemsPanelRoot as Grid;
-
-        //    panel.ColumnDefinitions.Clear();
-        //    for (int i = 0; i < columnCount; i++)
-        //    {
-        //        panel.ColumnDefinitions.Add(new ColumnDefinition());
-        //    }
-        //}
-
-        private UIElement CreateElement(string text, bool? isVerticalHeader)
-        {
-            var grid = CreateGrid();
-            var textBlock = CreateTextBlock(text);
-            grid.Children.Add(textBlock);
-
-            if (isVerticalHeader == null)
-            {
-                return grid;
-            }
-
-            var border = CreateBorder((bool)isVerticalHeader);
-
-            grid.Children.Add(border);
-
-            return grid;
-        }
-
-        private Border CreateBorder(bool isVertical)
-        {
-            var border = new Border
-            {
-                Background = new SolidColorBrush(Colors.White),
-                Margin = new Thickness(5)
-            };
-
-            if (isVertical)
-            {
-                Grid.SetRow(border, 1);
-                border.Height = 2;
-                return border;
-            }
-
-            Grid.SetColumn(border, 1);
-            border.Width = 2;
-            return border;
-        }
-
-        private Grid CreateGrid()
-        {
-            return new Grid
-            {
-                RowDefinitions =
-                {
-                    new RowDefinition(),
-                    new RowDefinition{ Height = GridLength.Auto}
-                },
-                ColumnDefinitions =
-                {
-                    new ColumnDefinition(),
-                    new ColumnDefinition{Width = GridLength.Auto},
-                },
-                Height = 70,
-                Width = 150
-            };
-        }
-
-        private TextBlock CreateTextBlock(string text)
-        {
-            return new TextBlock
-            {
-                VerticalAlignment = VerticalAlignment.Center,
-                HorizontalAlignment = HorizontalAlignment.Center,
-                Text = text,
-                TextWrapping = TextWrapping.Wrap,
-                TextTrimming = TextTrimming.CharacterEllipsis,
-                TextAlignment = TextAlignment.Center
-            };
-        }
 
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -408,21 +186,9 @@ namespace EduMessage.Pages
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        private void ListGrid_OnLoaded(object sender, RoutedEventArgs e)
+        private void TipButton_OnClick(object sender, RoutedEventArgs e)
         {
-            var grid = sender as Grid;
-
-            grid.ColumnDefinitions.Clear();
-            for (int i = 0; i < TasksCount; i++)
-            {
-                grid.ColumnDefinitions.Add(new ColumnDefinition());
-            }
-
-            grid.RowDefinitions.Clear();
-            for (int i = 0; i < UsersCount; i++)
-            {
-                grid.RowDefinitions.Add(new RowDefinition());
-            }
+            MarkTeachingTip.IsOpen = true;
         }
     }
 }

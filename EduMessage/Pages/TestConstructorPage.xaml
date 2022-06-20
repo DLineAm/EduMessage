@@ -89,6 +89,11 @@
                 <StackPanel>
                     <ListView ItemsSource="{Binding TestPages}"
                           SelectionMode="None">
+                        <ListView.ItemContainerStyle>
+                            <Style TargetType="ListViewItem">
+                                <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                            </Style>
+                        </ListView.ItemContainerStyle>
                         <ListView.ItemTemplate>
                             <DataTemplate x:DataType="webApplication1:TestPage">
                                 <Grid Background="Transparent">
@@ -172,6 +177,11 @@
                                                            SelectionMode="None"
                                                            Margin="0 12 0 0"
                                                            Visibility="{Binding IdTestType, Converter={StaticResource IntEqualityToVisibilityConverter}, ConverterParameter=1}">
+                                                <ListView.ItemContainerStyle>
+                                                    <Style TargetType="ListViewItem">
+                                                        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                                                    </Style>
+                                                </ListView.ItemContainerStyle>
                                                 <ListView.ItemTemplate>
                                                     <DataTemplate x:DataType="webApplication1:TestVariant">
                                                         <Grid Margin="0 12 0 0"
